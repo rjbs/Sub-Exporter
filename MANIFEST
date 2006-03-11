@@ -1,0 +1,26 @@
+Changes
+inc/Module/Install.pm
+inc/Module/Install/Base.pm
+inc/Module/Install/Can.pm
+inc/Module/Install/Fetch.pm
+inc/Module/Install/Makefile.pm
+inc/Module/Install/Metadata.pm
+inc/Module/Install/Win32.pm
+inc/Module/Install/WriteAll.pm
+lib/Sub/Exporter.pm
+Makefile.PL
+MANIFEST			This list of files
+META.yml
+README
+t/collection.t
+t/expand-group.t
+t/faux-export.t
+t/lib/Test/SubExportA.pm
+t/lib/Test/SubExportB.pm
+t/opt-canon.t
+t/opt-expand.t
+t/pod-coverage.t
+t/pod.t
+t/real-export-href.t
+t/real-export-poly.t
+t/real-export.t
