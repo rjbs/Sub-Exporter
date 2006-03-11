@@ -2,6 +2,12 @@
 use strict;
 use warnings;
 
+=head1 TEST PURPOSE
+
+These tests that everything public is documented.
+
+=cut
+
 use Test::More;
 
 BEGIN {

@@ -1,6 +1,13 @@
-#!perl
+#!perl -T
 use strict;
 use warnings;
+
+=head1 TEST PURPOSE
+
+These tests check the output of build_exporter when handed an alternate
+exporter that returns its plan.
+
+=cut
 
 use Test::More tests => 11;
 

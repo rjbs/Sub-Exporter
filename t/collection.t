@@ -1,6 +1,12 @@
-#!perl
+#!perl -T
 use strict;
 use warnings;
+
+=head1 TEST PURPOSE
+
+These tests exercise the handling of collections in the exporter option lists.
+
+=cut
 
 use Test::More tests => 5;
 

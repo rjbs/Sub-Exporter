@@ -1,10 +1,20 @@
-#!perl
+#!perl -T
 use strict;
 use warnings;
+
+=head1 TEST PURPOSE
+
+These tests exercise the use of Sub::Exporter via its setup_exporter routine.
+
+They use Test::SubExportA, bundled in ./t/lib, which uses this calling style.
+
+=cut
 
 use Test::More tests => 23;
 
 BEGIN { use_ok('Sub::Exporter'); }
+
+our $exporting_class = 'Test::SubExportA';
 
 use lib 't/lib';
 
@@ -33,7 +43,7 @@ use lib 't/lib';
 }
 
 package Test::SubExporter::DEFAULT;
-main::use_ok('Test::SubExportA');
+main::use_ok($exporting_class);
 use subs qw(xyzzy hello_sailor);
 
 main::is(
@@ -49,7 +59,7 @@ main::is(
 );
 
 package Test::SubExporter::RENAME;
-main::use_ok('Test::SubExportA', xyzzy => { -as => 'plugh' });
+main::use_ok($exporting_class, xyzzy => { -as => 'plugh' });
 use subs qw(plugh);
 
 main::is(
@@ -59,7 +69,7 @@ main::is(
 );
 
 package Test::SubExporter::SAILOR;
-main::use_ok('Test::SubExportA', ':sailor');
+main::use_ok($exporting_class, ':sailor');
 use subs qw(xyzzy hs_works hs_fails);
 
 main::is(
@@ -81,7 +91,7 @@ main::is(
 );
 
 package Test::SubExporter::Z3;
-main::use_ok('Test::SubExportA', hello_sailor => { game => 'zork3' });
+main::use_ok($exporting_class, hello_sailor => { game => 'zork3' });
 use subs qw(hello_sailor);
 
 main::is(
@@ -91,7 +101,7 @@ main::is(
 );
 
 package Test::SubExporter::FROTZ_SAILOR;
-main::use_ok('Test::SubExportA', -sailor => { -prefix => 'frotz_' });
+main::use_ok($exporting_class, -sailor => { -prefix => 'frotz_' });
 use subs map { "frotz_$_" }qw(xyzzy hs_works hs_fails);
 
 main::is(
@@ -116,7 +126,7 @@ package Test::SubExporter::Z3_REF;
 
 my $hello;
 main::use_ok(
-  'Test::SubExportA',
+  $exporting_class,
   hello_sailor => { game => 'zork3', -as => \$hello }
 );
 
@@ -135,7 +145,7 @@ main::is(
 
 package Test::SubExporter::Z3_BADREF;
 
-main::require_ok('Test::SubExportA');
+main::require_ok($exporting_class);
 
 eval {
   Test::SubExportA->import(hello_sailor => { game => 'zork3', -as => {} });

@@ -1,10 +1,21 @@
-#!perl
+#!perl -T
 use strict;
 use warnings;
+
+=head1 TEST PURPOSE
+
+These tests exercise that the polymorphic exporter-builder used when
+Sub::Exporter's -import group is invoked.
+
+They use Test::SubExportB, bundled in ./t/lib, which uses this calling style.
+
+=cut
 
 use Test::More tests => 17;
 
 BEGIN { use_ok('Sub::Exporter'); }
+
+our $exporting_class = 'Test::SubExportB';
 
 use lib 't/lib';
 
@@ -22,7 +33,7 @@ use lib 't/lib';
 }
 
 package Test::SubExporter::DEFAULT;
-main::use_ok('Test::SubExportB');
+main::use_ok($exporting_class);
 use subs qw(xyzzy hello_sailor);
 
 main::is(
@@ -38,7 +49,7 @@ main::is(
 );
 
 package Test::SubExporter::RENAME;
-main::use_ok('Test::SubExportB', xyzzy => { -as => 'plugh' });
+main::use_ok($exporting_class, xyzzy => { -as => 'plugh' });
 use subs qw(plugh);
 
 main::is(
@@ -48,7 +59,7 @@ main::is(
 );
 
 package Test::SubExporter::SAILOR;
-main::use_ok('Test::SubExportB', ':sailor');;
+main::use_ok($exporting_class, ':sailor');;
 use subs qw(xyzzy hs_works hs_fails);
 
 main::is(
@@ -70,7 +81,7 @@ main::is(
 );
 
 package Test::SubExporter::Z3;
-main::use_ok('Test::SubExportB', hello_sailor => { game => 'zork3' });
+main::use_ok($exporting_class, hello_sailor => { game => 'zork3' });
 use subs qw(hello_sailor);
 
 main::is(
@@ -80,7 +91,7 @@ main::is(
 );
 
 package Test::SubExporter::FROTZ_SAILOR;
-main::use_ok('Test::SubExportB', -sailor => { -prefix => 'frotz_' });
+main::use_ok($exporting_class, -sailor => { -prefix => 'frotz_' });
 use subs map { "frotz_$_" }qw(xyzzy hs_works hs_fails);
 
 main::is(

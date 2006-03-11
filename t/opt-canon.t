@@ -1,6 +1,12 @@
-#!perl
+#!perl -T
 use strict;
 use warnings;
+
+=head1 TEST PURPOSE
+
+These tests test option list cannonization (from an option list into a aref).
+
+=cut
 
 use Test::More tests => 15;
 

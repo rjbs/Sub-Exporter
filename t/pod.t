@@ -2,6 +2,12 @@
 use strict;
 use warnings;
 
+=head1 TEST PURPOSE
+
+These tests that all POD is valid.
+
+=cut
+
 use Test::More;
 
 BEGIN { 

@@ -1,6 +1,12 @@
-#!perl
+#!perl -T
 use strict;
 use warnings;
+
+=head1 TEST PURPOSE
+
+These tests check export group expansion, name prefixing, and option merging.
+
+=cut
 
 use Test::More tests => 34;
 
