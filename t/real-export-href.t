@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use Test::More 'no_plan';
+use Test::More tests => 23;
 
 BEGIN { use_ok('Sub::Exporter'); }
 
@@ -33,7 +33,8 @@ use lib 't/lib';
 }
 
 package Test::SubExporter::DEFAULT;
-BEGIN { main::use_ok('Test::SubExportA'); };
+main::use_ok('Test::SubExportA');
+use subs qw(xyzzy hello_sailor);
 
 main::is(
   xyzzy,
@@ -48,7 +49,8 @@ main::is(
 );
 
 package Test::SubExporter::RENAME;
-BEGIN { main::use_ok('Test::SubExportA', xyzzy => { -as => 'plugh' }); };
+main::use_ok('Test::SubExportA', xyzzy => { -as => 'plugh' });
+use subs qw(plugh);
 
 main::is(
   plugh,
@@ -57,7 +59,8 @@ main::is(
 );
 
 package Test::SubExporter::SAILOR;
-BEGIN { main::use_ok('Test::SubExportA', ':sailor'); };
+main::use_ok('Test::SubExportA', ':sailor');
+use subs qw(xyzzy hs_works hs_fails);
 
 main::is(
   xyzzy,
@@ -78,9 +81,8 @@ main::is(
 );
 
 package Test::SubExporter::Z3;
-BEGIN {
-  main::use_ok('Test::SubExportA', hello_sailor => { game => 'zork3' });
-};
+main::use_ok('Test::SubExportA', hello_sailor => { game => 'zork3' });
+use subs qw(hello_sailor);
 
 main::is(
   hello_sailor,
@@ -89,7 +91,8 @@ main::is(
 );
 
 package Test::SubExporter::FROTZ_SAILOR;
-BEGIN { main::use_ok('Test::SubExportA', -sailor => { -prefix => 'frotz_' }); };
+main::use_ok('Test::SubExportA', -sailor => { -prefix => 'frotz_' });
+use subs map { "frotz_$_" }qw(xyzzy hs_works hs_fails);
 
 main::is(
   frotz_xyzzy,
@@ -112,12 +115,10 @@ main::is(
 package Test::SubExporter::Z3_REF;
 
 my $hello;
-BEGIN {
-  main::use_ok(
-    'Test::SubExportA',
-    hello_sailor => { game => 'zork3', -as => \$hello }
-  );
-};
+main::use_ok(
+  'Test::SubExportA',
+  hello_sailor => { game => 'zork3', -as => \$hello }
+);
 
 eval "hello_sailor;";
 main::like(
