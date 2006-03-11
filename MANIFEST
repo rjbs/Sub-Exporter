@@ -23,4 +23,3 @@ t/pod-coverage.t
 t/pod.t
 t/real-export-href.t
 t/real-export-poly.t
-t/real-export.t
