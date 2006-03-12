@@ -419,13 +419,8 @@ sub _collect_collections {
   my %collection;
 
   for my $collection (keys %{ $config->{collectors} }) {
-    # XXX: surely this is way more complex than necessary
-    my @indexes = map  { $_->[1] }
-                  grep { $_->[0] eq $collection }
-                  map  { [ $import_args->[$_][0] => $_ ] }
-                  (0 .. $#$import_args);
-
-    next unless @indexes;
+    next unless my @indexes
+      = grep { $import_args->[$_][0] eq $collection } (0 .. $#$import_args);
 
     Carp::croak "collection $collection provided multiple times in import"
       if @indexes > 1;
