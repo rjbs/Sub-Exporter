@@ -355,7 +355,7 @@ sub _group_name {
 # \%seen is groups we've already expanded and can ignore.
 # \%merge is merged options from the group we're descending through.
 sub _expand_groups {
-  my ($class, $config, $groups, $seen, $merge) = @_;
+  my ($class, $config, $groups, $seen, $merge, $collection) = @_;
   $seen  ||= {};
   $merge ||= {};
 
@@ -372,15 +372,19 @@ sub _expand_groups {
 
       # rewrite the group
       splice @groups, $i, 1,
-        _expand_group($class, $config, $groups[$i], $seen, $merge);
+        _expand_group($class, $config, $groups[$i], $seen, $merge, $collection);
     } else {
       next unless my %merge = %$merge;
-      my $prefix = delete $merge{-prefix};
-      my $suffix = delete $merge{-suffix};
-      my $as = ref $groups[$i][1]{-as}
-        ? $groups[$i][1]{-as}
-        : ($prefix||'') . ($groups[$i][1]{-as}||$groups[$i][0]) . ($suffix||'');
-      $groups[$i][1] = { %{ $groups[$i][1] }, %merge, -as => $as };
+      my $prefix = (delete $merge{-prefix}) || '';
+      my $suffix = (delete $merge{-suffix}) || '';
+      if (ref $groups[$i][1] eq 'CODE') {
+         $groups[$i][0] = $prefix . $groups[$i][0] . $suffix;
+      } else {
+        my $as = ref $groups[$i][1]{-as}
+          ? $groups[$i][1]{-as}
+          : $prefix . ($groups[$i][1]{-as}||$groups[$i][0]) . $suffix;
+        $groups[$i][1] = { %{ $groups[$i][1] }, %merge, -as => $as };
+      }
     }
   }
 
@@ -389,7 +393,7 @@ sub _expand_groups {
 
 # \@group is a name/value pair from an opt list.
 sub _expand_group {
-  my ($class, $config, $group, $seen, $merge) = @_;
+  my ($class, $config, $group, $seen, $merge, $collection) = @_;
   $merge ||= {};
 
   my ($group_name, $group_arg) = @$group;
@@ -411,9 +415,23 @@ sub _expand_group {
 
   $seen->{$group_name} = 1;
   
-  my $exports = _canonicalize_opt_list($config->{groups}{$group_name});
+  my $exports = $config->{groups}{$group_name};
 
-  return @{ _expand_groups($class, $config, $exports, $seen, $merge) };
+  if (ref $exports eq 'ARRAY') {
+    $exports = _canonicalize_opt_list($exports);
+
+    return @{
+      _expand_groups($class, $config, $exports, $seen, $merge, $collection)
+    };
+  } elsif (ref $exports eq 'CODE') {
+    my $group = $exports->($class, $group_name, $group_arg, $collection);
+    Carp::croak qq(group generator "$group_name" did not return a hashref)
+      if ref $group ne 'HASH';
+    my $stuff = [ map { [ $_ => $group->{$_} ] } keys %$group ];
+    return @{
+      _expand_groups($class, $config, $stuff, $seen, $merge, $collection)
+    };
+  }
 }
 
 # Given a config and pre-canonicalized importer args, remove collections from
@@ -499,7 +517,7 @@ sub build_exporter {
   $config->{$_} = _expand_opt_list($config->{$_}, 'CODE')
     for qw(exports collectors);
 
-  $config->{groups} = _expand_opt_list($config->{groups}, 'HASH');
+  $config->{groups} = _expand_opt_list($config->{groups}, [ 'HASH', 'CODE' ]);
 
   # by default, export nothing
   $config->{groups}{default} ||= [];
@@ -517,19 +535,27 @@ sub build_exporter {
     my $collection = _collect_collections($config, $import_args);
 
     $import_args = [ [ -default => 1 ] ] unless @$import_args;
-    my $to_import = _expand_groups($class, $config, $import_args);
+    my $to_import = _expand_groups($class, $config, $import_args, $collection);
 
     # now, finally $import_arg is really the "to do" list
     for (@$to_import) {
       my ($name, $arg) = @$_;
-      $arg = { $arg ? %$arg : () };
 
-      Carp::croak qq("$name" is not exported by the $class module)
-        unless (exists $config->{exports}{$name});
+      my ($generator, $as);
 
-      my $generator = $config->{exports}{$name};
+      if ($arg and ref $arg eq 'CODE') {
+        $generator = sub { $arg };
+        $as = $name;
+      } else {
+        $arg = { $arg ? %$arg : () };
 
-      my $as = exists $arg->{-as} ? (delete $arg->{-as}) : $name;
+        Carp::croak qq("$name" is not exported by the $class module)
+          unless (exists $config->{exports}{$name});
+
+        $generator = $config->{exports}{$name};
+
+        $as = exists $arg->{-as} ? (delete $arg->{-as}) : $name;
+      }
 
       $special->{export}->(
         $class, $generator, $name, $arg, $collection, $as, $into
@@ -615,6 +641,8 @@ setup_exporter({
 # This is, I think, nearly a necessity:
 # a way to have one generator provide several routines which can then be
 # installed together
+# maybe:
+# groups => { encode => sub { (returns hashref) } };
 
 =over
 
