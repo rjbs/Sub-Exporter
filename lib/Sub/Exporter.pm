@@ -179,6 +179,8 @@ Prefixes also apply recursively.  That means that this code works:
 
   $dinner = any_willing_coney; # yum!
 
+Groups can also be passed a C<-suffix> argument.
+
 Finally, if the C<-as> argument to an exported routine is a reference to a
 scalar, a reference to the routine will be placed in that scalar.
 
@@ -374,9 +376,10 @@ sub _expand_groups {
     } else {
       next unless my %merge = %$merge;
       my $prefix = delete $merge{-prefix};
+      my $suffix = delete $merge{-suffix};
       my $as = ref $groups[$i][1]{-as}
         ? $groups[$i][1]{-as}
-        : ($prefix||'') . ($groups[$i][1]{-as}||$groups[$i][0]);
+        : ($prefix||'') . ($groups[$i][1]{-as}||$groups[$i][0]) . ($suffix||'');
       $groups[$i][1] = { %{ $groups[$i][1] }, %merge, -as => $as };
     }
   }
@@ -393,12 +396,13 @@ sub _expand_group {
   $group_name = _group_name($group_name);
 
   if (ref $group_arg) {
-    my $prefix = (delete $merge->{-prefix}||'')
-               . ($group_arg->{-prefix}||'');
+    my $prefix = (delete $merge->{-prefix}||'') . ($group_arg->{-prefix}||'');
+    my $suffix = ($group_arg->{-suffix}||'') . (delete $merge->{-suffix}||'');
     $merge = {
       %$merge,
       %$group_arg,
       ($prefix ? (-prefix => $prefix) : ()),
+      ($suffix ? (-suffix => $suffix) : ()),
     };
   }
   
@@ -602,6 +606,15 @@ setup_exporter({
 });
 
 =head1 TODO
+
+=cut
+
+# This would be cool:
+# use Food qr/\Aartificial/ => { -prefix => 'non_' };
+
+# This is, I think, nearly a necessity:
+# a way to have one generator provide several routines which can then be
+# installed together
 
 =over
 

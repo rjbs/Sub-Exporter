@@ -8,7 +8,7 @@ These tests check export group expansion, name prefixing, and option merging.
 
 =cut
 
-use Test::More tests => 34;
+use Test::More tests => 54;
 
 BEGIN { use_ok('Sub::Exporter'); }
 
@@ -24,7 +24,10 @@ my $config = {
 
     a_as_b       => [  a => { -as => 'b' } ],
     prefixed_A   => [ -A => { -prefix => 'alfa_' } ],
+    suffixed_A   => [ -A => { -suffix => '_yankee' } ],
     diprefixed_A => [ -prefixed_A => { -prefix => 'bravo_' } ],
+    disuffixed_A => [ -suffixed_A => { -suffix => '_zulu' } ],
+    presuffixed_A=> [ -A => { -prefix => 'freakin_', -suffix => '_right' } ],
     a_to_subref  => [  a => { -as => \$import_target }, 'b' ],
     prefixed_a_s => [ -a_to_subref => { -prefix => 'alfa_' } ],
   }
@@ -55,9 +58,19 @@ my @single_tests = (
     [ [ a => { -as => 'alpha_a' } ] ],
   ],
   [
+    "group with suffix",
+    [ -A => { -suffix => '_import' } ],
+    [ [ a => { -as => 'a_import' } ] ],
+  ],
+  [
     "recursive group with prefix",
     [ -C => { -prefix => 'kappa_' } ],
     [ [ a => { -as => 'kappa_a' } ], [ b => { -as => 'kappa_b' } ] ],
+  ],
+  [
+    "recursive group with suffix",
+    [ -C => { -suffix => '_etc' } ],
+    [ [ a => { -as => 'a_etc' } ], [ b => { -as => 'b_etc' } ] ],
   ],
   [
     "group that renames",
@@ -75,6 +88,16 @@ my @single_tests = (
     [ [ a => { -as => 'not_really_b' } ] ],
   ],
   [
+    "group that renames, with a suffix",
+    [ -a_as_b => { -suffix => '_or_not' } ],
+    [ [ a => { -as => 'b_or_not' } ] ],
+  ],
+  [
+    "group that renames, with a prefix and suffix",
+    [ -a_as_b => { -prefix => 'not_really_' } ],
+    [ [ a => { -as => 'not_really_b' } ] ],
+  ],
+  [
     "recursive group with a built-in prefix",
     [ -prefixed_A => undef ],
     [ [ a => { -as => 'alfa_a' } ] ],
@@ -85,14 +108,44 @@ my @single_tests = (
     [ [ a => { -as => 'bravo_alfa_a' } ] ],
   ],
   [
+    "recursive group with built-in and passed-in suffix",
+    [ -suffixed_A => { -suffix => '_zulu' } ],
+    [ [ a => { -as => 'a_yankee_zulu' } ] ],
+  ],
+  [
     "multi-prefixed group",
     [ -diprefixed_A => undef ],
     [ [ a => { -as => 'bravo_alfa_a' } ] ],
   ],
   [
+    "multi-suffixed group",
+    [ -disuffixed_A => undef ],
+    [ [ a => { -as => 'a_yankee_zulu' } ] ],
+  ],
+  [
     "multi-prefixed group with prefix",
     [ -diprefixed_A => { -prefix => 'charlie_' } ],
     [ [ a => { -as => 'charlie_bravo_alfa_a' } ] ],
+  ],
+  [
+    "group with built-in prefix and suffix",
+    [ -presuffixed_A => undef ],
+    [ [ a => { -as => 'freakin_a_right' } ] ],
+  ],
+  [
+    "group with built-in prefix and suffix, plus prefix",
+    [ -presuffixed_A => { -prefix => 'totally_' } ],
+    [ [ a => { -as => 'totally_freakin_a_right' } ] ],
+  ],
+  [
+    "group with built-in prefix and suffix, plus suffix",
+    [ -presuffixed_A => { -suffix => '_dude' } ],
+    [ [ a => { -as => 'freakin_a_right_dude' } ] ],
+  ],
+  [
+    "group with built-in prefix and suffix, plus prefix and suffix",
+    [ -presuffixed_A => { -prefix => 'totally_', -suffix => '_dude' } ],
+    [ [ a => { -as => 'totally_freakin_a_right_dude' } ] ],
   ],
   [
     "group that exports to scalar (unusual)",
