@@ -402,7 +402,7 @@ sub _expand_group {
     };
   }
   
-  Carp::croak qq(group "$group_name" not exported by $class)
+  Carp::croak qq(group "$group_name" is not exported by the $class module)
     unless exists $config->{groups}{$group_name};
 
   $seen->{$group_name} = 1;
@@ -525,7 +525,7 @@ sub build_exporter {
       my ($name, $arg) = @$_;
       $arg = { $arg ? %$arg : () };
 
-      Carp::croak "$name not exported by $class"
+      Carp::croak qq("$name" is not exported by the $class module)
         unless (exists $config->{exports}{$name});
 
       my $generator = $config->{exports}{$name};
