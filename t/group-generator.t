@@ -12,11 +12,9 @@ that use group generators.
 # XXX: The framework is stolen from expand-group.  I guess it should be
 # factored out.  Whatever. -- rjbs, 2006-03-12
 
-use Test::More 'no_plan';
+use Test::More tests => 9;
 
 BEGIN { use_ok('Sub::Exporter'); }
-
-my $import_target;
 
 my $alfa  = sub { 'alfa'  };
 my $bravo = sub { 'bravo' };
@@ -124,8 +122,6 @@ for my $test (@multi_tests) {
     'Class',
     $config,
     [ [ -generated => { xyz => 1 } ] ],
-    {},
-    {},
     { col1 => { value => 2 } },
   );
 

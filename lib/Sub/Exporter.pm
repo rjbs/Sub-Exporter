@@ -355,7 +355,7 @@ sub _group_name {
 # \%seen is groups we've already expanded and can ignore.
 # \%merge is merged options from the group we're descending through.
 sub _expand_groups {
-  my ($class, $config, $groups, $seen, $merge, $collection) = @_;
+  my ($class, $config, $groups, $collection, $seen, $merge) = @_;
   $seen  ||= {};
   $merge ||= {};
 
@@ -372,7 +372,7 @@ sub _expand_groups {
 
       # rewrite the group
       splice @groups, $i, 1,
-        _expand_group($class, $config, $groups[$i], $seen, $merge, $collection);
+        _expand_group($class, $config, $groups[$i], $collection, $seen, $merge);
     } else {
       next unless my %merge = %$merge;
       my $prefix = (delete $merge{-prefix}) || '';
@@ -393,7 +393,7 @@ sub _expand_groups {
 
 # \@group is a name/value pair from an opt list.
 sub _expand_group {
-  my ($class, $config, $group, $seen, $merge, $collection) = @_;
+  my ($class, $config, $group, $collection, $seen, $merge) = @_;
   $merge ||= {};
 
   my ($group_name, $group_arg) = @$group;
@@ -423,13 +423,13 @@ sub _expand_group {
       if ref $group ne 'HASH';
     my $stuff = [ map { [ $_ => $group->{$_} ] } keys %$group ];
     return @{
-      _expand_groups($class, $config, $stuff, $seen, $merge, $collection)
+      _expand_groups($class, $config, $stuff, $collection, $seen, $merge)
     };
   } else {
     $exports = _canonicalize_opt_list($exports);
 
     return @{
-      _expand_groups($class, $config, $exports, $seen, $merge, $collection)
+      _expand_groups($class, $config, $exports, $collection, $seen, $merge)
     };
   }
 }
