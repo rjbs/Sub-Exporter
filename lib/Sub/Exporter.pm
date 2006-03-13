@@ -183,10 +183,10 @@ The following keys are valid in C<%config>:
 The C<exports> list may be provided as an array reference or a hash reference.
 The list is processed in such a way that the following are equivalent:
 
-  { exports => [ qw(foo bar baz), quux => \&quuz_generator ] }
+  { exports => [ qw(foo bar baz), quux => \&quux_generator ] }
 
   { exports =>
-    { foo => undef, bar => undef, baz => undef, quux => \&quuz_generator } }
+    { foo => undef, bar => undef, baz => undef, quux => \&quux_generator } }
 
 Generators are coderefs that return coderefs.  They are called with four
 parameters:
@@ -211,7 +211,7 @@ would result in the following call to C<&build_reformatter>:
     { defaults => { eol => 'CR' } },
   );
 
-The returned coderef (<$code>) would then be installed as C<make_narrow> in the
+The returned coderef (C<$code>) would then be installed as C<make_narrow> in the
 calling package.
 
 =head2 C<groups> Configuration
