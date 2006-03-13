@@ -740,15 +740,31 @@ packages of exported subroutines which use inheritance specifically to allow
 more specialized, but similar, packages.
 
 L<Exporter::Easy> provides a wrapper around the standard Exporter.  It makes it
-simpler to build groups
+simpler to build groups, but doesn't provide any more functionality.  Because
+it is a front-end to Exporter, it will store your exporter's configuration in
+global package variables.
 
 =item * Attribute-Based Exporters
 
 Some exporters use attributes to mark variables to export.  L<Exporter::Simple>
-supports exporting any kind of symbol, and supports groups.
+supports exporting any kind of symbol, and supports groups.  Using a module
+like Exporter or Sub::Exporter, it's easy to look at one place and see what is
+exported, but it's impossible to look at a variable definition and see whether
+it is exported by that alone.  Exporter::Simple makes this trade in reverse:
+each variable's declaration includes its export definition, but there is no one
+place to look to find a manifest of exports.
+
+More importantly, Exporter::Simple does not add any new features to those of
+Exporter.  In fact, like Exporter::Easy, it is just a front-end to Exporter, so
+it ends up storing its configuration in global package variables.  (This means
+that there is one place to look for your exporter's manifest, actually.  You
+can inspect the C<@EXPORT> package variables, and other related package
+variables, at runtime.)
 
 L<Perl6::Export> isn't actually attribute based, but looks similar.  Its syntax
-is borrowed from Perl 6, and implemented by a source filter.
+is borrowed from Perl 6, and implemented by a source filter.  It is a prototype
+of an interface that is still being designed.  It should probably be avoided
+for production work.
 
 =item * Other Exporters
 
@@ -758,14 +774,13 @@ with changed names.
 L<Class::Exporter> performs a special kind of routine generation, giving each
 importing package an instance of your class, and then exporting the instance's
 methods as normal routines.  (Sub::Exporter, of course, can easily emulate this
-behavior.)
+behavior, as shown above.)
 
 L<Exporter::Tidy> implements a form of renaming (using its C<_map> argument)
 and of prefixing, and implements groups.  It also avoids using package
 variables for its configuration.
 
 =back
-
 
 =head1 TODO
 
@@ -774,17 +789,11 @@ variables for its configuration.
 # This would be cool:
 # use Food qr/\Aartificial/ => { -prefix => 'non_' };
 
-# This is, I think, nearly a necessity:
-# a way to have one generator provide several routines which can then be
-# installed together
-# maybe:
-# groups => { encode => sub { (returns hashref) } };
-
 =over
 
 =item * write a set of longer, more demonstrative examples
 
-=item * solidify the "custom build and install" interface (see &_export)
+=item * solidify the "custom build and install" interface (see C<&_export>)
 
 =back
 
@@ -794,9 +803,9 @@ Ricardo SIGNES, C<< <rjbs@cpan.org> >>
 
 =head1 THANKS
 
-Hans Dieter Pearcey and Shawn Sorichetti both provided helpful advice while I
-was writing Sub::Exporter.  Ian Langworth asked some good questions and hepled
-me improve my documentation.  Thanks, guys!
+Hans Dieter Pearcey provided helpful advice while I was writing Sub::Exporter.
+Ian Langworth and Shawn Sorichetti asked some good questions and hepled me
+improve my documentation quite a bit.  Thanks, guys!
 
 =head1 BUGS
 
