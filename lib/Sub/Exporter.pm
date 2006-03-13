@@ -114,7 +114,7 @@ subroutines:
 
   sub _curry_class {
     my ($class, $name) = @_;
-    sub { $class->$name(@_);
+    sub { $class->$name(@_) };
   }
 
 Because of the way that exporters and Sub::Exporter work, any package that
