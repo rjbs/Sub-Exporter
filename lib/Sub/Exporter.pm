@@ -79,7 +79,7 @@ its C<plus> routine imported into their package:
 
   use Addition qw(plus);
 
-  my $z = plus(2 + 2); # this works, because now plus is in the main package
+  my $z = plus(2, 2); # this works, because now plus is in the main package
 
 That syntax to set up the exporter, above, is a little verbose, so for the
 simple case of just naming some exports, you can write this:
