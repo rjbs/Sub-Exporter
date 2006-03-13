@@ -12,7 +12,7 @@ that use group generators.
 # XXX: The framework is stolen from expand-group.  I guess it should be
 # factored out.  Whatever. -- rjbs, 2006-03-12
 
-use Test::More tests => 9;
+use Test::More tests => 10;
 
 BEGIN { use_ok('Sub::Exporter'); }
 
@@ -39,6 +39,7 @@ my $config = {
   exports => [ ],
   groups  => {
     alphabet  => sub { { a => $alfa, b => $bravo } },
+    broken    => sub { [ qw(this is broken because it is not a hashref) ] },
     generated => $returner,
   },
   collectors => [ 'col1' ],
@@ -99,6 +100,19 @@ for my $test (@multi_tests) {
 
   is_deeply($got, $expected, "expand_groups: $label");
 }
+
+##
+
+eval {
+  Sub::Exporter::_expand_groups('Class', $config, [[ -broken => undef ]])
+};
+
+like($@,
+  qr/did not return a hash/,
+  "exception on non-hashref groupgen return",
+);
+
+##
 
 {
   my $got = Sub::Exporter::_expand_groups(
