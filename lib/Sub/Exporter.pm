@@ -33,14 +33,6 @@ Sub::Exporter must be used in two places.  First, in an exporting module:
       trim     => \&build_trimmer,
       indent   => \&build_indenter,
     ],
-    groups  => {
-      default    => [ qw(reformat) ],
-      shorteners => [ qw(squish trim) ],
-      email_safe => [
-        'indent',
-        reformat => { -as => 'email_format', width => 72 }
-      ],
-    },
     collectors => [ 'defaults' ],
   };
 
@@ -48,14 +40,15 @@ Then, in an importing module:
 
   # in the importing module:
   use Text::Tweaker
-    -shorteners => { -prefix => 'text_' },
-    reformat    => { width => 79, justify => 'full', -as => 'prettify_text' },
-    defaults    => { eol => 'CRLF' };
+    'squish',
+    indent   => { margin => 5 },
+    reformat => { width => 79, justify => 'full', -as => 'prettify_text' },
+    defaults => { eol => 'CRLF' };
 
-With this setup, the importing module ends up with three routines:
-C<text_squish>, C<text_trim>, and C<prettify_text>.  The latter two have been
-built to the specifications of the importer -- they are not just copies of the
-code in the exporting package.
+With this setup, the importing module ends up with three routines: C<squish>,
+C<indent>, and C<prettify_text>.  The latter two have been built to the
+specifications of the importer -- they are not just copies of the code in the
+exporting package.
 
 =head1 DESCRIPTION
 
@@ -136,7 +129,8 @@ How much easier to write:
   use Morality qw(virtue), sin => { -as => 'offense' };
   use Math::Trig -all => { -prefix => 'trig_' };
 
-and to have at one's disposal C<offense> and C<trig_sin>.
+and to have at one's disposal C<offense> and C<trig_sin> -- not to mention
+C<trig_cos> and C<trig_tan>.
 
 =head1 EXPORTER CONFIGURATION
 
@@ -210,7 +204,7 @@ have values to be meaningful, which may either list exports that make up the
 group (optionally with arguments) or may provide a way to build the group.
 
 The simpler case is the first: a group definition is a list of exports.  Here's
-the example from the L</SYNOPSIS>.
+the example that could go in exporter in the L</SYNOPSIS>.
 
   groups  => {
     default    => [ qw(reformat) ],
