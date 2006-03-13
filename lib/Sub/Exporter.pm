@@ -22,271 +22,301 @@ our $VERSION = '0.90';
 
 =head1 SYNOPSIS
 
-Sub::Exporter provides features from the simple and familiar:
+Sub::Exporter must be used in two places.  First, in an exporting module:
 
-  use Tools::Power;
-  # import the default exports of Tools::Power
-
-  use Tools::Power qw(drill circsaw);
-  # import two routines from Tools::Power
-
-...to the slightly more esoteric:
-
-  use Tools::Power 'drill', circsaw => { -as => 'buzzsaw' };
-  # import the "drill" routine as well as "circsaw", but call it "buzzsaw"
-
-  use Tools::Power drill => { bit => 'masonry', -as => 'masonry_drill' };
-  # import a customized version of the "drill" routine
-
-Or:
-
-  use Tools::Power ':manual', defaults => { unbreakable => 1 };
-  # import the "manual" group of routines, building in the given defaults
-
-  use Tools::Power brand_preference => [ qw(craftsman park) ];
-  # import the usual tools, with the given brand preferences
-
-=head1 USAGE
-
-=head2 What's an Exporter?
-
-First, a quick refresher:  when you C<use> a module, first it is required, then
-its C<import> method is called.  The Perl documentation tells us that the
-following two lines are equivalent:
-
-  use Module LIST;
-
-  BEGIN { require Module; Module->import(LIST); }
-
-The import method is the module's I<exporter>.
-
-=head2 The Basics of Sub::Exporter
-
-Sub::Exporter builds a custom exporter which can then be installed into your
-module.  It builds this method based on configuration passed to its
-C<setup_exporter> method.
-
-A very basic use case might look like this:
-
-  package Addition;
-  use Sub::Exporter;
-  Sub::Exporter::setup_exporter({ exports => [ qw(plus) ]});
-
-  sub plus { my ($x, $y) = @_; return $x + $y; }
-
-This would mean that when someone used your Addition module, they could have
-its C<plus> routine imported into their package:
-
-  use Addition qw(plus);
-
-  my $z = plus(2, 2); # this works, because now plus is in the main package
-
-That syntax to set up the exporter, above, is a little verbose, so for the
-simple case of just naming some exports, you can write this:
-
-  package Addition;
-  use Sub::Exporter -setup => qw(plus);
-
-That is really the same as this:
-
-  use Sub::Exporter -setup => { exports => [ qw(plus) ] };
-
-...which is, in turn, the same as the original example -- except that now the
-exporter is built and installed at compile time.  Well, that and you typed
-less.
-
-=head2 Using Export Groups
-
-You can specify whole groups of things that should be exportable together.
-These are called groups.  L<Exporter> calls these tags.  To specify groups, you
-just pass a C<groups> key in your exporter configuration:
-
-  package Food;
+  # in the exporting module:
+  package Text::Tweaker;
   use Sub::Exporter -setup => {
-    exports => [ qw(apple banana beef fluff lox rabbit) ],
+    exports => [
+      qw(squish titlecase) # always works the same way
+      reformat => \&build_reformatter, # generator to build exported function
+      trim     => \&build_trimmer,
+      indent   => \&build_indenter,
+    ],
     groups  => {
-      fauna  => [ qw(beef lox rabbit) ],
-      flora  => [ qw(apple banana) ],
+      default    => [ qw(reformat) ],
+      shorteners => [ qw(squish trim) ],
+      email_safe => [
+        'indent',
+        reformat => { -as => 'email_format', width => 72 }
+      ],
+    },
+    collectors => [ 'defaults' ],
+  };
+
+Then, in an importing module:
+
+  # in the importing module:
+  use Text::Tweaker
+    -shorteners => { -prefix => 'text_' },
+    reformat    => { width => 79, justify => 'full', -as => 'prettify_text' },
+    defaults    => { eol => 'CRLF' };
+
+With this setup, the importing module ends up with three routines:
+C<text_squish>, C<text_trim>, and C<prettify_text>.  The latter two have been
+built to the specifications of the importer -- they are not just copies of the
+code in the exporting package.
+
+=head1 DESCRIPTION
+
+B<If you're not familiar with Exporter or exporting, read
+L<<Sub::Exporter::Tutorial>> first!>
+
+=head2 Why Generators?
+
+The biggest benefit of Sub::Exporter over existing exporters (including the
+ubiquitous Exporter.pm) is its ability to build new coderefs for export, rather
+than to simply export code identical to that found in the exporting package.
+
+If your module's consumers get a routine that works like this:
+
+  use Data::Analyze qw(analyze);
+  my $value = analyze($data, $tolerance, $passes);
+
+and they constantly pass only one or two different set of values for the
+non-C<$data> arguments, your code can benefit from Sub::Exporter.  By writing a
+simple generator, you can let them do this, instead:
+
+  use Data::Analyze
+    analyze => { tolerance => 0.10, passes => 10, -as => analyze10 },
+    analyze => { tolerance => 0.15, passes => 50, -as => analyze50 };
+
+  my $value = analyze10($data);
+
+The generator for that would look something like this:
+
+  sub build_analyzer {
+    my ($class, $name, $arg) = @_;
+
+    return sub {
+      my $data      = shift;
+      my $tolerance = shift || $arg->{tolerance}; 
+      my $passes    = shift || $arg->{passes}; 
+
+      analyze($data, $tolerance, $passes);
     }
-  };
-
-Now, to import all that delicious foreign meat, your consumer needs only to
-write:
-
-  use Food qw(:fauna);
-  use Food qw(-fauna);
-
-Either one of the above is acceptable.  A colon is more traditional, but
-barewords with a leading colon can't be enquoted by a fat arrow.  We'll see why
-that matters later on.
-
-Groups can contain other groups.  If you include a group name (with the leading
-dash or colon) in a group definition, it will be expanded recursively when the
-exporter is called.  The exporter will B<not> recurse into the same group twice
-while expanding groups.
-
-There are two special groups:  C<all> and C<default>.  The C<all> group is
-defined by default, and contains all exportable subs.  You can redefine it,
-if you want to export only a subset when all exports are requested.  The
-C<default> group is the set of routines to export when nothing specific is
-requested.  By default, there is no C<default> group.
-
-=head2 Renaming Your Imports
-
-Sometimes you want to import something, but you don't like the name as which
-it's imported.  Sub::Exporter can rename your imports for you.  If you wanted
-to import C<lox> from the Food package, but you don't like the name, you could
-write this:
-
-  use Food lox => { -as => 'salmon' };
-
-Now you'd get the C<lox> routine, but it would be called salmon in your
-package.  You can also rename entire groups by using the C<prefix> option:
-
-  use Food -fauna => { -prefix => 'cute_little_' };
-
-Now you can call your C<cute_little_rabbit> routine.  (You can also call
-C<cute_little_beef>, but that hardly seems as enticing.)
-
-When you define groups, you can include renaming.
-
-  use Sub::Exporter -setup => {
-    exports => [ qw(apple banana beef fluff lox rabbit) ],
-    groups  => {
-      fauna  => [ qw(beef lox), rabbit => { -as => 'coney' } ],
-    }
-  };
-
-A prefix on a group like that does the right thing.  This is when it's useful
-to use a dash instead of a colon to indicate a group: you can put a fat arrow
-between the group and its arguments, then.
-
-  use Food -fauna => { -prefix => 'lovely_' };
-
-  eat( lovely_coney ); # this works
-
-Prefixes also apply recursively.  That means that this code works:
-
-  use Sub::Exporter -setup => {
-    exports => [ qw(apple banana beef fluff lox rabbit) ],
-    groups  => {
-      fauna   => [ qw(beef lox), rabbit => { -as => 'coney' } ],
-      allowed => [ -fauna => { -prefix => 'willing_' }, 'banana' ],
-    }
-  };
-
-  ...
-
-  use Food -allowed => { -prefix => 'any_' };
-
-  $dinner = any_willing_coney; # yum!
-
-Groups can also be passed a C<-suffix> argument.
-
-Finally, if the C<-as> argument to an exported routine is a reference to a
-scalar, a reference to the routine will be placed in that scalar.
-
-=head2 Building Subroutines to Order
-
-Sometimes, you want to export things that you don't have on hand.  You might
-want to offer customized routines built to the specification of your consumer;
-that's just good business!  With Sub::Exporter, this is easy.
-
-To offer subroutines to order, you need to provide a generator when you set up
-your exporter.  A generator is just a routine that returns a new routine.
-L<perlref> is talking about these when it discusses closures and function
-templates. The canonical example of a generator builds a unique incrementor;
-here's how you'd do that with Sub::Exporter;
-
-  package Package::Counter;
-  use Sub::Exporter -setup => {
-    exports => [ counter => sub { my $i = 0; sub { $i++ } } ],
-    groups  => { default => [ qw(counter) ] },
-  };
-
-Now anyone can use your Package::Counter module and he'll receive a C<counter>
-in his package.  It will count up by one, and will never interfere with anyone
-else's counter.
-
-This isn't very useful, though, unless the consumer can explain what he wants.
-This is done, in part, by supplying arguments when importing.  The following
-example shows how a generator can take and use arguments:
-
-  package Package::Counter;
-
-  sub _build_counter {
-    my ($class, $arg) = @_;
-    $arg ||= {};
-    my $i = $arg->{start} || 0;
-    return sub { $i++ };
   }
 
-  use Sub::Exporter -setup => {
-    exports => [ counter => \&_build_counter ],
-    groups  => { default => [ qw(counter) ] },
-  };
+Your module's user now has to do less work to benefit from it -- and remember,
+you're often your own user!  Investing in customized subroutines is an
+investment in future laziness.
 
-Now, the consumer can (if he wants) specify a starting value for his counter:
+This also avoids a common form of ugliness seen in many modules: package-level
+configuration.  That is, you might have seen something like the above
+implemented like so:
 
-  use Package::Counter counter => { start => 10 };
+  use Data::Analyze qw(analyze);
+  $Data::Analyze::default_tolerance = 0.10;
+  $Data::Analyze::default_passes    = 10;
 
-Arguments to a group are passed along to the generators of routines in that
-group, but Sub::Exporter arguments -- anything beginning with a dash -- are
-never passed in.  When groups are nested, the arguments are merged as the
-groups are expanded.
+This might save time, until you have multiple modules using Data::Analyze.
+Because there is only one global configuration, they step on each other's toes
+and your code begins to have mysterious errors.
 
-When a generator is called, it is passed four parameters:
+=head2 Other Customizations
 
-=over
+Building custom routines with generators isn't the only way that Sub::Exporters
+allows the importing code to refine its use of the exported routines.  They may
+also be renamed to avoid naming collisions.
 
-=item * the class on which the exporter was called
+Consider the following code:
 
-=item * the name of the export being generated (not the name it's being installed as)
+  # this program determines to which circle of Hell you will be condemned
+  use Morality qw(sin virtue); # for calculating viciousness
+  use Math::Trig qw(:all);     # for dealing with circles
 
-=item * the arguments supplied for the routine
+The programmer has inadvertantly imported two C<sin> routines.  The solution,
+in Exporter.pm-based modules, would be to import only one and then call the
+other by its fully-qualified name.  Alternately, the importer could write a
+routine that did so, or could mess about with typeglobs.
 
-=item * the collection of generic arguments
+How much easier to write:
 
-=back
+  # this program determines to which circle of Hell you will be condemned
+  use Morality qw(virtue), sin => { -as => 'offense' };
+  use Math::Trig -all => { -prefix => 'trig_' };
 
-The third item is the last major feature that hasn't been covered.
+and to have at one's disposal C<offense> and C<trig_sin>.
 
-=head2 Argument Collectors
+=head1 EXPORTER CONFIGURATION
 
-Sometimes you will want to accept arguments once that can then be available to
-any subroutine that you're going to export.  To do this, you specify
-collectors, like this:
+You can configure an exporter for your package by using Sub::Exporter like so:
 
-  use Menu::Airline
-  use Sub::Exporter -setup => {
-    exports =>  ... ,
-    groups  =>  ... ,
-    collectors => [ qw(allergies ethics) ],
-  };
+  package Tools;
+  use Sub::Exporter -setup => qw(function1 function2 function3);
 
-Collectors look like normal exports in the import call, but they don't do
-anything but collect data which can later be passed to generators.  If the
-module was used like this:
+This is the simplest way to use the exporter, and is basically equivalent to
+this:
 
-  use Menu::Airline allergies => [ qw(peanuts) ], ethics => [ qw(vegan) ];
+  package Tools;
+  use base qw(Exporter);
+  our @EXPORT_OK = qw(function1 function2 function2);
 
-...the consumer would get a salad.  Also, all the generators would be passed,
-as their third argument, something like this:
+To benefit from most of Sub::Exporter's features, this form must be used
+instead:
 
-  { allerges => [ qw(peanuts) ], ethics => [ qw(vegan) ] }
+  package Tools;
+  use Sub::Exporter -setup => \%config;
 
-Generators may have arguments in their definition, as well.  These must be code
-refs that perform validation of the collected values.  They are passed the
-collection value and may return true or false.  If they return false, the
-exporter will throw an exception.
+The following keys are valid in C<%config>:
 
-=head2 Generating Many Routines in One Scope
+  exports - a list of routines to provide for exporting; each routine may be
+            followed by generator
+  groups  - a list of groups to provide for exporting; each must be followed by
+            a list of exports, possibly with arguments for each export
+  collectors - a list of names into which values are collected for use in
+               routine generation; each name may be followed by a validator
 
-Sometimes it's useful to have multiple routines generated in one scope.  This
-way they can share lexical data which is otherwise unavailable.  To do this,
-you can supply a generator for a group which returns a hashref of names and
-code references.  This generator is passed all the usual data, and the group
-may receive the usual C<-prefix> or C<-suffix> arguments.
+=head2 C<exports> Configuration
+
+The C<exports> list may be provided as an array reference or a hash reference.
+The list is processed in such a way that the following are equivalent:
+
+  { exports => [ qw(foo bar baz), quux => \&quuz_generator ] }
+
+  { exports =>
+    { foo => undef, bar => undef, baz => undef, quux => \&quuz_generator } }
+
+Generators are coderefs that return coderefs.  They are called with four
+parameters:
+
+  $class - the class whose exporter has been called (the exporting class)
+  $name  - the name of the export for which the routine is being build
+ \%arg   - the arguments passed for this export
+ \%coll  - the collections for this import
+
+Given the configuration in the L</SYNOPSIS>, the following C<use> statement:
+
+  use Text::Tweaker
+    reformat => { -as => 'make_narrow', width => 33 },
+    defaults => { eol => 'CR' };
+
+would result in the following call to C<&build_reformatter>:
+
+  my $code = build_reformatter(
+    'Text::Tweaker',
+    'reformat',
+    { width => 33 }, # note that -as is not passed in
+    { defaults => { eol => 'CR' } },
+  );
+
+The returned coderef (<$code>) would then be installed as C<make_narrow> in the
+calling package.
+
+=head2 C<groups> Configuration
+
+The C<groups> list can be passed in the same forms as C<exports>.  Groups must
+have values to be meaningful, which may either list exports that make up the
+group (optionally with arguments) or may provide a way to build the group.
+
+The simpler case is the first: a group definition is a list of exports.  Here's
+the example from the L</SYNOPSIS>.
+
+  groups  => {
+    default    => [ qw(reformat) ],
+    shorteners => [ qw(squish trim) ],
+    email_safe => [
+      'indent',
+      reformat => { -as => 'email_format', width => 72 }
+    ],
+  },
+
+Groups are imported by specifying their name prefixed be either a dash or a
+colon.  This line of code would import the C<shorteners> group:
+
+  use Text::Tweaker qw(-shorteners);
+
+Arguments passed to a group when importing are merged into the groups options
+and passed to any relevant generators.  Groups can contain other groups, but
+looping group structures are ignored.
+
+The other possible value for a group definition, a coderef, allows one
+generator to build several exportable routines simultaneously.  This is useful
+when many routines must share enclosed lexical variables.  The coderef must
+return a hash reference.  The keys will be used as export names and the values
+are the subs that will be exported.
+
+This example shows a simple use of the group generator.
+
+  package Data::Crypto;
+  use Sub::Exporter -setup => { groups => { cipher => \&build_cipher_group } };
+
+  sub build_cipher_group {
+    my ($class, $group, $arg) = @_;
+    my ($encode, $decode) = build_codec($arg->{secret});
+    return { cipher => $encode, decipher => $decode };
+  }
+
+The C<cipher> and C<decipher> routines are built in a group because they are
+built together by code which encloses their secret in their environment.
+
+=head2 C<collectors> Configuration
+
+The C<collectors> entry in the exporter configuration gives names which, when
+found in the import call, have their values collected and passed to every
+generator.
+
+For example, the C<build_analyzer> generator that we saw above could be
+rewritten as:
+
+ sub build_analyzer {
+   my ($class, $name, $arg, $col) = @_;
+
+   return sub {
+     my $data      = shift;
+     my $tolerance = shift || $arg->{tolerance} || $col->{defaults}{tolerance}; 
+     my $passes    = shift || $arg->{passes}    || $col->{defaults}{passes}; 
+
+     analyze($data, $tolerance, $passes);
+   }
+ }
+
+That would allow the import to specify global defaults for his imports:
+
+  use Data::Analyze
+    'analyze',
+    analyze  => { tolerance => 0.10, -as => analyze10 },
+    analyze  => { tolerance => 0.15, passes => 50, -as => analyze50 },
+    defaults => { passes => 10 };
+
+  my $A = analyze10($data);     # equivalent to analyze($data, 0.10, 10);
+  my $C = analyze50($data);     # equivalent to analyze($data, 0.15, 10);
+  my $B = analyze($data, 0.20); # equivalent to analyze($data, 0.20, 10);
+
+If values are provided in the C<collectors> list during exporter setup, they
+must be code references, and are used to validate the importer's values.  The
+validator is called when the collection is found, and if it returns false, an
+exception is thrown.  We could ensure that no one tries to set a global data
+default easily:
+
+  collectors => { defaults => sub { return (exists $_[0]->{data}) ? 0 : 1 } }
+
+=head1 CALLING THE EXPORTER
+
+Arguments to the exporter (that is, the arguments after the module name in a
+C<use> statement) are parsed as follows:
+
+First, the collectors gather any collections found in the arguments.  Any
+reference type may be given as the value for a collector.  For each collection
+given in the arguments, its validator (if any) is called.  
+
+Next, groups are expanded.  If the group is implemented by a group generator,
+the generator is called.  There are two special arguments which, if given to a
+group, have special meaning:
+
+  -prefix - a string to prepend to any export imported from this group
+  -suffix - a string to append to any export imported from this group
+
+Finally, individual export generators are called and all subs, generated or
+otherwise, are installed in the calling package.  There is only one special
+argument for export generators:
+
+  -as     - where to install the exported sub
+
+Normally, C<-as> will contain an alternate name for the routine.  It may,
+however, contain a reference to a scalar.  If that is the case, a reference the
+generated routine will be placed in the scalar referenced by C<-as>.  It will
+not be installed into the calling package.
 
 =cut
 
@@ -669,7 +699,8 @@ Ricardo SIGNES, C<< <rjbs@cpan.org> >>
 =head1 THANKS
 
 Hans Dieter Pearcey and Shawn Sorichetti both provided helpful advice while I
-was writing Sub::Exporter.  Thanks, guys!
+was writing Sub::Exporter.  Ian Langworth asked some good questions and hepled
+me improve my documentation.  Thanks, guys!
 
 =head1 BUGS
 
