@@ -409,7 +409,7 @@ sub _expand_group {
       ($suffix ? (-suffix => $suffix) : ()),
     };
   }
-  
+
   Carp::croak qq(group "$group_name" is not exported by the $class module)
     unless exists $config->{groups}{$group_name};
 
@@ -417,19 +417,19 @@ sub _expand_group {
   
   my $exports = $config->{groups}{$group_name};
 
-  if (ref $exports eq 'ARRAY') {
-    $exports = _canonicalize_opt_list($exports);
-
-    return @{
-      _expand_groups($class, $config, $exports, $seen, $merge, $collection)
-    };
-  } elsif (ref $exports eq 'CODE') {
+  if (ref $exports eq 'CODE') {
     my $group = $exports->($class, $group_name, $group_arg, $collection);
     Carp::croak qq(group generator "$group_name" did not return a hashref)
       if ref $group ne 'HASH';
     my $stuff = [ map { [ $_ => $group->{$_} ] } keys %$group ];
     return @{
       _expand_groups($class, $config, $stuff, $seen, $merge, $collection)
+    };
+  } else {
+    $exports = _canonicalize_opt_list($exports);
+
+    return @{
+      _expand_groups($class, $config, $exports, $seen, $merge, $collection)
     };
   }
 }
