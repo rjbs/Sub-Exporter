@@ -9,7 +9,7 @@ that use group generators, more specifically when actually imported.
 
 =cut
 
-use Test::More 'no_plan';
+use Test::More tests => 3;
 
 use lib 't/lib';
 
