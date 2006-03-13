@@ -11,9 +11,9 @@ Sub::Exporter::Tutorial - a friendly guide to exporting with Sub::Exporter
 
 =head2 What's an Exporter?
 
-First, a quick refresher:  when you C<use> a module, first it is required, then
-its C<import> method is called.  The Perl documentation tells us that the
-following two lines are equivalent:
+When you C<use> a module, first it is required, then its C<import> method is
+called.  The Perl documentation tells us that the following two lines are
+equivalent:
 
   use Module LIST;
 
@@ -45,16 +45,10 @@ its C<plus> routine imported into their package:
 That syntax to set up the exporter, above, is a little verbose, so for the
 simple case of just naming some exports, you can write this:
 
-  package Addition;
-  use Sub::Exporter -setup => qw(plus);
-
-That is really the same as this:
-
   use Sub::Exporter -setup => { exports => [ qw(plus) ] };
 
-...which is, in turn, the same as the original example -- except that now the
-exporter is built and installed at compile time.  Well, that and you typed
-less.
+...which is the same as the original example -- except that now the exporter is
+built and installed at compile time.  Well, that and you typed less.
 
 =head2 Using Export Groups
 
@@ -303,5 +297,3 @@ Copyright 2006 Ricardo SIGNES.  This program is free software;  you can
 redistribute it and/or modify it under the same terms as Perl itself.
 
 =cut
-
-"jn8:32"; # <-- magic true value

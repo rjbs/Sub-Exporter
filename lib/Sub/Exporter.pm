@@ -106,6 +106,23 @@ This might save time, until you have multiple modules using Data::Analyze.
 Because there is only one global configuration, they step on each other's toes
 and your code begins to have mysterious errors.
 
+Generators can also allow you to export class methods to be called as
+subroutines:
+
+  package Data::Methodical;
+  use Sub::Exporter -setup => { exports => { some_method => \&_curry_class } };
+
+  sub _curry_class {
+    my ($class, $name) = @_;
+    sub { $class->$name(@_);
+  }
+
+Because of the way that exporters and Sub::Exporter work, any package that
+inherits from Data::Methodical can inherit its exporter and override its
+C<some_method>.  If a user imports C<some_method> from that package, he'll
+receive a subroutine that calls the method on the subclass, rather than on
+Data::Methodical itself.
+
 =head2 Other Customizations
 
 Building custom routines with generators isn't the only way that Sub::Exporters
@@ -137,7 +154,8 @@ C<trig_cos> and C<trig_tan>.
 You can configure an exporter for your package by using Sub::Exporter like so:
 
   package Tools;
-  use Sub::Exporter -setup => qw(function1 function2 function3);
+  use Sub::Exporter
+    -setup => { exports => [ qw(function1 function2 function3) ] };
 
 This is the simplest way to use the exporter, and is basically equivalent to
 this:
@@ -146,8 +164,7 @@ this:
   use base qw(Exporter);
   our @EXPORT_OK = qw(function1 function2 function2);
 
-To benefit from most of Sub::Exporter's features, this form must be used
-instead:
+Any basic use of Sub::Exporter will look like this:
 
   package Tools;
   use Sub::Exporter -setup => \%config;
@@ -243,6 +260,15 @@ This example shows a simple use of the group generator.
 
 The C<cipher> and C<decipher> routines are built in a group because they are
 built together by code which encloses their secret in their environment.
+
+=head3 Default Groups
+
+If a module that uses Sub::Exporter is C<use>d with no arguments, it will try
+to export the group named C<default>.  If that group has not been specifically
+configured, it will be empty, and nothing will happen.
+
+Another group is also created if not defined: C<all>.  The C<all> group
+contains all the exports from the exports list.
 
 =head2 C<collectors> Configuration
 
@@ -600,16 +626,6 @@ sub build_exporter {
   return $import;
 }
 
-# like build_exporter, but if passed a non-reference, it treats its arguments
-# as a list of exports.
-sub _polymorphic_build_exporter {
-  if (ref $_[0]) {
-    return build_exporter(@_);
-  } else {
-    return build_exporter({ exports => [ @_ ] });
-  }
-}
-
 # the default installer; it does what Sub::Exporter promises: call generators
 # with the three normal arguments, then install the code into the target
 # package
@@ -657,13 +673,99 @@ normal configuration hash.
 setup_exporter({
   exports => [
     qw(setup_exporter build_exporter),
-    _import => sub { splice @_, 0, 2; _polymorphic_build_exporter(@_) },
+    _import => sub { splice @_, 0, 2; build_exporter(@_) },
   ],
   groups  => {
     all   => [ qw(setup_exporter build_export) ],
     setup => { _import => { -as => 'import' } }
   }
 });
+
+=head1 COMPARISONS
+
+There are a whole mess of exporters on the CPAN.  The features included in
+Sub::Exporter set it apart from any existing Exporter.  Here's a summary of
+some other exporters and how they compare.
+
+=over
+
+=item * L<Exporter> and co.
+
+This is the standard Perl exporter.  Its interface is a little clunky, but it's
+fast and ubiquitous.  It can do some things that Sub::Exporter can't:  it can
+export things other than routines, it can import "everything in this group
+except this symbol," and some other more esoteric things.  These features seem
+to go nearly entirely unused.
+
+It always exports things exactly as they appear in the exporting module; it
+can't rename or customize routines.  Its groups ("tags") can't be nested.
+
+L<Exporter::Lite> is a whole lot like Exporter, but it does significantly less:
+it supports exporting symbols, but not groups, pattern matching, or negation.
+
+The fact that Sub::Exporter can't export symbols other than subroutines is
+a good idea, not a missing feature.
+
+For simple uses, setting up Sub::Exporter is about as easy as Exporter.  For
+complex uses, Sub::Exporter makes hard things possible, which would not be
+possible with Exporter. 
+
+When using a module that uses Sub::Exporter, users familiar with Exporter will
+probably see difference in the basics.  These two lines do about the same thing
+in whether the exporting module uses Exporter or Sub::Exporter.
+
+  use Some::Module qw(foo bar baz);
+  use Some::Module qw(foo :bar baz);
+
+The definition for exporting in Exporter.pm might look like this:
+
+  package Some::Module;
+  use base qw(Exporter);
+  our @EXPORT_OK   = qw(foo bar baz quux);
+  our %EXPORT_TAGS = (bar => [ qw(bar baz) ]);
+
+Using Sub::Exporter, it would look like this:
+
+  package Some::Module;
+  use Sub::Exporter -setup => {
+    exports => [ qw(foo bar baz quux) ],
+    groups  => { bar => [ qw(bar baz) ]}
+  };
+
+Sub::Exporter respects inheritance, so that a package may export inherited
+routines, and will export the most inherited version.  Exporting methods
+without currying away the invocant is a bad idea, but Sub::Exporter allows you
+to do just that -- and anyway, there are other uses for this feature, like
+packages of exported subroutines which use inheritance specifically to allow
+more specialized, but similar, packages.
+
+L<Exporter::Easy> provides a wrapper around the standard Exporter.  It makes it
+simpler to build groups
+
+=item * Attribute-Based Exporters
+
+Some exporters use attributes to mark variables to export.  L<Exporter::Simple>
+supports exporting any kind of symbol, and supports groups.
+
+L<Perl6::Export> isn't actually attribute based, but looks similar.  Its syntax
+is borrowed from Perl 6, and implemented by a source filter.
+
+=item * Other Exporters
+
+L<Exporter::Renaming> wraps the standard Exporter to allow it to export symbols
+with changed names.
+
+L<Class::Exporter> performs a special kind of routine generation, giving each
+importing package an instance of your class, and then exporting the instance's
+methods as normal routines.  (Sub::Exporter, of course, can easily emulate this
+behavior.)
+
+L<Exporter::Tidy> implements a form of renaming (using its C<_map> argument)
+and of prefixing, and implements groups.  It also avoids using package
+variables for its configuration.
+
+=back
+
 
 =head1 TODO
 
@@ -702,50 +804,6 @@ Please report any bugs or feature requests to C<bug-sub-exporter@rt.cpan.org>,
 or through the web interface at L<http://rt.cpan.org>. I will be notified, and
 then you'll automatically be notified of progress on your bug as I make
 changes.
-
-=head1 SEE ALSO
-
-There are a whole mess of exporters on the CPAN.  Here's a quick summary:
-
-=over
-
-=item * L<Exporter> and co.
-
-This is the standard Perl exporter.  Its interface is a little clunky, but it's
-fast and ubiquitous.  It can do some things that Sub::Exporter can't.  It can
-export things other than routines, it can import "everything in this group
-except this symbol," and some other more esoteric things.
-
-It always exports things exactly as they appear in the exporting module; it
-can't rename or customize routines.  Its groups ("tags") can't be nested.
-
-L<Exporter::Lite> is a whole lot like Exporter, but it does significantly less.
-
-L<Exporter::Easy> provides a wrapper around the standard Exporter.
-
-=item * Attribute-Based Exporters
-
-Some exporters use attributes to mark variables to export.  L<Exporter::Simple>
-supports exporting any kind of symbol, and supports groups.
-
-L<Perl6::Export> isn't actually attribute based, but looks similar.  Its syntax
-is borrowed from Perl 6, and implemented by a source filter.
-
-=item * Other Exporters
-
-L<Exporter::Renaming> wraps the standard Exporter to allow it to export symbols
-with changed names.
-
-L<Class::Exporter> performs a special kind of routine generation, giving each
-importing package an instance of your class, and then exporting the instance's
-methods as normal routines.  (Sub::Exporter, of course, can easily emulate this
-behavior.)
-
-L<Exporter::Tidy> implements a form of renaming (using its C<_map> argument)
-and of prefixing, and implements groups.  It also avoids using package
-variables for its configuration.
-
-=back
 
 =head1 COPYRIGHT
 
