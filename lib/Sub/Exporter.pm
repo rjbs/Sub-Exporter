@@ -157,7 +157,9 @@ When you define groups, you can include renaming.
     }
   };
 
-A prefix on a group like that does the right thing.
+A prefix on a group like that does the right thing.  This is when it's useful
+to use a dash instead of a colon to indicate a group: you can put a fat arrow
+between the group and its arguments, then.
 
   use Food -fauna => { -prefix => 'lovely_' };
 
@@ -277,6 +279,14 @@ Generators may have arguments in their definition, as well.  These must be code
 refs that perform validation of the collected values.  They are passed the
 collection value and may return true or false.  If they return false, the
 exporter will throw an exception.
+
+=head2 Generating Many Routines in One Scope
+
+Sometimes it's useful to have multiple routines generated in one scope.  This
+way they can share lexical data which is otherwise unavailable.  To do this,
+you can supply a generator for a group which returns a hashref of names and
+code references.  This generator is passed all the usual data, and the group
+may receive the usual C<-prefix> or C<-suffix> arguments.
 
 =cut
 
