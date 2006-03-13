@@ -59,8 +59,8 @@ code in the exporting package.
 
 =head1 DESCRIPTION
 
-B<If you're not familiar with Exporter or exporting, read
-L<<Sub::Exporter::Tutorial>> first!>
+B<ACHTUNG!>  If you're not familiar with Exporter or exporting, read
+L<Sub::Exporter::Tutorial> first!
 
 =head2 Why Generators?
 

@@ -7,33 +7,7 @@ Sub::Exporter::Tutorial - a friendly guide to exporting with Sub::Exporter
 
   $Id$
 
-=head1 SYNOPSIS
-
-Sub::Exporter provides features from the simple and familiar:
-
-  use Tools::Power;
-  # import the default exports of Tools::Power
-
-  use Tools::Power qw(drill circsaw);
-  # import two routines from Tools::Power
-
-...to the slightly more esoteric:
-
-  use Tools::Power 'drill', circsaw => { -as => 'buzzsaw' };
-  # import the "drill" routine as well as "circsaw", but call it "buzzsaw"
-
-  use Tools::Power drill => { bit => 'masonry', -as => 'masonry_drill' };
-  # import a customized version of the "drill" routine
-
-Or:
-
-  use Tools::Power ':manual', defaults => { unbreakable => 1 };
-  # import the "manual" group of routines, building in the given defaults
-
-  use Tools::Power brand_preference => [ qw(craftsman park) ];
-  # import the usual tools, with the given brand preferences
-
-=head1 USAGE
+=head1 DESCRIPTION
 
 =head2 What's an Exporter?
 
