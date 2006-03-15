@@ -740,7 +740,9 @@ packages of exported subroutines which use inheritance specifically to allow
 more specialized, but similar, packages.
 
 L<Exporter::Easy> provides a wrapper around the standard Exporter.  It makes it
-simpler to build groups
+simpler to build groups, but doesn't provide any more functionality.  Because
+it is a front-end to Exporter, it will store your exporter's configuration in
+global package variables.
 
 =item * Attribute-Based Exporters
 
@@ -780,7 +782,6 @@ variables for its configuration.
 
 =back
 
-
 =head1 TODO
 
 =cut
@@ -788,17 +789,11 @@ variables for its configuration.
 # This would be cool:
 # use Food qr/\Aartificial/ => { -prefix => 'non_' };
 
-# This is, I think, nearly a necessity:
-# a way to have one generator provide several routines which can then be
-# installed together
-# maybe:
-# groups => { encode => sub { (returns hashref) } };
-
 =over
 
 =item * write a set of longer, more demonstrative examples
 
-=item * solidify the "custom build and install" interface (see &_export)
+=item * solidify the "custom build and install" interface (see C<&_export>)
 
 =back
 
@@ -808,9 +803,9 @@ Ricardo SIGNES, C<< <rjbs@cpan.org> >>
 
 =head1 THANKS
 
-Hans Dieter Pearcey and Shawn Sorichetti both provided helpful advice while I
-was writing Sub::Exporter.  Ian Langworth asked some good questions and hepled
-me improve my documentation.  Thanks, guys!
+Hans Dieter Pearcey provided helpful advice while I was writing Sub::Exporter.
+Ian Langworth and Shawn Sorichetti asked some good questions and hepled me
+improve my documentation quite a bit.  Thanks, guys!
 
 =head1 BUGS
 
