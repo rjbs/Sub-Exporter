@@ -114,7 +114,7 @@ subroutines:
 
   sub _curry_class {
     my ($class, $name) = @_;
-    sub { $class->$name(@_);
+    sub { $class->$name(@_); };
   }
 
 Because of the way that exporters and Sub::Exporter work, any package that
@@ -638,6 +638,21 @@ sub _export {
   );
 }
 
+## Cute idea, possibly for future use: also supply an "unimport" for:
+## no Module::Whatever qw(arg arg arg);
+# sub _unexport {
+#   my (undef, undef, undef, undef, undef, $as, $into) = @_;
+# 
+#   if (ref $as eq 'SCALAR') {
+#     undef $$as;
+#   } elsif (ref $as) {
+#     Carp::croak "invalid reference type for $as: " . ref $as;
+#   } else {
+#     no strict 'refs';
+#     delete &{$into . '::' . $as};
+#   }
+# }
+
 sub _generate {
   my ($class, $generator, $name, $arg, $collection, $as, $into) = @_;
 
@@ -805,7 +820,7 @@ Ricardo SIGNES, C<< <rjbs@cpan.org> >>
 
 Hans Dieter Pearcey provided helpful advice while I was writing Sub::Exporter.
 Ian Langworth and Shawn Sorichetti asked some good questions and hepled me
-improve my documentation quite a bit.  Thanks, guys!
+improve my documentation quite a bit.  Thanks, guys! 
 
 =head1 BUGS
 
