@@ -4,6 +4,8 @@ Revision history for Sub-Exporter
         fix bug in nested imports: when importing groups A and B, and group B
         includes group A, the nested group would be ignored, even though it was
         not recursing
+
+        allow 'into_level' parameter to setup_exporter
         
 0.91    2006-03-16
         added "import elsewhere" option to generated exporter (thanks chansen!)

@@ -511,19 +511,23 @@ sub _collect_collections {
   my ($config, $import_args) = @_;
   my %collection;
 
-  for my $collection (keys %{ $config->{collectors} }) {
-    next unless my @indexes
-      = grep { $import_args->[$_][0] eq $collection } (0 .. $#$import_args);
+  my @collections
+    = map  { splice @$import_args, $_, 1 }
+      grep { exists $config->{collectors}{ $import_args->[$_][0] } }
+      reverse 0 .. $#$import_args;
 
-    Carp::croak "collection $collection provided multiple times in import"
-      if @indexes > 1;
+  my %seen;
+  for my $collection (@collections) {
+    my ($name, $value) = @$collection;
 
-    my $value = splice @$import_args, $indexes[0], 1;
-    $collection{ $collection } = $value->[1];
+    Carp::croak "collection $name provided multiple times in import"
+      if $seen{ $name }++;
 
-    if (ref(my $validator = $config->{collectors}{$collection})) {
-      Carp::croak "collection $collection failed validation"
-        unless $validator->($collection{$collection});
+    $collection{ $name } = $value;
+
+    if (ref(my $validator = $config->{collectors}{$name})) {
+      Carp::croak "collection $name failed validation"
+        unless $validator->($value);
     }
   }
 
