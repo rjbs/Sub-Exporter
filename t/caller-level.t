@@ -10,7 +10,7 @@ BEGIN {
 }
 
 BEGIN {
-  package MyExport1;
+  package Test::SubExport::FROM;
   use strict;
   use warnings;    
   use Sub::Exporter -setup => {
@@ -36,7 +36,7 @@ BEGIN {
   sub import {
     my $package = shift;
     my $caller  = caller(0);
-    MyExport1->import( { into => $caller }, @_ );
+    Test::SubExport::FROM->import( { into => $caller }, @_ );
   }
   
   1;
@@ -49,7 +49,7 @@ BEGIN {
   
   sub import {
     my $package = shift;
-    MyExport1->import( { caller_level => 1 }, @_ );
+    Test::SubExport::FROM->import( { caller_level => 1 }, @_ );
   }
   
   1;
@@ -60,7 +60,7 @@ Test::SubExport::INTO->import('A');
 
 main::can_ok(__PACKAGE__, 'A' );
 main::cmp_ok(
-  __PACKAGE__->can('A'), '==', MyExport1->can('A'),
+  __PACKAGE__->can('A'), '==', Test::SubExport::FROM->can('A'),
   'sub A was exported'
 );
 
@@ -70,12 +70,12 @@ Test::SubExport::INTO->import(':all');
 main::can_ok(__PACKAGE__, 'A', 'B' );
 
 main::cmp_ok(
-  __PACKAGE__->can('A'), '==', MyExport1->can('A'),
+  __PACKAGE__->can('A'), '==', Test::SubExport::FROM->can('A'),
   'sub A was exported'
 );
 
 main::cmp_ok(
-  __PACKAGE__->can('B'), '==', MyExport1->can('B'),
+  __PACKAGE__->can('B'), '==', Test::SubExport::FROM->can('B'),
   'sub B was exported'
 );
 
@@ -85,11 +85,11 @@ Test::SubExport::LEVEL->import(':all');
 main::can_ok(__PACKAGE__, 'A', 'B' );
 
 main::cmp_ok(
-  __PACKAGE__->can('A'), '==', MyExport1->can('A'),
+  __PACKAGE__->can('A'), '==', Test::SubExport::FROM->can('A'),
   'sub A was exported'
 );
 
 main::cmp_ok(
-  __PACKAGE__->can('B'), '==', MyExport1->can('B'),
+  __PACKAGE__->can('B'), '==', Test::SubExport::FROM->can('B'),
   'sub B was exported'
 );
