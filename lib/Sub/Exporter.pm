@@ -419,8 +419,8 @@ sub _expand_opt_list {
 sub _group_name {
   my ($name) = @_;
 
-  return unless $name =~ s/\A[-:]//;
-  return $name;
+  return if (index '-:', (substr $name, 0, 1)) == -1;
+  return substr $name, 1;
 }
 
 # \@groups is a canonicalized opt list of exports and groups this returns
@@ -435,23 +435,21 @@ sub _expand_groups {
   my @groups = @$groups;
 
   for my $i (reverse 0 .. $#$groups) {
-    # this isn't a group, let it be
     if (my $group_name = _group_name($groups[$i][0])) {
-      # we already dealt with this, remove it
-      if ($seen->{ $group_name }) {
-        splice @groups, $i, 1;
-        next;
-      }
+      my $seen = { %$seen }; # faux-dynamic scoping
 
-      # rewrite the group
       splice @groups, $i, 1,
         _expand_group($class, $config, $groups[$i], $collection, $seen, $merge);
     } else {
+      # there's nothing to munge in this export's args
       next unless my %merge = %$merge;
+
+      # we have things to merge in; do so
       my $prefix = (delete $merge{-prefix}) || '';
       my $suffix = (delete $merge{-suffix}) || '';
       if (ref $groups[$i][1] eq 'CODE') {
-         $groups[$i][0] = $prefix . $groups[$i][0] . $suffix;
+        # this entry was build by a group generator
+        $groups[$i][0] = $prefix . $groups[$i][0] . $suffix;
       } else {
         my $as = ref $groups[$i][1]{-as}
           ? $groups[$i][1]{-as}
@@ -472,6 +470,11 @@ sub _expand_group {
   my ($group_name, $group_arg) = @$group;
   $group_name = _group_name($group_name);
 
+  Carp::croak qq(group "$group_name" is not exported by the $class module)
+    unless exists $config->{groups}{$group_name};
+
+  return if $seen->{$group_name}++;
+
   if (ref $group_arg) {
     my $prefix = (delete $merge->{-prefix}||'') . ($group_arg->{-prefix}||'');
     my $suffix = ($group_arg->{-suffix}||'') . (delete $merge->{-suffix}||'');
@@ -482,11 +485,6 @@ sub _expand_group {
       ($suffix ? (-suffix => $suffix) : ()),
     };
   }
-
-  Carp::croak qq(group "$group_name" is not exported by the $class module)
-    unless exists $config->{groups}{$group_name};
-
-  $seen->{$group_name} = 1;
   
   my $exports = $config->{groups}{$group_name};
 
@@ -579,16 +577,28 @@ the exporter as a package's import routine.
 
 =cut
 
-sub build_exporter {
-  my ($config, $special) = @_;
-  $special ||= {};
+sub _key_intersection {
+  my ($x, $y) = @_;
+  my %seen = map { $_ => 1 } keys %$x;
+  my @names = grep { $seen{$_} } keys %$y;
+}
 
-  # this option name, if nothing else, needs to be improved before it is
-  # accepted as a core feature -- rjbs, 2006-03-09
-  $special->{export} ||= \&_export;
-  
+my %valid_config_key;
+BEGIN { %valid_config_key = map { $_ => 1 } qw(exports groups collectors) }
+
+sub _rewrite_config {
+  my ($config) = @_;
+
+  if (my @keys = grep { not exists $valid_config_key{$_} } keys %$config) {
+    Carp::croak "unknown options (@keys) passed to Sub::Exporter";
+  }
+
   $config->{$_} = _expand_opt_list($config->{$_}, 'CODE')
     for qw(exports collectors);
+
+  if (my @names = _key_intersection(@$config{qw(exports collectors)})) {
+    Carp::croak "names (@names) used in both collections and exports";
+  }
 
   $config->{groups} = _expand_opt_list($config->{groups}, [ 'HASH', 'CODE' ]);
 
@@ -597,7 +607,18 @@ sub build_exporter {
 
   # by default, build an all-inclusive 'all' group
   $config->{groups}{all} ||= [ keys %{ $config->{exports} } ];
+}
 
+sub build_exporter {
+  my ($config, $special) = @_;
+  $special ||= {};
+
+  # this option name, if nothing else, needs to be improved before it is
+  # accepted as a core feature -- rjbs, 2006-03-09
+  $special->{export} ||= \&_export;
+
+  _rewrite_config($config);
+  
   my $import = sub {
     my ($class) = shift;
 
@@ -626,6 +647,7 @@ sub build_exporter {
       my ($generator, $as);
 
       if ($arg and ref $arg eq 'CODE') {
+        # This is the case when a group generator has inserted name/code pairs.
         $generator = sub { $arg };
         $as = $name;
       } else {
@@ -647,6 +669,12 @@ sub build_exporter {
 
   return $import;
 }
+
+# XXX: Consider implementing a _export_args routine that takes the arguments to
+# _export and returns a hash of named params.  This lets other people write
+# exporters without tying me down to one set of @_ contents.  Maybe that's
+# premature guarantee, though, unless I guarantee that @_ will never get
+# /smaller/.
 
 # the default installer; it does what Sub::Exporter promises: call generators
 # with the three normal arguments, then install the code into the target

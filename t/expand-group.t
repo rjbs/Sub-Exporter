@@ -8,7 +8,7 @@ These tests check export group expansion, name prefixing, and option merging.
 
 =cut
 
-use Test::More tests => 54;
+use Test::More tests => 55;
 
 BEGIN { use_ok('Sub::Exporter'); }
 
@@ -189,6 +189,14 @@ my @multi_tests = (
     "group and export",
     [ [ ':A', undef ], [ c => undef ] ],
     [ [  a => undef ], [ c => undef ] ]
+  ],
+  [
+    "two groups with different merges",
+    [ [ -A => { -prefix => 'A_' } ], [ -prefixed_A => { -suffix => '_p' } ] ],
+    [
+      [ a => { -as => 'A_a'      } ],
+      [ a => { -as => 'alfa_a_p' } ],
+    ]
   ],
 );
 

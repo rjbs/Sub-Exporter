@@ -29,3 +29,4 @@ t/pod.t
 t/real-export-groupgen.t
 t/real-export-href.t
 t/real-export-setup.t
+t/valid-config.t
