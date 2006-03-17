@@ -588,8 +588,12 @@ sub build_exporter {
   my $import = sub {
     my ($class) = shift;
 
+    # XXX: clean this up -- rjbs, 2006-03-16
     my $import_arg = (ref $_[0]) ? shift(@_) : {};
-    $import_arg->{into} = caller(0) unless defined $import_arg->{into};
+    $import_arg->{into}
+      = caller(
+        defined $import_arg->{caller_level} ? $import_arg->{caller_level} : 0
+      ) unless defined $import_arg->{into};
 
     # this builds a AOA, where the inner arrays are [ name => value_ref ]
     my $import_args = _canonicalize_opt_list([ @_ ]);

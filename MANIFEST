@@ -14,6 +14,7 @@ MANIFEST			This list of files
 META.yml
 README
 t/collection.t
+t/caller-level.t
 t/expand-group.t
 t/faux-export.t
 t/group-generator.t
