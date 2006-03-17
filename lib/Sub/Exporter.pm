@@ -537,11 +537,19 @@ sub _collect_collections {
 This routine builds and installs an C<import> routine.  It is called with one
 argument, a hashref containing the exporter configuration.  Using this, it
 builds an exporter and installs it into the calling package with the name
-"import."  In addition to the normal exporter configuration, two named
+"import."  In addition to the normal exporter configuration, a few named
 arguments may be passed in the hashref:
 
-  into - into what package should the exporter be installed (defaults to caller)
-  as   - what name should the installed exporter be given (defaults to "import")
+  into       - into what package should the exporter be installed
+  into_level - into what level up the stack should the exporter be installed
+  as         - what name should the installed exporter be given
+
+By default the exporter is installed with the name C<import> into the immediate
+caller of C<setup_exporter>.  In other words, if your package calls
+C<setup_exporter> without providing any of the three above arguments, it will
+have an C<import> routine installed.
+
+Providing both C<into> and C<into_level> will cause an exception to be thrown.
 
 The exporter is built by C<L</build_exporter>>.
 
@@ -554,9 +562,14 @@ sub setup_exporter {
   my ($config, $special)  = @_;
   $special ||= {};
 
-  my $into
-    = delete $config->{into} || caller(delete $config->{into_level} || 0);
+  Carp::croak q(into and into_level may not both be supplied to exporter)
+    if exists $config->{into} and exists $config->{into_level};
+
   my $as   = delete $config->{as}   || 'import';
+  my $into
+    = exists $config->{into}       ? delete $config->{into}
+    : exists $config->{into_level} ? caller(delete $config->{into_level})
+    :                                caller(0);
 
   my $import = build_exporter($config, $special);
 
@@ -626,7 +639,7 @@ sub build_exporter {
     # XXX: clean this up -- rjbs, 2006-03-16
     my $import_arg = (ref $_[0]) ? shift(@_) : {};
     Carp::croak q(into and into_level may not both be supplied to exporter)
-      if defined $import_arg->{into} and defined $import_arg->{into_level};
+      if exists $import_arg->{into} and exists $import_arg->{into_level};
 
     my $into
       = defined $import_arg->{into}       ? $import_arg->{into}
