@@ -6,40 +6,40 @@ use warnings;
 use Test::More tests => 6;
 
 BEGIN { 
-    use_ok('Sub::Exporter'); 
+  use_ok('Sub::Exporter'); 
 }
 
 BEGIN {
-    package MyExport1;
-    use strict;
-    use warnings;    
-    use Sub::Exporter -setup => {
-        exports => [ qw(A B) ],
-        groups  => {
-            default => [ ':all' ],
-            a       => [ 'A'    ],
-            b       => [ 'B'    ]
-        }
-    };
-
-    sub A { 'A' }
-    sub B { 'B' }
-
-    1;    
-}
-
-BEGIN {
-    package MyExport2;
-    use strict;
-    use warnings;
-    
-    sub import {
-        my $package = shift;
-        my $caller  = caller(0);
-        MyExport1->import( { into => $caller }, @_ );
+  package MyExport1;
+  use strict;
+  use warnings;    
+  use Sub::Exporter -setup => {
+    exports => [ qw(A B) ],
+    groups  => {
+      default => [ ':all' ],
+      a       => [ 'A'    ],
+      b       => [ 'B'    ]
     }
-    
-    1;
+  };
+
+  sub A { 'A' }
+  sub B { 'B' }
+
+  1;    
+}
+
+BEGIN {
+  package MyExport2;
+  use strict;
+  use warnings;
+  
+  sub import {
+    my $package = shift;
+    my $caller  = caller(0);
+    MyExport1->import( { into => $caller }, @_ );
+  }
+  
+  1;
 }
 
 MyExport2->import('A');
