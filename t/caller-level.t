@@ -49,7 +49,7 @@ BEGIN {
   
   sub import {
     my $package = shift;
-    Test::SubExport::FROM->import( { caller_level => 1 }, @_ );
+    Test::SubExport::FROM->import( { into_level => 1 }, @_ );
   }
   
   1;

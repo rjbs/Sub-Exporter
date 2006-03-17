@@ -338,6 +338,19 @@ however, contain a reference to a scalar.  If that is the case, a reference the
 generated routine will be placed in the scalar referenced by C<-as>.  It will
 not be installed into the calling package.
 
+=head2 Special Exporter Arguments
+
+The generated exporter accept some special options, which may be passed as the
+first argument, in a hashref.
+
+These options are:
+
+  into_level - how far up the caller stack to look for a target (default 0)
+  into       - an explicit target (package) into which to export routines
+
+Providing both C<into_level> and C<into> will cause an exception to be
+thrown.
+
 =cut
 
 # This produces an array of arrays; the inner arrays are name/value pairs.
@@ -590,10 +603,13 @@ sub build_exporter {
 
     # XXX: clean this up -- rjbs, 2006-03-16
     my $import_arg = (ref $_[0]) ? shift(@_) : {};
-    $import_arg->{into}
-      = caller(
-        defined $import_arg->{caller_level} ? $import_arg->{caller_level} : 0
-      ) unless defined $import_arg->{into};
+    Carp::croak q(into and into_level may not both be supplied to exporter)
+      if defined $import_arg->{into} and defined $import_arg->{into_level};
+
+    my $into
+      = defined $import_arg->{into}       ? $import_arg->{into}
+      : defined $import_arg->{into_level} ? caller($import_arg->{into_level})
+      :                                     caller(0);
 
     # this builds a AOA, where the inner arrays are [ name => value_ref ]
     my $import_args = _canonicalize_opt_list([ @_ ]);
@@ -624,7 +640,7 @@ sub build_exporter {
       }
 
       $special->{export}->(
-        $class, $generator, $name, $arg, $collection, $as, $import_arg->{into}
+        $class, $generator, $name, $arg, $collection, $as, $into
       );
     }
   };
