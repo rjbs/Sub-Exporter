@@ -1,4 +1,7 @@
 Revision history for Sub-Exporter
 
+0.91    2006-03-16
+        added "import elsewhere" option to generated exporter (thanks chansen!)
+
 0.90    2006-03-11
         first public release

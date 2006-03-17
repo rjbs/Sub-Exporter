@@ -12,13 +12,13 @@ Sub::Exporter - a sophisticated exporter for custom-built routines
 
 =head1 VERSION
 
-version 0.90
+version 0.91
 
   $Id$
 
 =cut
 
-our $VERSION = '0.90';
+our $VERSION = '0.91';
 
 =head1 SYNOPSIS
 
@@ -587,7 +587,9 @@ sub build_exporter {
 
   my $import = sub {
     my ($class) = shift;
-    my ($into)  = caller(0);
+
+    my $import_arg = (ref $_[0]) ? shift(@_) : {};
+    $import_arg->{into} = caller(0) unless defined $import_arg->{into};
 
     # this builds a AOA, where the inner arrays are [ name => value_ref ]
     my $import_args = _canonicalize_opt_list([ @_ ]);
@@ -618,7 +620,7 @@ sub build_exporter {
       }
 
       $special->{export}->(
-        $class, $generator, $name, $arg, $collection, $as, $into
+        $class, $generator, $name, $arg, $collection, $as, $import_arg->{into}
       );
     }
   };
