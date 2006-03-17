@@ -1,7 +1,13 @@
 #!perl -T
-
 use strict;
 use warnings;
+
+=head1 TEST PURPOSE
+
+These tests exercise the "into" and "into_level" special arguments to the built
+exporter.
+
+=cut
 
 use Test::More tests => 9;
 

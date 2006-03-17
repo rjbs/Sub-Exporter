@@ -14,11 +14,11 @@ MANIFEST			This list of files
 META.yml
 README
 t/collection.t
-t/caller-level.t
 t/expand-group.t
 t/faux-export.t
 t/group-generator.t
 t/inherited.t
+t/into-level.t
 t/lib/Test/SubExportA.pm
 t/lib/Test/SubExportB.pm
 t/lib/Test/SubExportC.pm
