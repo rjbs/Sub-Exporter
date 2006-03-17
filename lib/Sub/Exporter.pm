@@ -554,7 +554,8 @@ sub setup_exporter {
   my ($config, $special)  = @_;
   $special ||= {};
 
-  my $into = delete $config->{into} || caller(0);
+  my $into
+    = delete $config->{into} || caller(delete $config->{into_level} || 0);
   my $as   = delete $config->{as}   || 'import';
 
   my $import = build_exporter($config, $special);
@@ -682,7 +683,7 @@ sub build_exporter {
 sub _export {
   my ($class, $generator, $name, $arg, $collection, $as, $into) = @_;
   _install(
-    _generate($class, $generator, $name, $arg, $collection, $as, $into),
+    _generate($class, $generator, $name, $arg, $collection),
     $into,
     $as,
   );
@@ -704,7 +705,7 @@ sub _export {
 # }
 
 sub _generate {
-  my ($class, $generator, $name, $arg, $collection, $as, $into) = @_;
+  my ($class, $generator, $name, $arg, $collection) = @_;
 
   my $code = $generator
            ? $generator->($class, $name, $arg, $collection)

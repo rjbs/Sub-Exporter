@@ -10,7 +10,7 @@ They use Test::SubExportA, bundled in ./t/lib, which uses this calling style.
 
 =cut
 
-use Test::More tests => 45;
+use Test::More tests => 46;
 
 BEGIN { use_ok('Sub::Exporter'); }
 
@@ -160,3 +160,24 @@ END_TEST
     "can't pass a non-scalar ref to -as",
   );
 }
+
+sub install_upstream {
+  Sub::Exporter::setup_exporter({
+    exports    => [ 'X' ],
+    as         => 'gimme_X_from',
+    into_level => 1,
+  });
+}
+
+package Test::SubExporter::LEVEL_1;
+
+sub X { return 1 };
+
+main::install_upstream;
+
+package Test::SubExporter::CALLS_LEVEL_1;
+
+Test::SubExporter::LEVEL_1->gimme_X_from(X => { -as => 'x_from_1' });
+use subs 'x_from_1';
+
+main::is(x_from_1(), 1, "imported from uplevel-installed exporter");
