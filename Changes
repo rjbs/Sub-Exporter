@@ -1,15 +1,16 @@
 Revision history for Sub-Exporter
 
 0.92    2006-03-16
-        fix bug in nested imports: when importing groups A and B, and group B
+        FIX BUG in nested imports: when importing groups A and B, and group B
         includes group A, the nested group would be ignored, even though it was
         not recursing
 
         allow 'into_level' parameter to setup_exporter
         rewrite collection collector to be more efficient
         rewrite opt list handlers to be more efficient
+        restate some code to improve clarity and coverage (now 100%)
         better diagnostic messages
-        
+
 0.91    2006-03-16
         added "import elsewhere" option to generated exporter (thanks chansen!)
 
