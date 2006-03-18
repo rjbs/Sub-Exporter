@@ -4,12 +4,12 @@ use warnings;
 
 =head1 TEST PURPOSE
 
-These tests make sure that invalid configurations passed to build_exporter
-throw exceptions.
+These tests make sure that invalid configurations passed to
+setup/build_exporter throw exceptions.
 
 =cut
 
-use Test::More tests => 2;
+use Test::More tests => 5;
 
 BEGIN { use_ok('Sub::Exporter'); }
 
@@ -21,3 +21,39 @@ eval {
 };
 
 like($@, qr/used in both/, "can't use one name in exports and collectors");
+
+eval {
+  Sub::Exporter::build_exporter({
+    collections => [ qw(foo) ], # This one gets me all the time.  Live & learn.
+  })
+};
+
+like($@, qr/unknown options/, "unknown options raise an exception");
+
+eval {
+  Sub::Exporter::setup_exporter({
+    into       => 'Your::Face',
+    into_level => 5,
+  })
+};
+
+like(
+  $@,
+  qr/may not both/,
+  "into and into_level are mutually exclusive (in setup_exporter)"
+);
+
+eval { 
+  Sub::Exporter::build_exporter({})->(
+    Class => {
+      into       => 'Your::Face',
+      into_level => 1
+    }
+  );
+};
+
+like(
+  $@,
+  qr/may not both/,
+  "into and into_level are mutually exclusive (in exporter)"
+);
