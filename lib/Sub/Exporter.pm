@@ -450,13 +450,16 @@ sub _expand_groups {
       # we have things to merge in; do so
       my $prefix = (delete $merge{-prefix}) || '';
       my $suffix = (delete $merge{-suffix}) || '';
+
       if (ref $groups[$i][1] eq 'CODE') {
         # this entry was build by a group generator
         $groups[$i][0] = $prefix . $groups[$i][0] . $suffix;
       } else {
-        my $as = ref $groups[$i][1]{-as}
-          ? $groups[$i][1]{-as}
-          : $prefix . ($groups[$i][1]{-as}||$groups[$i][0]) . $suffix;
+        my $as
+          = ref $groups[$i][1]{-as} ? $groups[$i][1]{-as}
+          :     $groups[$i][1]{-as} ? $prefix . $groups[$i][1]{-as} . $suffix
+          :                           $prefix . $groups[$i][0]      . $suffix;
+
         $groups[$i][1] = { %{ $groups[$i][1] }, %merge, -as => $as };
       }
     }
