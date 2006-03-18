@@ -364,8 +364,11 @@ thrown.
 #              every value followed by undef becomes a pair: [ value => undef ]
 #              otherwise, it becomes [ value => undef ] like so:
 #              [ "a", "b", [ 1, 2 ] ] -> [ [ a => undef ], [ b => [ 1, 2 ] ] ]
+#
+# It would be nice for this 'canonicalized' form to have a canonical order,
+# since it could be coming from a hash.
 sub _canonicalize_opt_list {
-  my ($opt_list, $require_unique, $must_be) = @_;
+  my ($opt_list, $moniker, $require_unique, $must_be) = @_;
 
   return [] unless $opt_list;
 
@@ -374,10 +377,15 @@ sub _canonicalize_opt_list {
   ] if ref $opt_list eq 'HASH';
 
   my @return;
+  my %seen;
 
   for (my $i = 0; $i < @$opt_list; $i++) {
     my $name = $opt_list->[$i];
     my $value;
+
+    if ($require_unique) {
+      Carp::croak "multiple definitions provided for $name" if $seen{$name}++;
+    }
 
     if    ($i == $#$opt_list)             { $value = undef;            }
     elsif (not defined $opt_list->[$i+1]) { $value = undef; $i++       }
@@ -385,19 +393,14 @@ sub _canonicalize_opt_list {
     else                                  { $value = undef;            }
 
     if ($must_be and defined $value) {
-      $must_be = [ $must_be ] unless ref $must_be;
       my $ref = ref $value;
-      Carp::croak "$ref-ref values are not allowed"
-        unless grep { $ref eq $_ } @$must_be;
+      my $ok  = ref $must_be ? (grep { $ref eq $_ } @$must_be)
+              :                ($ref eq $must_be);
+
+      Carp::croak "$ref-ref values are not valid in $moniker opt list" if !$ok;
     }
 
     push @return, [ $name => $value ];
-  }
-
-  if ($require_unique) {
-    my %seen;
-    map { Carp::croak "multiple definitions provided for $_" if $seen{$_}++ }
-    map { $_->[0] } @return;
   }
 
   return \@return;
@@ -405,11 +408,11 @@ sub _canonicalize_opt_list {
 
 # This turns a canonicalized opt_list (see above) into a hash.
 sub _expand_opt_list {
-  my ($opt_list, $must_be) = @_;
+  my ($opt_list, $moniker, $must_be) = @_;
   return {} unless $opt_list;
   return $opt_list if ref $opt_list eq 'HASH';
 
-  $opt_list = _canonicalize_opt_list($opt_list, 1, $must_be);
+  $opt_list = _canonicalize_opt_list($opt_list, $moniker, 1, $must_be);
   my %hash = map { $_->[0] => $_->[1] } @$opt_list;
   return \%hash;
 }
@@ -497,7 +500,7 @@ sub _expand_group {
       _expand_groups($class, $config, $stuff, $collection, $seen, $merge)
     };
   } else {
-    $exports = _canonicalize_opt_list($exports);
+    $exports = _canonicalize_opt_list($exports, "$group_name exports");
 
     return @{
       _expand_groups($class, $config, $exports, $collection, $seen, $merge)
@@ -611,14 +614,15 @@ sub _rewrite_config {
     Carp::croak "unknown options (@keys) passed to Sub::Exporter";
   }
 
-  $config->{$_} = _expand_opt_list($config->{$_}, 'CODE')
+  $config->{$_} = _expand_opt_list($config->{$_}, $_, 'CODE')
     for qw(exports collectors);
 
   if (my @names = _key_intersection(@$config{qw(exports collectors)})) {
     Carp::croak "names (@names) used in both collections and exports";
   }
 
-  $config->{groups} = _expand_opt_list($config->{groups}, [ 'HASH', 'CODE' ]);
+  $config->{groups}
+    = _expand_opt_list($config->{groups}, 'groups', [ 'HASH', 'CODE' ]);
 
   # by default, export nothing
   $config->{groups}{default} ||= [];

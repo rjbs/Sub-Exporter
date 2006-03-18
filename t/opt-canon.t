@@ -16,8 +16,13 @@ BEGIN { use_ok('Sub::Exporter'); }
 Sub::Install::install_sub({
   code => '_canonicalize_opt_list',
   from => 'Sub::Exporter',
-  as   => 'CAN',
 });
+
+sub CAN {
+  # specifying moniker is tedious (also, these tests predate them)
+  splice @_, 1, 0, 'test' if @_ > 1;
+  &_canonicalize_opt_list;
+}
 
 is_deeply(
   CAN([]),

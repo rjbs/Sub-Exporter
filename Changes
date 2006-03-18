@@ -6,6 +6,9 @@ Revision history for Sub-Exporter
         not recursing
 
         allow 'into_level' parameter to setup_exporter
+        rewrite collection collector to be more efficient
+        rewrite opt list handlers to be more efficient
+        better diagnostic messages
         
 0.91    2006-03-16
         added "import elsewhere" option to generated exporter (thanks chansen!)
