@@ -607,9 +607,12 @@ sub _key_intersection {
   my @names = grep { $seen{$_} } keys %$y;
 }
 
+# Given the config passed to setup_exporter, which contains sugary opt list
+# data, rewrite the opt lists into hashes, catch a few kinds of invalid
+# configurations, and set up defaults.  Since the config is a reference, it's
+# rewritten in place.
 my %valid_config_key;
 BEGIN { %valid_config_key = map { $_ => 1 } qw(exports groups collectors) }
-
 sub _rewrite_config {
   my ($config) = @_;
 
@@ -754,9 +757,7 @@ sub _install {
 
 Sub::Exporter also offers its own exports: the C<setup_exporter> and
 C<build_exporter> routines described above.  It also provides a special "setup"
-group, which will setup an exporter using the parameters passed to it.  This
-group can be passed a list of subroutines names to export, instead of the
-normal configuration hash.
+group, which will setup an exporter using the parameters passed to it.
 
 =cut
 
