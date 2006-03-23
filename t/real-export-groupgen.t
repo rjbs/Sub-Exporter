@@ -14,8 +14,8 @@ use Test::More tests => 3;
 use lib 't/lib';
 
 BEGIN {
-  use_ok('Test::SubExportC');
-  Test::SubExportC->import(
+  use_ok('Test::SubExporter::GroupGen');
+  Test::SubExporter::GroupGen->import(
     -generated => { xyz => 1 }, col1 => { value => 2 }
   );
 }
@@ -25,7 +25,7 @@ for (qw(foo bar)) {
     main->$_(),
     {
       name  => $_,
-      class => 'Test::SubExportC',
+      class => 'Test::SubExporter::GroupGen',
       group => 'generated',
       arg   => { xyz => 1 }, 
       collection => { col1 => { value => 2 } },

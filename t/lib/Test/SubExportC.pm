@@ -1,5 +1,5 @@
 #!perl
-package Test::SubExportC;
+package Test::SubExporter::GroupGen;
 
 use strict;
 use warnings;

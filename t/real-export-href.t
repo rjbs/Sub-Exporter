@@ -6,7 +6,8 @@ use warnings;
 
 These tests exercise the use of Sub::Exporter via its setup_exporter routine.
 
-They use Test::SubExportA, bundled in ./t/lib, which uses this calling style.
+They use Test::SubExporter::s_e, bundled in ./t/lib, which uses this calling
+style.
 
 =cut
 
@@ -14,7 +15,7 @@ use Test::More tests => 46;
 
 BEGIN { use_ok('Sub::Exporter'); }
 
-our $exporting_class = 'Test::SubExportA';
+our $exporting_class = 'Test::SubExporter::s_e';
 
 use lib 't/lib';
 
@@ -151,7 +152,7 @@ END_TEST
   main::require_ok($exporting_class);
 
   eval {
-    Test::SubExportA->import(hello_sailor => { game => 'zork3', -as => {} });
+    Test::SubExporter::s_e->import(hello_sailor => { game => 'zork3', -as => {} });
   };
 
   main::like(

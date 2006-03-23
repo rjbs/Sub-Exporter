@@ -1,5 +1,5 @@
 #!perl
-package Test::SubExportA;
+package Test::SubExporter::s_e;
 
 use strict;
 use warnings;
