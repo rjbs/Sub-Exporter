@@ -768,9 +768,20 @@ setup_exporter({
   ],
   groups  => {
     all   => [ qw(setup_exporter build_export) ],
-    setup => { _import => { -as => 'import' } }
+    #setup => { _import => { -as => 'import' } }
   }
+  collections => { -setup => \&_setup },
 });
+
+sub _setup {
+  my ($value, $name, $config, $import_args, $class, $into) = @_;
+
+  if (ref $value) {
+    push @$import_args, [ _import => { -as => 'import' } ];
+    return 1;
+  }
+  return;
+}
 
 =head1 COMPARISONS
 
