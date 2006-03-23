@@ -178,7 +178,7 @@ The following keys are valid in C<%config>:
   collectors - a list of names into which values are collected for use in
                routine generation; each name may be followed by a validator
 
-=head2 C<exports> Configuration
+=head2 Export Configuration
 
 The C<exports> list may be provided as an array reference or a hash reference.
 The list is processed in such a way that the following are equivalent:
@@ -214,7 +214,7 @@ would result in the following call to C<&build_reformatter>:
 The returned coderef (C<$code>) would then be installed as C<make_narrow> in the
 calling package.
 
-=head2 C<groups> Configuration
+=head2 Group Configuration
 
 The C<groups> list can be passed in the same forms as C<exports>.  Groups must
 have values to be meaningful, which may either list exports that make up the
@@ -270,7 +270,7 @@ configured, it will be empty, and nothing will happen.
 Another group is also created if not defined: C<all>.  The C<all> group
 contains all the exports from the exports list.
 
-=head2 C<collectors> Configuration
+=head2 Collector Configuration
 
 The C<collectors> entry in the exporter configuration gives names which, when
 found in the import call, have their values collected and passed to every
@@ -491,7 +491,7 @@ sub _expand_group {
       ($suffix ? (-suffix => $suffix) : ()),
     };
   }
-  
+
   my $exports = $config->{groups}{$group_name};
 
   if (ref $exports eq 'CODE') {
@@ -514,7 +514,7 @@ sub _expand_group {
 # Given a config and pre-canonicalized importer args, remove collections from
 # the args and return them.
 sub _collect_collections {
-  my ($config, $import_args) = @_;
+  my ($config, $import_args, $class, $into) = @_;
   my %collection;
 
   my @collections
@@ -531,9 +531,9 @@ sub _collect_collections {
 
     $collection{ $name } = $value;
 
-    if (ref(my $validator = $config->{collectors}{$name})) {
+    if (ref(my $hook = $config->{collectors}{$name})) {
       Carp::croak "collection $name failed validation"
-        unless $validator->($value);
+        unless $hook->($value, $name, $config, $import_args, $class, $into);
     }
   }
 
@@ -542,7 +542,7 @@ sub _collect_collections {
 
 =head1 SUBROUTINES
 
-=head2 C< setup_exporter >
+=head2 setup_exporter
 
 This routine builds and installs an C<import> routine.  It is called with one
 argument, a hashref containing the exporter configuration.  Using this, it
@@ -590,7 +590,7 @@ sub setup_exporter {
   });
 }
 
-=head2 C< build_exporter >
+=head2 build_exporter
 
 Given a standard exporter configuration, this routine builds and returns an
 exporter -- that is, a subroutine that can be installed as a class method to
@@ -613,7 +613,7 @@ sub _key_intersection {
 # rewritten in place.
 my %valid_config_key;
 BEGIN { %valid_config_key = map { $_ => 1 } qw(exports groups collectors) }
-sub _rewrite_config {
+sub _rewrite_build_config {
   my ($config) = @_;
 
   if (my @keys = grep { not exists $valid_config_key{$_} } keys %$config) {
@@ -645,8 +645,8 @@ sub build_exporter {
   # accepted as a core feature -- rjbs, 2006-03-09
   $special->{export} ||= \&_export;
 
-  _rewrite_config($config);
-  
+  _rewrite_build_config($config);
+
   my $import = sub {
     my ($class) = shift;
 
@@ -656,14 +656,14 @@ sub build_exporter {
       if exists $import_arg->{into} and exists $import_arg->{into_level};
 
     my $into
-      = defined $import_arg->{into}       ? $import_arg->{into}
-      : defined $import_arg->{into_level} ? caller($import_arg->{into_level})
+      = defined $import_arg->{into}       ? delete $import_arg->{into}
+      : defined $import_arg->{into_level} ? caller(delete $import_arg->{into_level})
       :                                     caller(0);
 
     # this builds a AOA, where the inner arrays are [ name => value_ref ]
     my $import_args = _canonicalize_opt_list([ @_ ]);
-    
-    my $collection = _collect_collections($config, $import_args);
+
+    my $collection = _collect_collections($config, $import_args, $class, $into);
 
     $import_args = [ [ -default => 1 ] ] unless @$import_args;
     my $to_import = _expand_groups($class, $config, $import_args, $collection);
