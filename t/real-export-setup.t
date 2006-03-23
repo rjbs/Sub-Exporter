@@ -12,7 +12,7 @@ calling style.
 
 =cut
 
-use Test::More tests => 31;
+use Test::More tests => 33;
 
 BEGIN { use_ok('Sub::Exporter'); }
 
@@ -21,33 +21,17 @@ our $exporting_class = 'Test::SubExporter::DashSetup';
 use lib 't/lib';
 
 for my $iteration (1..2) {
-#  {
-#    package Test::SubExporter::BUILT;
-#
-#    my $import = Sub::Exporter::_polymorphic_build_exporter([ qw(X) ]);
-#
-#    sub X { return "expected" }
-#
-#    package Test::SubExporter::BUILT::CONSUMER;
-#
-#    $import->('Test::SubExporter::BUILT', ':all');
-#    main::is(X(), "expected", "manually constructed importer worked");
-#  }
+  {
+    package Test::SubExporter::SETUP;
+    use Sub::Exporter -setup => qw(X);
 
-#  {
-#    package Test::SubExporter::SETUP;
-#    use Sub::Exporter -setup => [ qw(X) ];
-#
-#    sub X { return "desired" }
-#
-#    package Test::SubExporter::SETUP::CONSUMER;
-#
-#    use Data::Dump::Streamer;
-#    warn Dump(\&Test::SubExporter::SETUP::import);
-#
-#    Test::SubExporter::SETUP->import(':all');
-#    main::is(X(), "desired", "constructed importer (via -setup) worked");
-#  }
+    sub X { return "desired" }
+
+    package Test::SubExporter::SETUP::CONSUMER;
+
+    Test::SubExporter::SETUP->import(':all');
+    main::is(X(), "desired", "constructed importer (via -setup LIST) worked");
+  }
 
   package Test::SubExporter::DEFAULT;
   main::use_ok($exporting_class);

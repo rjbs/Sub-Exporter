@@ -769,18 +769,21 @@ setup_exporter({
   groups  => {
     all   => [ qw(setup_exporter build_export) ],
     #setup => { _import => { -as => 'import' } }
-  }
-  collections => { -setup => \&_setup },
+  },
+  collectors => { -setup => \&_setup },
 });
 
 sub _setup {
   my ($value, $name, $config, $import_args, $class, $into) = @_;
 
   if (ref $value) {
-    push @$import_args, [ _import => { -as => 'import' } ];
+    push @$import_args, [ _import => { -as => 'import', %$value } ];
+    return 1;
+  } else {
+    my %config = (exports => { map { @$_[0,1] } @$import_args });
+    @$import_args = [ _import => { -as => 'import', %config } ];
     return 1;
   }
-  return;
 }
 
 =head1 COMPARISONS
