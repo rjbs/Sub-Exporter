@@ -7,7 +7,8 @@ use warnings;
 These tests exercise that the polymorphic exporter-builder used when
 Sub::Exporter's -import group is invoked.
 
-They use Test::SubExportB, bundled in ./t/lib, which uses this calling style.
+They use Test::SubExporter::DashSetup, bundled in ./t/lib, which uses this
+calling style.
 
 =cut
 
@@ -15,7 +16,7 @@ use Test::More tests => 31;
 
 BEGIN { use_ok('Sub::Exporter'); }
 
-our $exporting_class = 'Test::SubExportB';
+our $exporting_class = 'Test::SubExporter::DashSetup';
 
 use lib 't/lib';
 

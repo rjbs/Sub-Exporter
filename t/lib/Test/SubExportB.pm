@@ -1,5 +1,5 @@
 #!perl
-package Test::SubExportB;
+package Test::SubExporter::DashSetup;
 
 use strict;
 use warnings;
