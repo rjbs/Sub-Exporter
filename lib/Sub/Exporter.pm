@@ -569,8 +569,7 @@ The exporter is built by C<L</build_exporter>>.
 # probably, moved to \%config.  These are also passed along to build_exporter.
 
 sub setup_exporter {
-  my ($config, $special)  = @_;
-  $special ||= {};
+  my ($config)  = @_;
 
   Carp::croak q(into and into_level may not both be supplied to exporter)
     if exists $config->{into} and exists $config->{into_level};
@@ -581,7 +580,7 @@ sub setup_exporter {
     : exists $config->{into_level} ? caller(delete $config->{into_level})
     :                                caller(0);
 
-  my $import = build_exporter($config, $special);
+  my $import = build_exporter($config);
 
   Sub::Install::install_sub({
     code => $import,
@@ -613,6 +612,7 @@ sub _key_intersection {
 # rewritten in place.
 my %valid_config_key;
 BEGIN { %valid_config_key = map { $_ => 1 } qw(exports groups collectors) }
+
 sub _rewrite_build_config {
   my ($config) = @_;
 
@@ -638,12 +638,7 @@ sub _rewrite_build_config {
 }
 
 sub build_exporter {
-  my ($config, $special) = @_;
-  $special ||= {};
-
-  # this option name, if nothing else, needs to be improved before it is
-  # accepted as a core feature -- rjbs, 2006-03-09
-  $special->{export} ||= \&_export;
+  my ($config) = @_;
 
   _rewrite_build_config($config);
 
@@ -659,6 +654,8 @@ sub build_exporter {
       = defined $import_arg->{into}       ? delete $import_arg->{into}
       : defined $import_arg->{into_level} ? caller(delete $import_arg->{into_level})
       :                                     caller(0);
+
+    my $export = delete $import_arg->{export} || \&_export;
 
     # this builds a AOA, where the inner arrays are [ name => value_ref ]
     my $import_args = _canonicalize_opt_list([ @_ ]);
@@ -689,7 +686,7 @@ sub build_exporter {
         $as = exists $arg->{-as} ? (delete $arg->{-as}) : $name;
       }
 
-      $special->{export}->(
+      $export->(
         $class, $generator, $name, $arg, $collection, $as, $into
       );
     }

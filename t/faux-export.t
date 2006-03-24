@@ -59,7 +59,8 @@ sub faux_exporter {
   my ($reset, $export, $exports) = faux_exporter;
   my $code = sub {
     $reset->();
-    Sub::Exporter::build_exporter($config, { export => $export })->(@_);
+    splice @_, 1, 0, { export => $export };
+    Sub::Exporter::build_exporter($config)->(@_);
   };
 
   $code->('Tools::Power');
@@ -109,10 +110,8 @@ sub faux_exporter {
   my ($reset, $export, $exports) = faux_exporter;
   my $code = sub {
     $reset->();
-    Sub::Exporter::build_exporter(
-      { exports => [ 'foo' ] },
-      { export => $export }
-    )->(@_);
+    splice @_, 1, 0, { export => $export };
+    Sub::Exporter::build_exporter({ exports => [ 'foo' ] })->(@_);
   };
 
   $code->('Example::Foo');
@@ -134,8 +133,8 @@ sub faux_exporter {
   package Test::SubExport::FAUX;
   my ($reset, $export, $exports) = main::faux_exporter;
 
-  Sub::Exporter::setup_exporter({ exports => [ 'X' ] }, { export => $export });
-  __PACKAGE__->import(':all');
+  Sub::Exporter::setup_exporter({ exports => [ 'X' ] });
+  __PACKAGE__->import({ export => $export }, ':all');
 
   main::is_deeply($exports, [ [ X => {} ] ], "setup (not built) exporter");
 }
