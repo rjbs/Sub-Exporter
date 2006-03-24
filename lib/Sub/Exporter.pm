@@ -611,7 +611,9 @@ sub _key_intersection {
 # configurations, and set up defaults.  Since the config is a reference, it's
 # rewritten in place.
 my %valid_config_key;
-BEGIN { %valid_config_key = map { $_ => 1 } qw(exports groups collectors) }
+BEGIN {
+  %valid_config_key = map { $_ => 1 } qw(exports exporter groups collectors)
+}
 
 sub _rewrite_build_config {
   my ($config) = @_;
@@ -655,7 +657,9 @@ sub build_exporter {
       : defined $import_arg->{into_level} ? caller(delete $import_arg->{into_level})
       :                                     caller(0);
 
-    my $export = delete $import_arg->{export} || \&_export;
+    my $export = delete $import_arg->{exporter}
+              || $config->{exporter}
+              || \&_export;
 
     # this builds a AOA, where the inner arrays are [ name => value_ref ]
     my $import_args = _canonicalize_opt_list([ @_ ]);
