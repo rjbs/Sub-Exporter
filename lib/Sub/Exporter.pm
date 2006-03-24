@@ -690,9 +690,7 @@ sub build_exporter {
         $as = exists $arg->{-as} ? (delete $arg->{-as}) : $name;
       }
 
-      $export->(
-        $class, $generator, $name, $arg, $collection, $as, $into
-      );
+      $export->($class, $generator, $name, $arg, $collection, $as, $into);
     }
   };
 
