@@ -1,5 +1,9 @@
 Revision history for Sub-Exporter
 
+0.93    2006-03-26
+        internal refactoring
+        add more arguments to collector hook calls
+
 0.92    2006-03-16
         FIX BUG in nested imports: when importing groups A and B, and group B
         includes group A, the nested group would be ignored, even though it was

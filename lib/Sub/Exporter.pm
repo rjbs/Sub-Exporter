@@ -12,13 +12,13 @@ Sub::Exporter - a sophisticated exporter for custom-built routines
 
 =head1 VERSION
 
-version 0.92
+version 0.93
 
   $Id$
 
 =cut
 
-our $VERSION = '0.92';
+our $VERSION = '0.93';
 
 =head1 SYNOPSIS
 
@@ -310,6 +310,19 @@ exception is thrown.  We could ensure that no one tries to set a global data
 default easily:
 
   collectors => { defaults => sub { return (exists $_[0]->{data}) ? 0 : 1 } }
+
+Collector coderefs can also be used as hooks to perform arbitrary actions
+before anything is exported.  B<Warning!>  This feature is experimental and may
+change in the future.
+
+When the coderef is called, it is actually passed these values:
+
+  $value - the value given for the collector in the args to import
+  $name  - the name of the collector
+ \%config      - the exporter configuration
+ \@import_args - the arguments passed to the exporter, sans collections
+  $class - the package on which the importer was called
+  $into  - the package into which exports will be exported
 
 =head1 CALLING THE EXPORTER
 
@@ -898,6 +911,12 @@ variables for its configuration.
 =item * write a set of longer, more demonstrative examples
 
 =item * solidify the "custom build and install" interface (see C<&_export>)
+
+=item * finalize the collector-hook semantics
+
+=item * add an "always exported" group
+
+=item * consider post-export hooks
 
 =back
 
