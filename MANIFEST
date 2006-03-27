@@ -19,9 +19,11 @@ t/faux-export.t
 t/group-generator.t
 t/inherited.t
 t/into-level.t
-t/lib/Test/SubExportA.pm
-t/lib/Test/SubExportB.pm
-t/lib/Test/SubExportC.pm
+t/lib/Test
+t/lib/Test/SubExporter
+t/lib/Test/SubExporter/DashSetup.pm
+t/lib/Test/SubExporter/GroupGen.pm
+t/lib/Test/SubExporter/s_e.pm
 t/opt-canon.t
 t/opt-expand.t
 t/pod-coverage.t
