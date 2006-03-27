@@ -19,8 +19,6 @@ t/faux-export.t
 t/group-generator.t
 t/inherited.t
 t/into-level.t
-t/lib/Test
-t/lib/Test/SubExporter
 t/lib/Test/SubExporter/DashSetup.pm
 t/lib/Test/SubExporter/GroupGen.pm
 t/lib/Test/SubExporter/s_e.pm
