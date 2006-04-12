@@ -8,14 +8,15 @@ These tests test option list expansion (from an option list into a hashref).
 
 =cut
 
+use Sub::Install;
 use Test::More tests => 6;
 
-BEGIN { use_ok('Sub::Exporter'); }
+BEGIN { use_ok('Data::OptList'); }
 
 # let's get a convenient copy to use:
 Sub::Install::install_sub({
-  code => '_expand_opt_list',
-  from => 'Sub::Exporter',
+  code => 'expand_opt_list',
+  from => 'Data::OptList',
   as   => 'EXP',
 });
 

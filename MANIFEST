@@ -7,6 +7,7 @@ inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
+lib/Data/OptList.pm
 lib/Sub/Exporter.pm
 lib/Sub/Exporter/Tutorial.pod
 Makefile.PL

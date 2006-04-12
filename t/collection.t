@@ -31,7 +31,7 @@ my $config = {
   ]
 };
 
-$config->{$_} = Sub::Exporter::_expand_opt_list($config->{$_})
+$config->{$_} = Data::OptList::expand_opt_list($config->{$_})
   for qw(exports collectors);
 
 {

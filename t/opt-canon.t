@@ -8,20 +8,21 @@ These tests test option list cannonization (from an option list into a aref).
 
 =cut
 
+use Sub::Install;
 use Test::More tests => 15;
 
-BEGIN { use_ok('Sub::Exporter'); }
+BEGIN { use_ok('Data::OptList'); }
 
 # let's get a convenient copy to use:
 Sub::Install::install_sub({
-  code => '_canonicalize_opt_list',
-  from => 'Sub::Exporter',
+  code => 'canonicalize_opt_list',
+  from => 'Data::OptList',
 });
 
 sub CAN {
   # specifying moniker is tedious (also, these tests predate them)
   splice @_, 1, 0, 'test' if @_ > 1;
-  &_canonicalize_opt_list;
+  &canonicalize_opt_list;
 }
 
 is_deeply(
