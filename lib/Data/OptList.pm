@@ -3,6 +3,8 @@ package Data::OptList;
 use strict;
 use warnings;
 
+our $VERSION = '0.01';
+
 # This produces an array of arrays; the inner arrays are name/value pairs.
 # Values will be either "undef" or a reference.  $must_be is either a scalar or
 # array of scalars; it defines what kind(s) of refs may be values.  If an

@@ -1,5 +1,8 @@
 Revision history for Sub-Exporter
 
+0.94_01 
+        break out Data::OptList for future disting
+
 0.93    2006-03-26
         internal refactoring
         add more arguments to collector hook calls
