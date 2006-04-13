@@ -5,20 +5,26 @@ use warnings;
 
 our $VERSION = '0.01';
 
-# This produces an array of arrays; the inner arrays are name/value pairs.
-# Values will be either "undef" or a reference.  $must_be is either a scalar or
-# array of scalars; it defines what kind(s) of refs may be values.  If an
-# invalid value is found, an exception is thrown.
-# possible inputs:
-#  undef    -> []
-#  hashref  -> [ [ key1 => value1 ] ... ] # non-ref values become undef
-#  arrayref -> every value followed by a ref becomes a pair: [ value => ref   ]
-#              every value followed by undef becomes a pair: [ value => undef ]
-#              otherwise, it becomes [ value => undef ] like so:
-#              [ "a", "b", [ 1, 2 ] ] -> [ [ a => undef ], [ b => [ 1, 2 ] ] ]
-#
-# It would be nice for this 'canonicalized' form to have a canonical order,
-# since it could be coming from a hash.
+=head2 canonicalize_opt_list
+
+This produces an array of arrays; the inner arrays are name/value pairs.
+Values will be either "undef" or a reference.  $must_be is either a scalar or
+array of scalars; it defines what kind(s) of refs may be values.  If an
+invalid value is found, an exception is thrown.
+possible inputs:
+
+ undef    -> []
+ hashref  -> [ [ key1 => value1 ] ... ] # non-ref values become undef
+ arrayref -> every value followed by a ref becomes a pair: [ value => ref   ]
+             every value followed by undef becomes a pair: [ value => undef ]
+             otherwise, it becomes [ value => undef ] like so:
+             [ "a", "b", [ 1, 2 ] ] -> [ [ a => undef ], [ b => [ 1, 2 ] ] ]
+
+It would be nice for this 'canonicalized' form to have a canonical order,
+since it could be coming from a hash.
+
+=cut
+
 sub canonicalize_opt_list {
   my ($opt_list, $moniker, $require_unique, $must_be) = @_;
 
@@ -58,7 +64,12 @@ sub canonicalize_opt_list {
   return \@return;
 }
 
-# This turns a canonicalized opt_list (see above) into a hash.
+=head2 expand_opt_list
+
+This turns a canonicalized opt_list (see above) into a hash.
+
+=cut
+
 sub expand_opt_list {
   my ($opt_list, $moniker, $must_be) = @_;
   return {} unless $opt_list;
