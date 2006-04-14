@@ -483,8 +483,16 @@ sub _collect_collections {
     $collection{ $name } = $value;
 
     if (ref(my $hook = $config->{collectors}{$name})) {
+      my $arg = {
+        name        => $name,
+        config      => $config,
+        import_args => $import_args,
+        class       => $class,
+        into        => $into,
+      };
+
       Carp::croak "collection $name failed validation"
-        unless $hook->($value, $name, $config, $import_args, $class, $into);
+        unless $hook->($value, $arg);
     }
   }
 
@@ -724,14 +732,15 @@ setup_exporter({
 });
 
 sub _setup {
-  my ($value, $name, $config, $import_args, $class, $into) = @_;
+  my ($value, $arg) = @_;
+  # $name, $config, $import_args, $class, $into) = @_;
 
   if (ref $value) {
-    push @$import_args, [ _import => { -as => 'import', %$value } ];
+    push @{ $arg->{import_args} }, [ _import => { -as => 'import', %$value } ];
     return 1;
   } else {
-    my %config = (exports => { map { @$_[0,1] } @$import_args });
-    @$import_args = [ _import => { -as => 'import', %config } ];
+    my %config = (exports => { map { @$_[0,1] } @{ $arg->{import_args} } });
+    @{ $arg->{import_args} } = [ _import => { -as => 'import', %config } ];
     return 1;
   }
 }
