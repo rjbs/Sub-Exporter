@@ -612,7 +612,7 @@ sub build_exporter {
     my $into
       = defined $special->{into}       ? delete $special->{into}
       : defined $special->{into_level} ? caller(delete $special->{into_level})
-      :                                     caller(0);
+      :                                  caller(0);
 
     my $export = delete $special->{exporter}
               || $config->{exporter}
@@ -667,6 +667,11 @@ sub _do_import {
 # the default installer; it does what Sub::Exporter promises: call generators
 # with the three normal arguments, then install the code into the target
 # package
+
+# The mixin installer will need to generate a package (Package::Generator) and
+# install there, then set ISA on the target.  This package should be unique per
+# import call, so we can do something tricky like check the refaddr of
+# $collection.
 sub _export {
   my ($class, $generator, $name, $arg, $collection, $as, $into) = @_;
   _install(
