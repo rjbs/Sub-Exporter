@@ -52,7 +52,7 @@ collection into its args before calling it.  This means that you can support a
 
 =cut
 
-sub merge_defaults {
+sub merge_col {
   my ($default_name, $gen) = @_;
   sub {
     my ($class, $name, $arg, $col) = @_;
