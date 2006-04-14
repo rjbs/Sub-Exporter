@@ -39,7 +39,7 @@ sub curry_class {
   }
 }
 
-=head2 merged_col
+=head2 merge_col
 
   exports => {
     twiddle => merge_col defaults => \&_twiddle_gen,
@@ -65,5 +65,30 @@ sub merge_col {
   }
 }
 
+=head2 mixin_exporter
+
+This utility returns an exporter that will export into a superclass and adjust
+the ISA importing class to include the newly generated superclass.
+
+=cut
+
+sub mixin_exporter {
+  my ($mixin_class, $col_ref);
+  sub {
+    my ($class, $generator, $name, $arg, $collection, $as, $into) = @_;
+    
+    unless ($mixin_class and ($collection == $col_ref)) {
+      require Package::Generator; # XXX remove this before release?
+      $mixin_class = Package::Generator->new_package({
+        base => "$class\:\:__mixin__",
+      });
+      $col_ref = 0 + $collection;
+      no strict 'refs';
+      unshift @{"$into" . "::ISA"}, $mixin_class;
+    }
+    $into = $mixin_class;
+    Sub::Exporter::_export($class, $generator, $name, $arg, $collection, $as, $into);
+  };
+}
 
 1;

@@ -668,10 +668,6 @@ sub _do_import {
 # with the three normal arguments, then install the code into the target
 # package
 
-# The mixin installer will need to generate a package (Package::Generator) and
-# install there, then set ISA on the target.  This package should be unique per
-# import call, so we can do something tricky like check the refaddr of
-# $collection.
 sub _export {
   my ($class, $generator, $name, $arg, $collection, $as, $into) = @_;
   _install(
@@ -679,22 +675,6 @@ sub _export {
     $into,
     $as,
   );
-}
-
-sub _export_mixin_gen {
-  my $mixin_class;
-  sub {
-    my ($class, $generator, $name, $arg, $collection, $as, $into) = @_;
-    
-    unless ($mixin_class) {
-      require Package::Generator; # XXX remove this before release
-      $mixin_class = Package::Generator->new_package;
-      no strict 'refs';
-      unshift @{"$into" . "::ISA"}, $mixin_class;
-    }
-    $into = $mixin_class;
-    _export($class, $generator, $name, $arg, $collection, $as, $into);
-  };
 }
 
 ## Cute idea, possibly for future use: also supply an "unimport" for:
