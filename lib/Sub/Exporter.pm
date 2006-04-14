@@ -570,9 +570,7 @@ sub _key_intersection {
 # configurations, and set up defaults.  Since the config is a reference, it's
 # rewritten in place.
 my %valid_config_key;
-BEGIN {
-  %valid_config_key = map { $_ => 1 } qw(exports exporter groups collectors)
-}
+BEGIN { %valid_config_key = map {$_=>1} qw(exports exporter groups collectors) }
 
 sub _rewrite_build_config {
   my ($config) = @_;
@@ -607,16 +605,16 @@ sub build_exporter {
     my ($class) = shift;
 
     # XXX: clean this up -- rjbs, 2006-03-16
-    my $import_arg = (ref $_[0]) ? shift(@_) : {};
+    my $special = (ref $_[0]) ? shift(@_) : {};
     Carp::croak q(into and into_level may not both be supplied to exporter)
-      if exists $import_arg->{into} and exists $import_arg->{into_level};
+      if exists $special->{into} and exists $special->{into_level};
 
     my $into
-      = defined $import_arg->{into}       ? delete $import_arg->{into}
-      : defined $import_arg->{into_level} ? caller(delete $import_arg->{into_level})
+      = defined $special->{into}       ? delete $special->{into}
+      : defined $special->{into_level} ? caller(delete $special->{into_level})
       :                                     caller(0);
 
-    my $export = delete $import_arg->{exporter}
+    my $export = delete $special->{exporter}
               || $config->{exporter}
               || \&_export;
 
@@ -630,30 +628,34 @@ sub build_exporter {
 
     # now, finally $import_arg is really the "to do" list
     for (@$to_import) {
-      my ($name, $arg) = @$_;
-
-      my ($generator, $as);
-
-      if ($arg and ref $arg eq 'CODE') {
-        # This is the case when a group generator has inserted name/code pairs.
-        $generator = sub { $arg };
-        $as = $name;
-      } else {
-        $arg = { $arg ? %$arg : () };
-
-        Carp::croak qq("$name" is not exported by the $class module)
-          unless (exists $config->{exports}{$name});
-
-        $generator = $config->{exports}{$name};
-
-        $as = exists $arg->{-as} ? (delete $arg->{-as}) : $name;
-      }
-
-      $export->($class, $generator, $name, $arg, $collection, $as, $into);
+      _do_import($class, @$_, $collection, $config, $into, $export);
     }
   };
 
   return $import;
+}
+
+sub _do_import {
+  my ($class, $name, $arg, $collection, $config, $into, $export) = @_;
+
+  my ($generator, $as);
+
+  if ($arg and ref $arg eq 'CODE') {
+    # This is the case when a group generator has inserted name/code pairs.
+    $generator = sub { $arg };
+    $as = $name;
+  } else {
+    $arg = { $arg ? %$arg : () };
+
+    Carp::croak qq("$name" is not exported by the $class module)
+      unless (exists $config->{exports}{$name});
+
+    $generator = $config->{exports}{$name};
+
+    $as = exists $arg->{-as} ? (delete $arg->{-as}) : $name;
+  }
+
+  $export->($class, $generator, $name, $arg, $collection, $as, $into);
 }
 
 # XXX: Consider implementing a _export_args routine that takes the arguments to
@@ -726,14 +728,12 @@ setup_exporter({
   ],
   groups  => {
     all   => [ qw(setup_exporter build_export) ],
-    #setup => { _import => { -as => 'import' } }
   },
   collectors => { -setup => \&_setup },
 });
 
 sub _setup {
   my ($value, $arg) = @_;
-  # $name, $config, $import_args, $class, $into) = @_;
 
   if (ref $value) {
     push @{ $arg->{import_args} }, [ _import => { -as => 'import', %$value } ];
