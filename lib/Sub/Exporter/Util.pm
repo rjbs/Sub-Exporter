@@ -42,8 +42,10 @@ sub curry_class {
 =head2 merge_col
 
   exports => {
-    twiddle => merge_col(defaults => \&_twiddle_gen),
-    tweak   => merge_col(defaults => \&_tweak_gen  ),
+    merge_col(defaults => {
+      twiddle => \&_twiddle_gen,
+      tweak   => \&_tweak_gen,
+    }),
   }
 
 This utility wraps the given generator in one that will merge the named
@@ -53,16 +55,25 @@ collection into its args before calling it.  This means that you can support a
 =cut
 
 sub merge_col {
-  my ($default_name, $gen) = @_;
-  sub {
-    my ($class, $name, $arg, $col) = @_;
+  my (%groups) = @_;
 
-    my $merged_arg = exists $col->{$default_name}
-                   ? { %{ $col->{$default_name} }, %$arg }
-                   : $arg;
+  my %merged;
 
-    $gen->($class, $name, $merged_arg, $col);
+  while (my ($default_name, $group) = each %groups) {
+    while (my ($export_name, $gen) = each %$group) {
+      $merged{$export_name} = sub {
+        my ($class, $name, $arg, $col) = @_;
+
+        my $merged_arg = exists $col->{$default_name}
+                       ? { %{ $col->{$default_name} }, %$arg }
+                       : $arg;
+
+        $gen->($class, $name, $merged_arg, $col);
+      }
+    }
   }
+
+  return %merged;
 }
 
 =head2 mixin_exporter
