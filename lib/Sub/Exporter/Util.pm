@@ -42,8 +42,8 @@ sub curry_class {
 =head2 merge_col
 
   exports => {
-    twiddle => merge_col defaults => \&_twiddle_gen,
-    tweak   => merge_col defaults => \&_tweak_gen,
+    twiddle => merge_col(defaults => \&_twiddle_gen),
+    tweak   => merge_col(defaults => \&_tweak_gen  ),
   }
 
 This utility wraps the given generator in one that will merge the named
@@ -56,7 +56,7 @@ sub merge_col {
   my ($default_name, $gen) = @_;
   sub {
     my ($class, $name, $arg, $col) = @_;
-  
+
     my $merged_arg = exists $col->{$default_name}
                    ? { %{ $col->{$default_name} }, %$arg }
                    : $arg;
@@ -76,7 +76,7 @@ sub mixin_exporter {
   my ($mixin_class, $col_ref);
   sub {
     my ($class, $generator, $name, $arg, $collection, $as, $into) = @_;
-    
+
     unless ($mixin_class and ($collection == $col_ref)) {
       require Package::Generator; # XXX remove this before release?
       $mixin_class = Package::Generator->new_package({
@@ -87,7 +87,7 @@ sub mixin_exporter {
       unshift @{"$into" . "::ISA"}, $mixin_class;
     }
     $into = $mixin_class;
-    Sub::Exporter::_export($class, $generator, $name, $arg, $collection, $as, $into);
+    Sub::Exporter::default_exporter($class, $generator, $name, $arg, $collection, $as, $into);
   };
 }
 

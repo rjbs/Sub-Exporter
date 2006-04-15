@@ -616,7 +616,7 @@ sub build_exporter {
 
     my $export = delete $special->{exporter}
               || $config->{exporter}
-              || \&_export;
+              || \&default_exporter;
 
     # this builds a AOA, where the inner arrays are [ name => value_ref ]
     my $import_args = Data::OptList::canonicalize_opt_list([ @_ ]);
@@ -664,11 +664,19 @@ sub _do_import {
 # premature guarantee, though, unless I guarantee that @_ will never get
 # /smaller/.
 
-# the default installer; it does what Sub::Exporter promises: call generators
-# with the three normal arguments, then install the code into the target
-# package
+=head2 default_exporter
 
-sub _export {
+This is Sub::Exporter's default exporter.  It does what Sub::Exporter promises:
+it calls generators with the three normal arguments, then installs the code
+into the target package.
+
+B<Warning!>  Its interface isn't really stable yet, so don't rely on it.  It's
+only named here so that you can pass it in to the exporter builder.  It will
+have a stable interface in the future so that it may be more easily replaced.
+
+=cut
+
+sub default_exporter {
   my ($class, $generator, $name, $arg, $collection, $as, $into) = @_;
   _install(
     _generate($class, $generator, $name, $arg, $collection),
