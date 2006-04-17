@@ -23,14 +23,14 @@ use lib 't/lib';
 for my $iteration (1..2) {
   {
     package Test::SubExporter::SETUP;
-    use Sub::Exporter -setup => qw(X);
+    use Sub::Exporter -setup => [ qw(X) ];
 
     sub X { return "desired" }
 
     package Test::SubExporter::SETUP::CONSUMER;
 
     Test::SubExporter::SETUP->import(':all');
-    main::is(X(), "desired", "constructed importer (via -setup LIST) worked");
+    main::is(X(), "desired", "constructed importer (via -setup [LIST]) worked");
   }
 
   package Test::SubExporter::DEFAULT;

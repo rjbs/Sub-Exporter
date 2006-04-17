@@ -744,14 +744,16 @@ setup_exporter({
 sub _setup {
   my ($value, $arg) = @_;
 
-  if (ref $value) {
+  if (ref $value eq 'HASH') {
     push @{ $arg->{import_args} }, [ _import => { -as => 'import', %$value } ];
     return 1;
-  } else {
-    my %config = (exports => { map { @$_[0,1] } @{ $arg->{import_args} } });
-    @{ $arg->{import_args} } = [ _import => { -as => 'import', %config } ];
+  } elsif (ref $value eq 'ARRAY') {
+    push @{ $arg->{import_args} },
+      [ _import => { -as => 'import', exports => $value } ];
+
     return 1;
   }
+  return;
 }
 
 =head1 COMPARISONS
