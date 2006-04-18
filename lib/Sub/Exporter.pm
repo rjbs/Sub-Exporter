@@ -750,7 +750,6 @@ sub _setup {
   } elsif (ref $value eq 'ARRAY') {
     push @{ $arg->{import_args} },
       [ _import => { -as => 'import', exports => $value } ];
-
     return 1;
   }
   return;
