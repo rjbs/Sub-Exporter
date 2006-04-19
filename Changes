@@ -2,6 +2,7 @@ Revision history for Sub-Exporter
 
 0.94_01 
         break out Data::OptList for future disting
+        improve detection of group generators
 
 0.93    2006-03-26
         internal refactoring

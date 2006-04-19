@@ -5,6 +5,8 @@ use warnings;
 
 our $VERSION = '0.01';
 
+use Scalar::Util ();
+
 =head2 canonicalize_opt_list
 
 This produces an array of arrays; the inner arrays are name/value pairs.
@@ -51,7 +53,7 @@ sub canonicalize_opt_list {
     else                                  { $value = undef;            }
 
     if ($must_be and defined $value) {
-      my $ref = ref $value;
+      my $ref = Scalar::Util::reftype($value);
       my $ok  = ref $must_be ? (grep { $ref eq $_ } @$must_be)
               :                ($ref eq $must_be);
 

@@ -4,9 +4,9 @@ use strict;
 use warnings;
 
 use Carp ();
-use Data::OptList;
-use Scalar::Util;
-use Sub::Install;
+use Data::OptList ();
+use Scalar::Util ();
+use Sub::Install ();
 
 =head1 NAME
 
@@ -450,7 +450,7 @@ sub _expand_group {
 
   my $exports = $config->{groups}{$group_name};
 
-  if (ref $exports eq 'CODE') {
+  if (_CALLABLE($exports)) {
     my $group = $exports->($class, $group_name, $group_arg, $collection);
     Carp::croak qq(group generator "$group_name" did not return a hashref)
       if ref $group ne 'HASH';
@@ -646,7 +646,7 @@ sub _do_import {
 
   my ($generator, $as);
 
-  if ($arg and ref $arg eq 'CODE') {
+  if ($arg and _CALLABLE($arg)) {
     # This is the case when a group generator has inserted name/code pairs.
     $generator = sub { $arg };
     $as = $name;
