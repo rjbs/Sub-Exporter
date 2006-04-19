@@ -5,6 +5,7 @@ use warnings;
 
 use Carp ();
 use Data::OptList;
+use Scalar::Util;
 use Sub::Install;
 
 =head1 NAME
@@ -376,6 +377,11 @@ sub _group_name {
   return substr $name, 1;
 }
 
+sub _CALLABLE {
+  (Scalar::Util::reftype($_[0])||'') eq 'CODE' or Scalar::Util::blessed($_[0])
+  and overload::Method($_[0],'&{}') ? $_[0] : undef;
+}
+
 # \@groups is a canonicalized opt list of exports and groups this returns
 # another canonicalized opt list with groups replaced with relevant exports.
 # \%seen is groups we've already expanded and can ignore.
@@ -401,7 +407,7 @@ sub _expand_groups {
       my $prefix = (delete $merge{-prefix}) || '';
       my $suffix = (delete $merge{-suffix}) || '';
 
-      if (ref $groups[$i][1] eq 'CODE') {
+      if (_CALLABLE($groups[$i][1])) {
         # this entry was build by a group generator
         $groups[$i][0] = $prefix . $groups[$i][0] . $suffix;
       } else {

@@ -9,6 +9,7 @@ license       ('perl');
 version_from  ('lib/Sub/Exporter.pm');
 
 requires('Sub::Install' => 0.03);
+requires('Scalar::Util' => 0.00); # unknown minimum
 
 sign(1);
 
