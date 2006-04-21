@@ -13,6 +13,9 @@ use Test::More tests => 11;
 
 BEGIN { use_ok('Sub::Exporter'); }
 
+use lib 't/lib';
+use Test::SubExporter::Faux qw(faux_exporter exports_ok);
+
 my $config = {
   exports => [
     qw(circsaw drill handsaw nailgun),
@@ -31,30 +34,6 @@ my $config = {
   ]
 };
 
-sub faux_exporter {
-  my ($verbose) = @_;
-
-  my @exported;
-
-  my $reset = sub { @exported = () };
-
-  my $export = sub {
-    my ($class, $generator, $name, $arg, $collection, $as, $into) = @_;
-    my $everything = { 
-      class      => $class,
-      generator  => $generator,
-      name       => $name,
-      arg        => $arg,
-      collection => $collection,
-      as         => $as,
-      into       => $into,
-    };
-    push @exported, [ $name, ($verbose ? $everything : $arg) ];
-  };
-
-  return ($reset, $export, \@exported);
-}
-
 {
   my ($reset, $export, $exports) = faux_exporter;
   my $code = sub {
@@ -64,28 +43,28 @@ sub faux_exporter {
   };
 
   $code->('Tools::Power');
-  is_deeply(
+  exports_ok(
     $exports,
     [ [ handsaw => {} ], [ hammer => { claw => 1 } ] ],
     "exporting with no arguments gave us default group"
   );
 
   $code->('Tools::Power', ':all');
-  is_deeply(
+  exports_ok(
     [ sort { $a->[0] cmp $b->[0] } @$exports ],
     [ map { [ $_ => {} ] } sort qw(circsaw drill handsaw nailgun hammer), ],
     "exporting :all gave us all exports",
   );
 
   $code->('Tools::Power', drill => { -as => 'auger' });
-  is_deeply(
+  exports_ok(
     $exports,
     [ [ drill => {} ] ],
     "'-as' parameter is not passed to generators",
   );
 
   $code->('Tools::Power', ':cutters');
-  is_deeply(
+  exports_ok(
     $exports,
     [ [ circsaw => {} ], [ handsaw => {} ], [ circsaw => {} ] ], 
     "group with two export instances of one export",
@@ -115,16 +94,16 @@ sub faux_exporter {
   };
 
   $code->('Example::Foo');
-  is_deeply(
+  exports_ok(
     $exports,
     [ ],
     "exporting with no arguments gave us default default group, i.e., nothing"
   );
 
   $code->('Tools::Power', ':all');
-  is_deeply(
-    [ sort { $a->[0] cmp $b->[0] } @$exports ],
-    [ map { [ $_ => {} ] } sort qw(foo), ],
+  exports_ok(
+    $exports,
+    [ [ foo => {} ] ],
     "exporting :all gave us all exports, i.e., foo",
   );
 }
@@ -136,5 +115,5 @@ sub faux_exporter {
   Sub::Exporter::setup_exporter({ exports => [ 'X' ], exporter => $export });
   __PACKAGE__->import(':all');
 
-  main::is_deeply($exports, [ [ X => {} ] ], "setup (not built) exporter");
+  main::exports_ok($exports, [ [ X => {} ] ], "setup (not built) exporter");
 }

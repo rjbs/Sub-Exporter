@@ -102,4 +102,36 @@ sub mixin_exporter {
   };
 }
 
+=head2 like
+
+It's a collector that adds imports for anything like given regex.
+
+=cut
+
+sub like {
+  sub {
+    my ($value, $arg) = @_;
+    Carp::croak "no regex supplied to regex group generator" unless $value;
+
+    my @value = eval { $value->isa('Regexp') } ? ($value, undef)
+              :                                  @$value;
+
+    while (my ($re, $opt) = splice @value, 0, 2) {
+      my @exports  = keys %{ $arg->{config}->{exports} };
+      my @matching = grep { $_ =~ $re } @exports;
+
+      my %merge = $opt ? %$opt : ();
+      my $prefix = (delete $merge{-prefix}) || '';
+      my $suffix = (delete $merge{-suffix}) || '';
+
+      for my $name (@matching) {
+        my $as = $prefix . $name . $suffix;
+        push @{ $arg->{import_args} }, [ $name => { %merge, -as => $as } ];
+      }
+    }
+
+    1;
+  }
+}
+
 1;
