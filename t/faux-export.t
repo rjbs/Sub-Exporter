@@ -14,7 +14,7 @@ use Test::More tests => 11;
 BEGIN { use_ok('Sub::Exporter'); }
 
 use lib 't/lib';
-use Test::SubExporter::Faux qw(faux_exporter exports_ok);
+use Test::SubExporter::Faux;
 
 my $config = {
   exports => [
