@@ -22,6 +22,7 @@ t/group-generator.t
 t/inherited.t
 t/into-level.t
 t/lib/Test/SubExporter/DashSetup.pm
+t/lib/Test/SubExporter/Faux.pm
 t/lib/Test/SubExporter/GroupGen.pm
 t/lib/Test/SubExporter/s_e.pm
 t/opt-canon.t
@@ -31,5 +32,7 @@ t/pod.t
 t/real-export-groupgen.t
 t/real-export-href.t
 t/real-export-setup.t
+t/util-like.t
+t/util-merge.t
 t/util-mixin.t
 t/valid-config.t
