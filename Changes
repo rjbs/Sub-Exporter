@@ -3,6 +3,8 @@ Revision history for Sub-Exporter
 0.94_01 
         break out Data::OptList for future disting
         improve detection of group generators
+        improve data passed to hooks (if you relied on the guts, you'll break)
+        the ::Util module
 
 0.93    2006-03-26
         internal refactoring
