@@ -846,7 +846,8 @@ variables, at runtime.)
 L<Perl6::Export> isn't actually attribute based, but looks similar.  Its syntax
 is borrowed from Perl 6, and implemented by a source filter.  It is a prototype
 of an interface that is still being designed.  It should probably be avoided
-for production work.
+for production work.  On the other hand, L<Perl6::Export::Attrs> implements
+Perl 6-like exporting, but translates it into Perl 5 by providing attributes.
 
 =item * Other Exporters
 
