@@ -1,7 +1,8 @@
 Revision history for Sub-Exporter
 
-0.94_01 
+0.95
         break out Data::OptList for future disting
+        remove an "optimization" that broke expand_opt_list
         improve detection of group generators
         improve data passed to hooks (if you relied on the guts, you'll break)
         the ::Util module

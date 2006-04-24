@@ -182,8 +182,6 @@ I'd really like to decide I'm happy with the interface so I can take out those
 "Warning" messages that everyone will probably ignore anyway.  Then I'll make
 this its own dist.
 
-=back
-
 =head1 AUTHOR
 
 Ricardo SIGNES, C<< <rjbs@cpan.org> >>
@@ -201,6 +199,5 @@ Copyright 2006 Ricardo SIGNES.  This program is free software;  you can
 redistribute it and/or modify it under the same terms as Perl itself.
 
 =cut
-
 
 1;
