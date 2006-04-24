@@ -4,13 +4,13 @@ use warnings;
 
 use Test::More tests => 8;
 BEGIN { use_ok("Sub::Exporter"); }
-BEGIN { use_ok("Sub::Exporter::Util"); }
 
   BEGIN {
     package Thing;
+    BEGIN { main::use_ok('Sub::Exporter::Util', 'curry_class'); }
     use Sub::Exporter -setup => {
       exports => {
-        return_invocant => Sub::Exporter::Util::curry_class,
+        return_invocant => curry_class,
       },
     };
 

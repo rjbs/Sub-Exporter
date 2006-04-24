@@ -4,7 +4,6 @@ use warnings;
 
 use Test::More tests => 20;
 BEGIN { use_ok("Sub::Exporter"); }
-BEGIN { use_ok("Sub::Exporter::Util"); }
 
   BEGIN {
     package Thing;
@@ -21,8 +20,9 @@ BEGIN { use_ok("Sub::Exporter::Util"); }
 
   BEGIN {
     package Thing::Mixin;
+    BEGIN { main::use_ok("Sub::Exporter::Util", 'mixin_exporter'); }
     use Sub::Exporter -setup => {
-      exporter => Sub::Exporter::Util::mixin_exporter,
+      exporter => mixin_exporter,
       exports  => {
         bar => sub { sub { 1 } },
         foo => sub {

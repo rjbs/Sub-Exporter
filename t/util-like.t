@@ -4,7 +4,6 @@ use warnings;
 
 use Test::More tests => 8;
 BEGIN { use_ok("Sub::Exporter"); }
-BEGIN { use_ok("Sub::Exporter::Util"); }
 
 use lib 't/lib';
 use Test::SubExporter::Faux;
@@ -27,10 +26,11 @@ BEGIN {
     isa_ok($export, 'CODE');
 
     package Thing;
+    BEGIN { main::use_ok('Sub::Exporter::Util', 'like'); }
     use Sub::Exporter -setup => {
       exporter   => $export,
       collectors => {
-        -like => Sub::Exporter::Util::like
+        -like => like
       },
       exports => \%generator,
     };

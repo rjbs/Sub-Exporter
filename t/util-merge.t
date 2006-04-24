@@ -4,14 +4,14 @@ use warnings;
 
 use Test::More tests => 8;
 BEGIN { use_ok("Sub::Exporter"); }
-BEGIN { use_ok("Sub::Exporter::Util"); }
 
   BEGIN {
     package Thing;
+  BEGIN { main::use_ok("Sub::Exporter::Util", 'merge_col'); }
     use Sub::Exporter -setup => {
       collectors => [ qw(defaults etc) ],
       exports    => {
-        Sub::Exporter::Util::merge_col(
+        merge_col(
           defaults => {
             stack => sub { my @x = @_; sub { return @x } },
             kcats => sub { my @x = @_; sub { return reverse @x } },

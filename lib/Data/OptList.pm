@@ -176,4 +176,31 @@ sub expand_opt_list {
   return \%hash;
 }
 
+=head1 TODO
+
+I'd really like to decide I'm happy with the interface so I can take out those
+"Warning" messages that everyone will probably ignore anyway.  Then I'll make
+this its own dist.
+
+=back
+
+=head1 AUTHOR
+
+Ricardo SIGNES, C<< <rjbs@cpan.org> >>
+
+=head1 BUGS
+
+Please report any bugs or feature requests to C<bug-sub-exporter@rt.cpan.org>,
+or through the web interface at L<http://rt.cpan.org>. I will be notified, and
+then you'll automatically be notified of progress on your bug as I make
+changes.
+
+=head1 COPYRIGHT
+
+Copyright 2006 Ricardo SIGNES.  This program is free software;  you can
+redistribute it and/or modify it under the same terms as Perl itself.
+
+=cut
+
+
 1;
