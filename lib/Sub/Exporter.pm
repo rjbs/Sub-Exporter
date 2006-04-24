@@ -593,7 +593,9 @@ sub _rewrite_build_config {
   }
 
   $config->{groups}
-    = Data::OptList::expand_opt_list($config->{groups}, 'groups', [ 'HASH', 'CODE' ]);
+    = Data::OptList::expand_opt_list(
+      $config->{groups}, 'groups', [ 'HASH', 'CODE', 'ARRAY' ]
+    );
 
   # by default, export nothing
   $config->{groups}{default} ||= [];
