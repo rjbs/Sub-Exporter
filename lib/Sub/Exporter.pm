@@ -869,20 +869,13 @@ variables for its configuration.
 
 =cut
 
-# This would be cool:
-# use Food qr/\Aartificial/ => { -prefix => 'non_' };
-
 =over
 
 =item * write a set of longer, more demonstrative examples
 
-=item * solidify the "custom build and install" interface (see C<&_export>)
+=item * solidify the "custom exporter" interface (see C<&default_exporter>)
 
-=item * finalize the collector-hook semantics
-
-=item * add an "always exported" group
-
-=item * consider post-export hooks
+=item * add an "always" group
 
 =back
 
