@@ -125,7 +125,9 @@ sub mixin_exporter {
       unshift @{"$into" . "::ISA"}, $mixin_class;
     }
     $into = $mixin_class;
-    Sub::Exporter::default_exporter($class, $generator, $name, $arg, $collection, $as, $into);
+    Sub::Exporter::default_exporter(
+      $class, $generator, $name, $arg, $collection, $as, $into
+    );
   };
 }
 
@@ -156,10 +158,14 @@ sub like {
     my ($value, $arg) = @_;
     Carp::croak "no regex supplied to regex group generator" unless $value;
 
-    my @value = eval { $value->isa('Regexp') } ? ($value, undef)
-              :                                  @$value;
+    # Oh, qr//, how you bother me!  See the p5p thread from around now about
+    # fixing this problem... too bad it won't help me. -- rjbs, 2006-04-25
+    my @values = eval { $value->isa('Regexp') } ? ($value, undef)
+               :                                  @$value;
 
-    while (my ($re, $opt) = splice @value, 0, 2) {
+    while (my ($re, $opt) = splice @values, 0, 2) {
+      Carp::croak "given pattern for regex group generater is not a Regexp"
+        unless eval { $re->isa('Regexp') };
       my @exports  = keys %{ $arg->{config}->{exports} };
       my @matching = grep { $_ =~ $re } @exports;
 

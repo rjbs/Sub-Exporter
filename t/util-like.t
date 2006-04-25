@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 10;
+use Test::More tests => 11;
 BEGIN { use_ok("Sub::Exporter"); }
 
 use lib 't/lib';
@@ -136,4 +136,7 @@ everything_ok(
 
   eval { $like->() };
   like($@, qr/no regex supplied/, "exception with no args to like->()");
+
+  eval { $like->([ "fake*reg{3}exp" => { a => 1 } ]) };
+  like($@, qr/not a regex/i, "exception with non qr// pattern in like");
 }
