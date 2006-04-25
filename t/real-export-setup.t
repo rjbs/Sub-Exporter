@@ -12,7 +12,7 @@ calling style.
 
 =cut
 
-use Test::More tests => 33;
+use Test::More tests => 35;
 
 BEGIN { use_ok('Sub::Exporter'); }
 
@@ -31,6 +31,12 @@ for my $iteration (1..2) {
 
     Test::SubExporter::SETUP->import(':all');
     main::is(X(), "desired", "constructed importer (via -setup [LIST]) worked");
+  }
+
+  {
+    package Test::SubExporter::SETUPFAILURE;
+    eval { Sub::Exporter->import( -setup => sub { 1 }) };
+    main::like($@, qr/-setup failed validation/, "only [],{} ok for -setup");
   }
 
   package Test::SubExporter::DEFAULT;

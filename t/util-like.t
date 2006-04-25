@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 8;
+use Test::More tests => 10;
 BEGIN { use_ok("Sub::Exporter"); }
 
 use lib 't/lib';
@@ -72,7 +72,13 @@ exports_ok(
 );
 
 # XXX: must use verbose exporter
-$code->(-like => [ qr/^b/i => { -prefix => 'like_' } ]);
+my %col = ( -like => [
+  qr/^b/i => { -prefix => 'like_' },
+  qr/zz/i => { -suffix => '_y2'   },
+]);
+
+$code->(%col);
+
 everything_ok(
   $exports,
   [
@@ -82,7 +88,7 @@ everything_ok(
         generator  => $generator{BAR},
         name       => 'BAR',
         arg        => {},
-        collection => { -like => [ qr/^b/i => { -prefix => 'like_' } ] },
+        collection => \%col,
         as         => 'like_BAR',
         into       => 'main',
       },
@@ -93,7 +99,7 @@ everything_ok(
         generator  => $generator{bar},
         name       => 'bar',
         arg        => {},
-        collection => { -like => [ qr/^b/i => { -prefix => 'like_' } ] },
+        collection => \%col,
         as         => 'like_bar',
         into       => 'main',
       },
@@ -104,11 +110,30 @@ everything_ok(
         generator  => $generator{baz},
         name       => 'baz',
         arg        => {},
-        collection => { -like => [ qr/^b/i => { -prefix => 'like_' } ] },
+        collection => \%col,
         as         => 'like_baz',
+        into       => 'main',
+      },
+    ],
+    [
+      xyzzy => {
+        class      => 'Thing',
+        generator  => $generator{xyzzy},
+        name       => 'xyzzy',
+        arg        => {},
+        collection => \%col,
+        as         => 'xyzzy_y2',
         into       => 'main',
       },
     ],
   ],
   'give me everything starting with b or B as like_$_ ([qr//=>{...}])'
 );
+
+{
+  my $like = Sub::Exporter::Util::like();
+  is(ref($like), 'CODE', 'like() gives us a generator');
+
+  eval { $like->() };
+  like($@, qr/no regex supplied/, "exception with no args to like->()");
+}
