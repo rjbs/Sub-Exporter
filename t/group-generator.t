@@ -38,7 +38,7 @@ my $returner = sub {
 my $config = {
   exports => [ ],
   groups  => {
-    alphabet  => sub { { a => $alfa, b => $bravo } },
+    alphabet  => sub { { A => $alfa, b => $bravo } },
     broken    => sub { [ qw(this is broken because it is not a hashref) ] },
     generated => $returner,
   },
@@ -51,12 +51,12 @@ my @single_tests = (
   [
     "simple group generator",
     [ -alphabet => undef ],
-    [ [ a => $alfa ], [ b => $bravo ] ],
+    [ [ A => $alfa ], [ b => $bravo ] ],
   ],
   [
     "simple group generator with prefix",
     [ -alphabet => { -prefix => 'prefix_' } ],
-    [ [ prefix_a => $alfa ], [ prefix_b => $bravo ] ],
+    [ [ prefix_A => $alfa ], [ prefix_b => $bravo ] ],
   ],
 );
 
@@ -124,7 +124,7 @@ like($@,
 
   my %code = map { $_->[0] => $_->[1] } @$got;
 
-  my $a = $code{a};
+  my $a = $code{A};
   my $b = $code{b};
 
   is($a->(), 'alfa',  "generated 'a' sub does what we think");
