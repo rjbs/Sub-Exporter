@@ -6,7 +6,7 @@ use warnings;
 use Carp ();
 use Data::OptList ();
 use Scalar::Util ();
-use Sub::Install ();
+use Sub::Install 0.91 ();
 
 =head1 NAME
 
@@ -14,13 +14,13 @@ Sub::Exporter - a sophisticated exporter for custom-built routines
 
 =head1 VERSION
 
-version 0.95
+version 0.951
 
   $Id$
 
 =cut
 
-our $VERSION = '0.95';
+our $VERSION = '0.951';
 
 =head1 SYNOPSIS
 
