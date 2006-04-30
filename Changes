@@ -1,0 +1,34 @@
+Revision history for Sub-Exporter
+
+0.951   2006-04-30
+        fix util-mixin.t to skip if prereqs are missing
+        various changes to improve blessed/weird generators
+        (thanks to Yuval Kogman for pointing problems out)
+
+0.95    2006-04-26
+        break out Data::OptList for future disting
+        remove an "optimization" that broke expand_opt_list
+        improve detection of group generators
+        improve data passed to hooks (if you relied on the guts, you'll break)
+        the ::Util module
+
+0.93    2006-03-26
+        internal refactoring
+        add more arguments to collector hook calls
+
+0.92    2006-03-16
+        FIX BUG in nested imports: when importing groups A and B, and group B
+        includes group A, the nested group would be ignored, even though it was
+        not recursing
+
+        allow 'into_level' parameter to setup_exporter
+        rewrite collection collector to be more efficient
+        rewrite opt list handlers to be more efficient
+        restate some code to improve clarity and coverage (now 100%)
+        better diagnostic messages
+
+0.91    2006-03-16
+        added "import elsewhere" option to generated exporter (thanks chansen!)
+
+0.90    2006-03-11
+        first public release
