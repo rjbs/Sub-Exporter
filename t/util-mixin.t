@@ -2,7 +2,16 @@
 use strict;
 use warnings;
 
-use Test::More tests => 20;
+use Test::More;
+
+BEGIN {
+  if (eval { require Package::Generator; 1; }) {
+    plan tests => 20;
+  } else {
+    plan skip_all => "the mixin exporter requires Package::Generator";
+  }
+}
+
 BEGIN { use_ok("Sub::Exporter"); }
 
   BEGIN {
