@@ -26,6 +26,7 @@ t/into-level.t
 t/lib/Test/SubExporter/DashSetup.pm
 t/lib/Test/SubExporter/Faux.pm
 t/lib/Test/SubExporter/GroupGen.pm
+t/lib/Test/SubExporter/ObjGen.pm
 t/lib/Test/SubExporter/s_e.pm
 t/opt-canon.t
 t/opt-expand.t

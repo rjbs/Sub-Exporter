@@ -1,5 +1,8 @@
 Revision history for Sub-Exporter
 
+0.952   2006-04-30
+        add missing file to manifest
+
 0.951   2006-04-30
         fix util-mixin.t to skip if prereqs are missing
         various changes to improve blessed/weird generators
