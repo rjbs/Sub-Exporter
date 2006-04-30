@@ -1,6 +1,11 @@
 Revision history for Sub-Exporter
 
-0.95
+0.951   2006-04-30
+        fix util-mixin.t to skip if prereqs are missing
+        various changes to improve blessed/weird generators
+        (thanks to Yuval Kogman for pointing problems out)
+
+0.95    2006-04-26
         break out Data::OptList for future disting
         remove an "optimization" that broke expand_opt_list
         improve detection of group generators

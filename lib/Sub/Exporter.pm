@@ -887,7 +887,10 @@ Ricardo SIGNES, C<< <rjbs@cpan.org> >>
 
 Hans Dieter Pearcey provided helpful advice while I was writing Sub::Exporter.
 Ian Langworth and Shawn Sorichetti asked some good questions and hepled me
-improve my documentation quite a bit.  Thanks, guys! 
+improve my documentation quite a bit.  Yuval Kogman helped me find a bunch of
+little problems.
+
+Thanks, guys! 
 
 =head1 BUGS
 

@@ -79,6 +79,7 @@ following a name is its value.
 
 =cut
 
+use List::Util ();
 use Scalar::Util ();
 
 =head1 FUNCTIONS
@@ -119,6 +120,20 @@ no value is passed for this argument, any reference is valid.
 
 =cut
 
+sub _CALLABLE {
+  (Scalar::Util::reftype($_[0])||'') eq 'CODE' or Scalar::Util::blessed($_[0])
+  and overload::Method($_[0],'&{}') ? $_[0] : undef;
+}
+
+sub __is_a {
+  my ($got, $expected) = @_;
+
+  return List::Util::first { __is_a($got, $_) } @$expected if ref $expected;
+
+  return _CALLABLE($got) if $expected eq 'CODE';
+  return Scalar::Util::reftype($got) eq $expected;
+}
+
 sub canonicalize_opt_list {
   my ($opt_list, $moniker, $require_unique, $must_be) = @_;
 
@@ -145,11 +160,10 @@ sub canonicalize_opt_list {
     else                                  { $value = undef;            }
 
     if ($must_be and defined $value) {
-      my $ref = Scalar::Util::reftype($value);
-      my $ok  = ref $must_be ? (grep { $ref eq $_ } @$must_be)
-              :                ($ref eq $must_be);
-
-      Carp::croak "$ref-ref values are not valid in $moniker opt list" if !$ok;
+      unless (__is_a($value, $must_be)) {
+        my $ref = Scalar::Util::reftype($value);
+        Carp::croak "$ref-ref values are not valid in $moniker opt list";
+      }
     }
 
     push @return, [ $name => $value ];

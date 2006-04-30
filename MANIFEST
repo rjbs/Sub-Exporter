@@ -19,6 +19,7 @@ t/callable.t
 t/collection.t
 t/expand-group.t
 t/faux-export.t
+t/gen-callable.t
 t/group-generator.t
 t/inherited.t
 t/into-level.t
