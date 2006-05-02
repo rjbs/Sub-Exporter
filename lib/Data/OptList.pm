@@ -9,13 +9,13 @@ Data::OptList - parse and validate simple name/value option pairs
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
   $Id$
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 SYNOPSIS
 
@@ -80,7 +80,7 @@ following a name is its value.
 =cut
 
 use List::Util ();
-use Scalar::Util ();
+use Params::Util ();
 
 =head1 FUNCTIONS
 
@@ -120,9 +120,14 @@ no value is passed for this argument, any reference is valid.
 
 =cut
 
-sub _CALLABLE {
-  (Scalar::Util::reftype($_[0])||'') eq 'CODE' or Scalar::Util::blessed($_[0])
-  and overload::Method($_[0],'&{}') ? $_[0] : undef;
+my %test_for;
+BEGIN {
+  %test_for = (
+    CODE   => \&Params::Util::_CALLABLE,
+    HASH   => \&Params::Util::_HASHLIKE,
+    ARRAY  => \&Params::Util::_ARRAYLIKE,
+    SCALAR => \&Params::Util::_SCALAR0,
+  );
 }
 
 sub __is_a {
@@ -130,8 +135,9 @@ sub __is_a {
 
   return List::Util::first { __is_a($got, $_) } @$expected if ref $expected;
 
-  return _CALLABLE($got) if $expected eq 'CODE';
-  return Scalar::Util::reftype($got) eq $expected;
+  return defined
+    exists($test_for{$expected}) ? $test_for{$expected}->($got)
+                                 : Params::Util::_INSTANCE($got, $expected);
 }
 
 sub canonicalize_opt_list {
@@ -161,7 +167,7 @@ sub canonicalize_opt_list {
 
     if ($must_be and defined $value) {
       unless (__is_a($value, $must_be)) {
-        my $ref = Scalar::Util::reftype($value);
+        my $ref = ref $value;
         Carp::croak "$ref-ref values are not valid in $moniker opt list";
       }
     }

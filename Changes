@@ -1,5 +1,8 @@
 Revision history for Sub-Exporter
 
+0.953   2006-04-30
+        require Params::Util for craftier opt list validation
+
 0.952   2006-04-30
         add missing file to manifest
 
