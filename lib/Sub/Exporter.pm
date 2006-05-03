@@ -542,7 +542,7 @@ sub setup_exporter {
 
   my $import = build_exporter($config);
 
-  Sub::Install::install_sub({
+  Sub::Install::reinstall_sub({
     code => $import,
     into => $into,
     as   => $as,
@@ -721,7 +721,7 @@ sub _install {
   } elsif (ref $as) {
     Carp::croak "invalid reference type for $as: " . ref $as;
   } else {
-    Sub::Install::install_sub({ code => $code, into => $into, as => $as });
+    Sub::Install::reinstall_sub({ code => $code, into => $into, as => $as });
   }
 }
 
