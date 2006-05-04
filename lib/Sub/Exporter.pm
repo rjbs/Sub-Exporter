@@ -385,10 +385,9 @@ sub _expand_groups {
   my ($class, $config, $groups, $collection, $seen, $merge) = @_;
   $seen  ||= {};
   $merge ||= {};
-
   my @groups = @$groups;
 
-  for my $i (reverse 0 .. $#$groups) {
+  for my $i (reverse 0 .. $#groups) {
     if (my $group_name = _group_name($groups[$i][0])) {
       my $seen = { %$seen }; # faux-dynamic scoping
 
