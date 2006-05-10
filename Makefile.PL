@@ -10,7 +10,7 @@ version_from  ('lib/Sub/Exporter.pm');
 
 requires('Sub::Install' => 0.91);
 requires('List::Util'   => 0.00); # unknown minimum
-requires('Params::Util' => 0.12); # _HASHLIKE, _ARRAYLIKE
+requires('Params::Util' => 0.14); # _HASHLIKE, _ARRAYLIKE, _CODELIKE
 
 sign(1);
 

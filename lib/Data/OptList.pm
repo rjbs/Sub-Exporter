@@ -123,7 +123,7 @@ no value is passed for this argument, any reference is valid.
 my %test_for;
 BEGIN {
   %test_for = (
-    CODE   => \&Params::Util::_CALLABLE,
+    CODE   => \&Params::Util::_CODELIKE,
     HASH   => \&Params::Util::_HASHLIKE,
     ARRAY  => \&Params::Util::_ARRAYLIKE,
     SCALAR => \&Params::Util::_SCALAR0,

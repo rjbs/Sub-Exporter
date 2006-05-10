@@ -401,7 +401,7 @@ sub _expand_groups {
       my $prefix = (delete $merge{-prefix}) || '';
       my $suffix = (delete $merge{-suffix}) || '';
 
-      if (Params::Util::_CALLABLE($groups[$i][1])) {
+      if (Params::Util::_CODELIKE($groups[$i][1])) {
         # this entry was build by a group generator
         $groups[$i][0] = $prefix . $groups[$i][0] . $suffix;
       } else {
@@ -444,7 +444,7 @@ sub _expand_group {
 
   my $exports = $config->{groups}{$group_name};
 
-  if (Params::Util::_CALLABLE($exports)) {
+  if (Params::Util::_CODELIKE($exports)) {
     my $group = $exports->($class, $group_name, $group_arg, $collection);
     Carp::croak qq(group generator "$group_name" did not return a hashref)
       if ref $group ne 'HASH';
@@ -642,7 +642,7 @@ sub _do_import {
 
   my ($generator, $as);
 
-  if ($arg and Params::Util::_CALLABLE($arg)) {
+  if ($arg and Params::Util::_CODELIKE($arg)) {
     # This is the case when a group generator has inserted name/code pairs.
     $generator = sub { $arg };
     $as = $name;
