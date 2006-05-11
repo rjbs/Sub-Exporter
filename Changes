@@ -1,6 +1,6 @@
 Revision history for Sub-Exporter
 
-0.953   2006-04-30
+0.953   2006-05-10
         require Params::Util for craftier opt list validation
         use reinstall, rather than install, to avoid warnings on redef
 
