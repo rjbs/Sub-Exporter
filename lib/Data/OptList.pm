@@ -9,13 +9,13 @@ Data::OptList - parse and validate simple name/value option pairs
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
   $Id$
 
 =cut
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 SYNOPSIS
 
@@ -81,6 +81,7 @@ following a name is its value.
 
 use List::Util ();
 use Params::Util ();
+use Sub::Install ();
 
 =head1 FUNCTIONS
 
@@ -178,22 +179,35 @@ sub canonicalize_opt_list {
   return \@return;
 }
 
-=head2 expand_opt_list
+=head2 opt_list_as_hash
 
-  my $opt_hash = Data::OptList::expand_opt_list($input, $moniker, $must_be);
+  my $opt_hash = Data::OptList::opt_list_as_hash($input, $moniker, $must_be);
 
-Given valid C<expand_opt_list> input, return a hash.
+Given valid C<canonicalize_opt_list> input, this routine returns a hash.  It
+will throw an exception if any name has more than one value.
 
 =cut
 
-sub expand_opt_list {
+sub opt_list_as_hash {
   my ($opt_list, $moniker, $must_be) = @_;
   return {} unless $opt_list;
-  # return $opt_list if ref $opt_list eq 'HASH';
 
   $opt_list = canonicalize_opt_list($opt_list, $moniker, 1, $must_be);
   my %hash = map { $_->[0] => $_->[1] } @$opt_list;
   return \%hash;
+}
+
+=head1 EXPORTS
+
+Both C<canonicalize_opt_list> and C<opt_list_as_hash> may be exported on
+request.
+
+=cut
+
+BEGIN {
+  *import = Sub::Install::exporter {
+    exports => [qw(canonicalize_opt_list opt_list_as_hash)],
+  };
 }
 
 =head1 TODO

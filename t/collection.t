@@ -9,6 +9,7 @@ These tests exercise the handling of collections in the exporter option lists.
 =cut
 
 use Test::More tests => 5;
+use Data::OptList qw(opt_list_as_hash);
 
 BEGIN { use_ok('Sub::Exporter'); }
 
@@ -31,7 +32,7 @@ my $config = {
   ]
 };
 
-$config->{$_} = Data::OptList::expand_opt_list($config->{$_})
+$config->{$_} = opt_list_as_hash($config->{$_})
   for qw(exports collectors);
 
 {

@@ -579,7 +579,7 @@ sub _rewrite_build_config {
     Carp::croak "unknown options (@keys) passed to Sub::Exporter";
   }
 
-  $config->{$_} = Data::OptList::expand_opt_list($config->{$_}, $_, 'CODE')
+  $config->{$_} = Data::OptList::opt_list_as_hash($config->{$_}, $_, 'CODE')
     for qw(exports collectors);
 
   if (my @names = _key_intersection(@$config{qw(exports collectors)})) {
@@ -587,7 +587,7 @@ sub _rewrite_build_config {
   }
 
   $config->{groups}
-    = Data::OptList::expand_opt_list(
+    = Data::OptList::opt_list_as_hash(
       $config->{groups}, 'groups', [ 'HASH', 'CODE', 'ARRAY' ]
     );
 
