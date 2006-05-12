@@ -81,7 +81,7 @@ following a name is its value.
 
 use List::Util ();
 use Params::Util ();
-use Sub::Install ();
+use Sub::Install 0.92 ();
 
 =head1 FUNCTIONS
 

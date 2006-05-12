@@ -6,7 +6,7 @@ use warnings;
 use Carp ();
 use Data::OptList ();
 use Params::Util ();
-use Sub::Install 0.91 ();
+use Sub::Install 0.92 ();
 
 =head1 NAME
 
@@ -20,7 +20,7 @@ version 0.953
 
 =cut
 
-our $VERSION = '0.953';
+our $VERSION = '0.954';
 
 =head1 SYNOPSIS
 

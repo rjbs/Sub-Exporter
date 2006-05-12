@@ -1,5 +1,9 @@
 Revision history for Sub-Exporter
 
+0.954   2006-05-11
+        tweaks to Data::OptList, moving toward its own dist: now it exports
+        expand_opt_list is now opt_list_as_hash
+
 0.953   2006-05-10
         require Params::Util for craftier opt list validation
         use reinstall, rather than install, to avoid warnings on redef
