@@ -9,7 +9,7 @@ setup/build_exporter throw exceptions.
 
 =cut
 
-use Test::More tests => 5;
+use Test::More tests => 6;
 
 BEGIN { use_ok('Sub::Exporter'); }
 
@@ -57,3 +57,17 @@ like(
   qr/may not both/,
   "into and into_level are mutually exclusive (in exporter)"
 );
+
+eval {
+  Sub::Exporter::build_exporter({
+    into       => "This::Doesnt::Matter",
+    into_level => 0,
+  })
+};
+
+like(
+  $@,
+  qr(^into and into_level may not both be supplied to exporter),
+  "can't use one name in exports and collectors"
+);
+

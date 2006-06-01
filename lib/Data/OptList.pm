@@ -9,13 +9,13 @@ Data::OptList - parse and validate simple name/value option pairs
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
   $Id$
 
 =cut
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 =head1 SYNOPSIS
 
@@ -137,8 +137,8 @@ sub __is_a {
   return List::Util::first { __is_a($got, $_) } @$expected if ref $expected;
 
   return defined
-    exists($test_for{$expected}) ? $test_for{$expected}->($got)
-                                 : Params::Util::_INSTANCE($got, $expected);
+    (exists($test_for{$expected}) ? $test_for{$expected}->($got)
+                                 : Params::Util::_INSTANCE($got, $expected));
 }
 
 sub canonicalize_opt_list {

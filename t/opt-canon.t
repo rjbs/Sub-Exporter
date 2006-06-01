@@ -9,7 +9,7 @@ These tests test option list cannonization (from an option list into a aref).
 =cut
 
 use Sub::Install;
-use Test::More tests => 15;
+use Test::More tests => 19;
 
 BEGIN { use_ok('Data::OptList'); }
 
@@ -84,10 +84,31 @@ is_deeply(
   "opt list of names and values expands with [must_be]",
 );
 
+{
+  bless((my $object = {}), 'Test::DOL::Obj');
+  is_deeply(
+    CAN([ foo => $object, ':bar', 'baz' ], 0, 'Test::DOL::Obj'),
+    [ [ foo => $object ], [ ':bar' => undef ], [ baz => undef ] ],
+    "opt list of names and values expands with must_be, must_be object",
+  );
+
+  is_deeply(
+    CAN([ foo => $object, ':bar', 'baz' ], 0, ['Test::DOL::Obj']),
+    [ [ foo => $object ], [ ':bar' => undef ], [ baz => undef ] ],
+    "opt list of names and values expands with [must_be], must_be object",
+  );
+}
+
 eval { CAN([ foo => { a => 1 }, ':bar', 'baz' ], 0, 'ARRAY'); };
 like($@, qr/HASH-ref values are not/, "exception tossed on invaild ref value");
 
 eval { CAN([ foo => { a => 1 }, ':bar', 'baz' ], 0, ['ARRAY']); };
+like($@, qr/HASH-ref values are not/, "exception tossed on invaild ref value");
+
+eval { CAN([ foo => { a => 1 }, ':bar', 'baz' ], 0, 'Test::DOL::Obj'); };
+like($@, qr/HASH-ref values are not/, "exception tossed on invaild ref value");
+
+eval { CAN([ foo => { a => 1 }, ':bar', 'baz' ], 0, ['Test::DOL::Obj']); };
 like($@, qr/HASH-ref values are not/, "exception tossed on invaild ref value");
 
 is_deeply(

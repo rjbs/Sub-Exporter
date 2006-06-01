@@ -14,13 +14,13 @@ Sub::Exporter - a sophisticated exporter for custom-built routines
 
 =head1 VERSION
 
-version 0.953
+version 0.960
 
   $Id$
 
 =cut
 
-our $VERSION = '0.954';
+our $VERSION = '0.960';
 
 =head1 SYNOPSIS
 
@@ -570,7 +570,11 @@ sub _key_intersection {
 # configurations, and set up defaults.  Since the config is a reference, it's
 # rewritten in place.
 my %valid_config_key;
-BEGIN { %valid_config_key = map {$_=>1} qw(exports exporter groups collectors) }
+BEGIN {
+  %valid_config_key =
+    map { $_ => 1 }
+    qw(collectors exporter exports groups into into_level)
+}
 
 sub _rewrite_build_config {
   my ($config) = @_;
@@ -578,6 +582,9 @@ sub _rewrite_build_config {
   if (my @keys = grep { not exists $valid_config_key{$_} } keys %$config) {
     Carp::croak "unknown options (@keys) passed to Sub::Exporter";
   }
+
+  Carp::croak q(into and into_level may not both be supplied to exporter)
+    if exists $config->{into} and exists $config->{into_level};
 
   $config->{$_} = Data::OptList::opt_list_as_hash($config->{$_}, $_, 'CODE')
     for qw(exports collectors);
@@ -614,6 +621,8 @@ sub build_exporter {
     my $into
       = defined $special->{into}       ? delete $special->{into}
       : defined $special->{into_level} ? caller(delete $special->{into_level})
+      : defined $config->{into}        ? $config->{into}
+      : defined $config->{into_level}  ? caller($config->{into_level})
       :                                  caller(0);
 
     my $export = delete $special->{exporter}

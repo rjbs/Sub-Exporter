@@ -1,5 +1,10 @@
 Revision history for Sub-Exporter
 
+0.960   2006-05-31
+        added into and into_config to config
+        100% test coverage... almost!
+        fix bug that prevented validation of opt lists with must_be=class
+
 0.954   2006-05-11
         tweaks to Data::OptList, moving toward its own dist: now it exports
         expand_opt_list is now opt_list_as_hash
