@@ -15,14 +15,14 @@ BEGIN { use_ok('Data::OptList'); }
 
 # let's get a convenient copy to use:
 Sub::Install::install_sub({
-  code => 'mk_opt',
+  code => 'mkopt',
   from => 'Data::OptList',
 });
 
 sub OPT {
   # specifying moniker is tedious (also, these tests predate them)
   splice @_, 1, 0, 'test' if @_ > 1;
-  &mk_opt;
+  &mkopt;
 }
 
 is_deeply(

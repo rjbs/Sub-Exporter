@@ -15,7 +15,7 @@ BEGIN { use_ok('Data::OptList'); }
 
 # let's get a convenient copy to use:
 Sub::Install::install_sub({
-  code => 'mk_opt_hash',
+  code => 'mkopt_hash',
   from => 'Data::OptList',
   as   => 'OPTH',
 });

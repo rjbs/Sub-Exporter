@@ -21,7 +21,7 @@ our $VERSION = '0.04';
 
   use Data::OptList;
 
-  my $options = Data::Optlist::mk_opt([
+  my $options = Data::Optlist::mkopt([
     qw(key1 key2 key3 key4),
     key5 => { ... },
     key6 => [ ... ],
@@ -69,7 +69,7 @@ and thinking is even worse than typing.
 
 With Data::OptList, you can do this instead:
 
-  Data::OptList::mk_opt([
+  Data::OptList::mkopt([
     qw(foo bar baz),
     xyz => { ... },
   ]);
@@ -85,9 +85,9 @@ use Sub::Install 0.92 ();
 
 =head1 FUNCTIONS
 
-=head2 mk_opt
+=head2 mkopt
 
-  my $opt_list = Data::OptList::mk_opt(
+  my $opt_list = Data::OptList::mkopt(
     $input,
     $moniker,
     $require_unique,
@@ -138,7 +138,7 @@ sub __is_a {
                                  : Params::Util::_INSTANCE($got, $expected));
 }
 
-sub mk_opt {
+sub mkopt {
   my ($opt_list, $moniker, $require_unique, $must_be) = @_;
 
   return [] unless $opt_list;
@@ -176,34 +176,34 @@ sub mk_opt {
   return \@return;
 }
 
-=head2 mk_opt_hash
+=head2 mkopt_hash
 
-  my $opt_hash = Data::OptList::mk_opt_hash($input, $moniker, $must_be);
+  my $opt_hash = Data::OptList::mkopt_hash($input, $moniker, $must_be);
 
-Given valid C<mk_opt> input, this routine returns a hash.  It will throw an
+Given valid C<mkopt> input, this routine returns a hash.  It will throw an
 exception if any name has more than one value.
 
 =cut
 
-sub mk_opt_hash {
+sub mkopt_hash {
   my ($opt_list, $moniker, $must_be) = @_;
   return {} unless $opt_list;
 
-  $opt_list = mk_opt($opt_list, $moniker, 1, $must_be);
+  $opt_list = mkopt($opt_list, $moniker, 1, $must_be);
   my %hash = map { $_->[0] => $_->[1] } @$opt_list;
   return \%hash;
 }
 
 =head1 EXPORTS
 
-Both C<mk_opt> and C<mk_opt_hash> may be exported on
+Both C<mkopt> and C<mkopt_hash> may be exported on
 request.
 
 =cut
 
 BEGIN {
   *import = Sub::Install::exporter {
-    exports => [qw(mk_opt mk_opt_hash)],
+    exports => [qw(mkopt mkopt_hash)],
   };
 }
 
