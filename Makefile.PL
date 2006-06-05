@@ -8,11 +8,8 @@ author        ('Ricardo SIGNES <rjbs@cpan.org>');
 license       ('perl');
 version_from  ('lib/Sub/Exporter.pm');
 
-requires('Sub::Install' => 0.92); # exporter, needed by Data::OptList
-requires('List::Util'   => 0.00); # unknown minimum
-requires('Params::Util' => 0.14); # _HASHLIKE, _ARRAYLIKE, _CODELIKE
+requires('Sub::Install'  => 0.92 ); # exporter, needed to actually export
+requires('Data::OptList' => 0.100); # used to process options
+requires('Params::Util'  => 0.14 ); # _CODELIKE
 
-# sign(1); # I hear this gives people grief -- rjbs, 2006-05-10
-
-# auto_install;
 WriteAll();

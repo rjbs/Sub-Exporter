@@ -7,7 +7,6 @@ inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
-lib/Data/OptList.pm
 lib/Sub/Exporter.pm
 lib/Sub/Exporter/Tutorial.pod
 lib/Sub/Exporter/Util.pm
@@ -27,8 +26,6 @@ t/lib/Test/SubExporter/Faux.pm
 t/lib/Test/SubExporter/GroupGen.pm
 t/lib/Test/SubExporter/ObjGen.pm
 t/lib/Test/SubExporter/s_e.pm
-t/opt-canon.t
-t/opt-expand.t
 t/pod-coverage.t
 t/pod.t
 t/real-export-groupgen.t
