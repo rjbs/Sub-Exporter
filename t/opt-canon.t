@@ -15,36 +15,36 @@ BEGIN { use_ok('Data::OptList'); }
 
 # let's get a convenient copy to use:
 Sub::Install::install_sub({
-  code => 'canonicalize_opt_list',
+  code => 'mk_opt',
   from => 'Data::OptList',
 });
 
-sub CAN {
+sub OPT {
   # specifying moniker is tedious (also, these tests predate them)
   splice @_, 1, 0, 'test' if @_ > 1;
-  &canonicalize_opt_list;
+  &mk_opt;
 }
 
 is_deeply(
-  CAN([]),
+  OPT([]),
   [],
   "empty opt list expands properly",
 );
 
 is_deeply(
-  CAN(),
+  OPT(),
   [],
   "undef expands into []",
 );
 
 is_deeply(
-  CAN([ qw(foo bar baz) ]),
+  OPT([ qw(foo bar baz) ]),
   [ [ foo => undef ], [ bar => undef ], [ baz => undef ] ],
   "opt list of just names expands",
 );
 
 {
-  my $options = CAN({ foo => undef, bar => 10, baz => [] });
+  my $options = OPT({ foo => undef, bar => 10, baz => [] });
      $options = [ sort { $a->[0] cmp $b->[0] } @$options ];
 
   is_deeply(
@@ -55,31 +55,31 @@ is_deeply(
 }
 
 is_deeply(
-  CAN([ qw(foo bar baz) ], 0, "ARRAY"),
+  OPT([ qw(foo bar baz) ], 0, "ARRAY"),
   [ [ foo => undef ], [ bar => undef ], [ baz => undef ] ],
   "opt list of just names expands with must_be",
 );
 
 is_deeply(
-  CAN([ qw(foo :bar baz) ]),
+  OPT([ qw(foo :bar baz) ]),
   [ [ foo => undef ], [ ':bar' => undef ], [ baz => undef ] ],
   "opt list of names expands with :group names",
 );
 
 is_deeply(
-  CAN([ foo => { a => 1 }, ':bar', 'baz' ]),
+  OPT([ foo => { a => 1 }, ':bar', 'baz' ]),
   [ [ foo => { a => 1 } ], [ ':bar' => undef ], [ baz => undef ] ],
   "opt list of names and values expands",
 );
 
 is_deeply(
-  CAN([ foo => { a => 1 }, ':bar', 'baz' ], 0, 'HASH'),
+  OPT([ foo => { a => 1 }, ':bar', 'baz' ], 0, 'HASH'),
   [ [ foo => { a => 1 } ], [ ':bar' => undef ], [ baz => undef ] ],
   "opt list of names and values expands with must_be",
 );
 
 is_deeply(
-  CAN([ foo => { a => 1 }, ':bar', 'baz' ], 0, ['HASH']),
+  OPT([ foo => { a => 1 }, ':bar', 'baz' ], 0, ['HASH']),
   [ [ foo => { a => 1 } ], [ ':bar' => undef ], [ baz => undef ] ],
   "opt list of names and values expands with [must_be]",
 );
@@ -87,41 +87,41 @@ is_deeply(
 {
   bless((my $object = {}), 'Test::DOL::Obj');
   is_deeply(
-    CAN([ foo => $object, ':bar', 'baz' ], 0, 'Test::DOL::Obj'),
+    OPT([ foo => $object, ':bar', 'baz' ], 0, 'Test::DOL::Obj'),
     [ [ foo => $object ], [ ':bar' => undef ], [ baz => undef ] ],
     "opt list of names and values expands with must_be, must_be object",
   );
 
   is_deeply(
-    CAN([ foo => $object, ':bar', 'baz' ], 0, ['Test::DOL::Obj']),
+    OPT([ foo => $object, ':bar', 'baz' ], 0, ['Test::DOL::Obj']),
     [ [ foo => $object ], [ ':bar' => undef ], [ baz => undef ] ],
     "opt list of names and values expands with [must_be], must_be object",
   );
 }
 
-eval { CAN([ foo => { a => 1 }, ':bar', 'baz' ], 0, 'ARRAY'); };
+eval { OPT([ foo => { a => 1 }, ':bar', 'baz' ], 0, 'ARRAY'); };
 like($@, qr/HASH-ref values are not/, "exception tossed on invaild ref value");
 
-eval { CAN([ foo => { a => 1 }, ':bar', 'baz' ], 0, ['ARRAY']); };
+eval { OPT([ foo => { a => 1 }, ':bar', 'baz' ], 0, ['ARRAY']); };
 like($@, qr/HASH-ref values are not/, "exception tossed on invaild ref value");
 
-eval { CAN([ foo => { a => 1 }, ':bar', 'baz' ], 0, 'Test::DOL::Obj'); };
+eval { OPT([ foo => { a => 1 }, ':bar', 'baz' ], 0, 'Test::DOL::Obj'); };
 like($@, qr/HASH-ref values are not/, "exception tossed on invaild ref value");
 
-eval { CAN([ foo => { a => 1 }, ':bar', 'baz' ], 0, ['Test::DOL::Obj']); };
+eval { OPT([ foo => { a => 1 }, ':bar', 'baz' ], 0, ['Test::DOL::Obj']); };
 like($@, qr/HASH-ref values are not/, "exception tossed on invaild ref value");
 
 is_deeply(
-  CAN([ foo => { a => 1 }, ':bar' => undef, 'baz' ]),
+  OPT([ foo => { a => 1 }, ':bar' => undef, 'baz' ]),
   [ [ foo => { a => 1 } ], [ ':bar' => undef ], [ baz => undef ] ],
   "opt list of names and values expands, ignoring undef",
 );
 
-eval { CAN([ foo => { a => 1 }, ':bar' => undef, ':bar' ], 1); };
+eval { OPT([ foo => { a => 1 }, ':bar' => undef, ':bar' ], 1); };
 like($@, qr/multiple definitions/, "require_unique constraint catches repeat");
 
 is_deeply(
-  CAN([ foo => { a => 1 }, ':bar' => undef, 'baz' ], 1),
+  OPT([ foo => { a => 1 }, ':bar' => undef, 'baz' ], 1),
   [ [ foo => { a => 1 } ], [ ':bar' => undef ], [ baz => undef ] ],
   "previously tested expansion OK with require_unique",
 );

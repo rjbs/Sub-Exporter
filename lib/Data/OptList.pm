@@ -21,7 +21,7 @@ our $VERSION = '0.04';
 
   use Data::OptList;
 
-  my $options = Data::Optlist::canonicalize_opt_list([
+  my $options = Data::Optlist::mk_opt([
     qw(key1 key2 key3 key4),
     key5 => { ... },
     key6 => [ ... ],
@@ -69,7 +69,7 @@ and thinking is even worse than typing.
 
 With Data::OptList, you can do this instead:
 
-  Data::OptList::canonicalize_opt_list([
+  Data::OptList::mk_opt([
     qw(foo bar baz),
     xyz => { ... },
   ]);
@@ -85,12 +85,9 @@ use Sub::Install 0.92 ();
 
 =head1 FUNCTIONS
 
-=head2 canonicalize_opt_list
+=head2 mk_opt
 
-B<Warning>: This modules presently exists only to serve Sub::Exporter.  Its
-interface is still subject to change at the author's whim.
-
-  my $opt_list = Data::OptList::canonicalize_opt_list(
+  my $opt_list = Data::OptList::mk_opt(
     $input,
     $moniker,
     $require_unique,
@@ -141,7 +138,7 @@ sub __is_a {
                                  : Params::Util::_INSTANCE($got, $expected));
 }
 
-sub canonicalize_opt_list {
+sub mk_opt {
   my ($opt_list, $moniker, $require_unique, $must_be) = @_;
 
   return [] unless $opt_list;
@@ -179,42 +176,36 @@ sub canonicalize_opt_list {
   return \@return;
 }
 
-=head2 opt_list_as_hash
+=head2 mk_opt_hash
 
-  my $opt_hash = Data::OptList::opt_list_as_hash($input, $moniker, $must_be);
+  my $opt_hash = Data::OptList::mk_opt_hash($input, $moniker, $must_be);
 
-Given valid C<canonicalize_opt_list> input, this routine returns a hash.  It
-will throw an exception if any name has more than one value.
+Given valid C<mk_opt> input, this routine returns a hash.  It will throw an
+exception if any name has more than one value.
 
 =cut
 
-sub opt_list_as_hash {
+sub mk_opt_hash {
   my ($opt_list, $moniker, $must_be) = @_;
   return {} unless $opt_list;
 
-  $opt_list = canonicalize_opt_list($opt_list, $moniker, 1, $must_be);
+  $opt_list = mk_opt($opt_list, $moniker, 1, $must_be);
   my %hash = map { $_->[0] => $_->[1] } @$opt_list;
   return \%hash;
 }
 
 =head1 EXPORTS
 
-Both C<canonicalize_opt_list> and C<opt_list_as_hash> may be exported on
+Both C<mk_opt> and C<mk_opt_hash> may be exported on
 request.
 
 =cut
 
 BEGIN {
   *import = Sub::Install::exporter {
-    exports => [qw(canonicalize_opt_list opt_list_as_hash)],
+    exports => [qw(mk_opt mk_opt_hash)],
   };
 }
-
-=head1 TODO
-
-I'd really like to decide I'm happy with the interface so I can take out those
-"Warning" messages that everyone will probably ignore anyway.  Then I'll make
-this its own dist.
 
 =head1 AUTHOR
 

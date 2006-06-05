@@ -15,55 +15,55 @@ BEGIN { use_ok('Data::OptList'); }
 
 # let's get a convenient copy to use:
 Sub::Install::install_sub({
-  code => 'opt_list_as_hash',
+  code => 'mk_opt_hash',
   from => 'Data::OptList',
-  as   => 'OLH',
+  as   => 'OPTH',
 });
 
 is_deeply(
-  OLH([]),
+  OPTH([]),
   {},
   "empty opt list expands properly",
 );
 
 is_deeply(
-  OLH([ qw(foo bar baz) ]),
+  OPTH([ qw(foo bar baz) ]),
   { foo => undef, bar => undef, baz => undef },
   "opt list of just names expands",
 );
 
 is_deeply(
-  OLH([ qw(foo :bar baz) ]),
+  OPTH([ qw(foo :bar baz) ]),
   { foo => undef, ':bar' => undef, baz => undef },
   "opt list of names expands with :group names",
 );
 
 is_deeply(
-  OLH([ foo => { a => 1 }, ':bar', 'baz' ]),
+  OPTH([ foo => { a => 1 }, ':bar', 'baz' ]),
   { foo => { a => 1 }, ':bar' => undef, baz => undef },
   "opt list of names and values expands",
 );
 
 is_deeply(
-  OLH([ foo => { a => 1 }, ':bar' => undef, 'baz' ]),
+  OPTH([ foo => { a => 1 }, ':bar' => undef, 'baz' ]),
   { foo => { a => 1 }, ':bar' => undef, baz => undef },
   "opt list of names and values expands, ignoring undef",
 );
 
 is_deeply(
-  OLH({ foo => { a => 1 }, -bar => undef, baz => undef }, 0, 'HASH'),
+  OPTH({ foo => { a => 1 }, -bar => undef, baz => undef }, 0, 'HASH'),
   { foo => { a => 1 }, -bar => undef, baz => undef },
   "opt list of names and values expands with must_be",
 );
 
 is_deeply(
-  OLH({ foo => { a => 1 }, -bar => undef, baz => undef }, 0, ['HASH']),
+  OPTH({ foo => { a => 1 }, -bar => undef, baz => undef }, 0, ['HASH']),
   { foo => { a => 1 }, -bar => undef, baz => undef },
   "opt list of names and values expands with [must_be]",
 );
 
-eval { OLH({ foo => { a => 1 }, -bar => undef, baz => undef }, 0, 'ARRAY'); };
+eval { OPTH({ foo => { a => 1 }, -bar => undef, baz => undef }, 0, 'ARRAY'); };
 like($@, qr/HASH-ref values are not/, "exception tossed on invaild ref value");
 
-eval { OLH({ foo => { a => 1 }, -bar => undef, baz => undef }, 0, ['ARRAY']); };
+eval { OPTH({ foo => { a => 1 }, -bar => undef, baz => undef }, 0, ['ARRAY']); };
 like($@, qr/HASH-ref values are not/, "exception tossed on invaild ref value");
