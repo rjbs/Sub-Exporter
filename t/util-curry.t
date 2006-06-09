@@ -65,3 +65,6 @@ main::is(
   'Thing::Subclass',
   'return of method class-curried from Thing::Subclass is Thing::Subclass'
 );
+
+use Data::Dump::Streamer;
+Dump(\&Thing::import);
