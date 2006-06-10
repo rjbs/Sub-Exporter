@@ -9,13 +9,13 @@ Sub::Exporter::Util - utilities to make Sub::Exporter easier
 
 =head1 VERSION
 
-version 0.01
+version 0.015
 
   $Id$
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.015';
 
 =head1 DESCRIPTION
 
@@ -50,11 +50,19 @@ This would be equivalent to:
 If Some::Module is subclassed and the subclass's import method is called to
 import C<some_method>, the subclass will be curried in as the invocant.
 
+If an argument is provided for C<curry_class> it is used as the name of the
+curried method to export.  This means you could export a Widget constructor
+like this:
+
+  exports => { widget => curry_class('new') }
+
 =cut
 
 sub curry_class {
+  my $override_name = shift;
   sub {
     my ($class, $name) = @_;
+    $name = $override_name if defined $override_name;
     sub { $class->$name(@_); };
   }
 }
