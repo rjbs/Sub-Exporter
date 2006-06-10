@@ -1,5 +1,8 @@
 Revision history for Sub-Exporter
 
+0.965   2006-06-05
+        curry_class now allows the export to curry a differently-named method
+
 0.961   2006-06-05
         Data::OptList is now in its own dist; updated to use it
 
