@@ -714,6 +714,9 @@ sub default_exporter {
 sub _generate {
   my ($class, $generator, $name, $arg, $collection) = @_;
 
+  # I considered making the T case, below, "$class->$generator(" but it seems
+  # that overloading precedence would turn an overloaded-as-code generator
+  # object into a string before code. -- rjbs, 2006-06-11
   my $code = $generator
            ? $generator->($class, $name, $arg, $collection)
            : $class->can($name); 
