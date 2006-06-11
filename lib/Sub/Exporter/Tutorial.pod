@@ -249,45 +249,9 @@ Ricardo SIGNES, C<< <rjbs@cpan.org> >>
 
 =head1 SEE ALSO
 
-There are a whole mess of exporters on the CPAN.  Here's a quick summary:
-
 =over
 
-=item * L<Exporter> and co.
-
-This is the standard Perl exporter.  Its interface is a little clunky, but it's
-fast and ubiquitous.  It can do some things that Sub::Exporter can't.  It can
-export things other than routines, it can import "everything in this group
-except this symbol," and some other more esoteric things.
-
-It always exports things exactly as they appear in the exporting module; it
-can't rename or customize routines.  Its groups ("tags") can't be nested.
-
-L<Exporter::Lite> is a whole lot like Exporter, but it does significantly less.
-
-L<Exporter::Easy> provides a wrapper around the standard Exporter.
-
-=item * Attribute-Based Exporters
-
-Some exporters use attributes to mark variables to export.  L<Exporter::Simple>
-supports exporting any kind of symbol, and supports groups.
-
-L<Perl6::Export> isn't actually attribute based, but looks similar.  Its syntax
-is borrowed from Perl 6, and implemented by a source filter.
-
-=item * Other Exporters
-
-L<Exporter::Renaming> wraps the standard Exporter to allow it to export symbols
-with changed names.
-
-L<Class::Exporter> performs a special kind of routine generation, giving each
-importing package an instance of your class, and then exporting the instance's
-methods as normal routines.  (Sub::Exporter, of course, can easily emulate this
-behavior.)
-
-L<Exporter::Tidy> implements a form of renaming (using its C<_map> argument)
-and of prefixing, and implements groups.  It also avoids using package
-variables for its configuration.
+=item * L<Sub::Exporter> for complete documentation and references to other exporters.
 
 =back
 
