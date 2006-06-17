@@ -746,7 +746,7 @@ group, which will setup an exporter using the parameters passed to it.
 setup_exporter({
   exports => [
     qw(setup_exporter build_exporter),
-    _import => sub { splice @_, 0, 2; build_exporter(@_) },
+    _import => sub { build_exporter($_[2]) },
   ],
   groups  => {
     all   => [ qw(setup_exporter build_export) ],
