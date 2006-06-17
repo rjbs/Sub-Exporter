@@ -314,17 +314,16 @@ default easily:
   collectors => { defaults => sub { return (exists $_[0]->{data}) ? 0 : 1 } }
 
 Collector coderefs can also be used as hooks to perform arbitrary actions
-before anything is exported.  B<Warning!>  This feature is experimental and may
-change in the future.
+before anything is exported.
 
-When the coderef is called, it is actually passed these values:
+When the coderef is called, it is passed the value of the collection and a
+hashref containing the following entries:
 
-  $value - the value given for the collector in the args to import
-  $name  - the name of the collector
- \%config      - the exporter configuration
- \@import_args - the arguments passed to the exporter, sans collections
-  $class - the package on which the importer was called
-  $into  - the package into which exports will be exported
+  name        - the name of the collector
+  config      - the exporter configuration (hashref)
+  import_args - the arguments passed to the exporter, sans collections (aref)
+  class       - the package on which the importer was called
+  into        - the package into which exports will be exported
 
 =head1 CALLING THE EXPORTER
 
