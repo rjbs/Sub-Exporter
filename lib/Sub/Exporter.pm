@@ -631,9 +631,11 @@ sub build_exporter {
     # this builds a AOA, where the inner arrays are [ name => value_ref ]
     my $import_args = Data::OptList::mkopt([ @_ ]);
 
+    # is this right?  defaults first or collectors first? -- rjbs, 2006-06-24
+    $import_args = [ [ -default => undef ] ] unless @$import_args;
+
     my $collection = _collect_collections($config, $import_args, $class, $into);
 
-    $import_args = [ [ -default => 1 ] ] unless @$import_args;
     my $to_import = _expand_groups($class, $config, $import_args, $collection);
 
     # now, finally $import_arg is really the "to do" list
