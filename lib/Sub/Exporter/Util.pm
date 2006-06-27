@@ -9,13 +9,13 @@ Sub::Exporter::Util - utilities to make Sub::Exporter easier
 
 =head1 VERSION
 
-version 0.015
+version 0.020
 
   $Id$
 
 =cut
 
-our $VERSION = '0.015';
+our $VERSION = '0.020';
 
 =head1 DESCRIPTION
 
@@ -114,6 +114,9 @@ sub merge_col {
 This utility returns an exporter that will export into a superclass and adjust
 the ISA importing class to include the newly generated superclass.
 
+If the target of importing is an object, the hierarchy is reversed: the new
+class will be ISA the object's class, and the object will be reblessed.
+
 B<Prerequisites>: This utility requires that Package::Generator be installed.
 
 =cut
@@ -210,8 +213,6 @@ sub like {
 use Sub::Exporter -setup => {
   exports => [ qw(like merge_col curry_class mixin_exporter) ]
 };
-
-=head1 TODO
 
 =head1 AUTHOR
 

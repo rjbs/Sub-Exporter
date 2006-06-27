@@ -1,8 +1,9 @@
 Revision history for Sub-Exporter
 
-0.967   2006-06-24
+0.970   2006-06-27
         defaults populate before collectors collect, now
         default group's value is undef by default, not 1
+        mixin_exporter can now export into objects, creating virtual classes
         
 0.966   2006-06-17
         correct documentation of collector hook args
