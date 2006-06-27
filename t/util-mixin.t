@@ -6,7 +6,7 @@ use Test::More;
 
 BEGIN {
   if (eval { require Package::Generator; 1; }) {
-    plan tests => 20;
+    plan 'no_plan';
   } else {
     plan skip_all => "the mixin exporter requires Package::Generator";
   }
@@ -101,3 +101,33 @@ for my $x (0 .. $#pkg) {
     isnt("@{$super[$x]}", "@{$super[$y]}", "parent($x) ne parent($y)")
   }
 }
+
+{
+  package Test::SubExporter::OBJECT;
+
+  sub new { bless {} => shift }
+
+  sub plugh { "plugh" }
+}
+
+package main;
+
+my $obj_1 = Test::SubExporter::OBJECT->new;
+isa_ok($obj_1, "Test::SubExporter::OBJECT", "first object");
+is(ref $obj_1, "Test::SubExporter::OBJECT", "first object's ref is TSEO");
+
+my $obj_2 = Test::SubExporter::OBJECT->new;
+isa_ok($obj_2, "Test::SubExporter::OBJECT", "second object");
+is(ref $obj_2, "Test::SubExporter::OBJECT", "second object's ref is TSEO");
+
+Thing::Mixin->import({ into => $obj_1 }, qw(bar));
+pass("mixin-exporting to an object didn't die");
+
+is(
+  eval { $obj_1->bar },
+  1,
+  "now that object has a bar method"
+);
+
+isa_ok($obj_1, "Test::SubExporter::OBJECT");
+isnt(ref $obj_1, "Test::SubExporter::OBJECT", "but its actual class isnt TSEO");
