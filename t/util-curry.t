@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 9;
+use Test::More tests => 10;
 BEGIN { use_ok("Sub::Exporter"); }
 
   BEGIN {
@@ -15,6 +15,7 @@ BEGIN { use_ok("Sub::Exporter"); }
       },
     };
 
+    sub new { bless { key => "value" } => $_[0] }
     sub return_invocant { return $_[0] }
   }
   
@@ -75,4 +76,14 @@ main::is(
   talkback(),
   'Thing',
   'imported talkback acts like return_invocant'
+);
+
+package Test::SubExporter::CURRY::Object;
+
+BEGIN { Thing->new->import(qw(talkback)); }
+
+main::isa_ok(
+  talkback(),
+  'Thing',
+  'the result of object-curried talkback'
 );
