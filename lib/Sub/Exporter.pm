@@ -800,8 +800,8 @@ complex uses, Sub::Exporter makes hard things possible, which would not be
 possible with Exporter. 
 
 When using a module that uses Sub::Exporter, users familiar with Exporter will
-probably see difference in the basics.  These two lines do about the same thing
-in whether the exporting module uses Exporter or Sub::Exporter.
+probably see no difference in the basics.  These two lines do about the same
+thing in whether the exporting module uses Exporter or Sub::Exporter.
 
   use Some::Module qw(foo bar baz);
   use Some::Module qw(foo :bar baz);
