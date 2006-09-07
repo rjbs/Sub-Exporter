@@ -1,5 +1,8 @@
 Revision history for Sub-Exporter
 
+0.971   2006-??-??
+        minor documentation clarification
+
 0.970   2006-06-27
         defaults populate before collectors collect, now
         default group's value is undef by default, not 1
