@@ -9,13 +9,13 @@ Sub::Exporter::Util - utilities to make Sub::Exporter easier
 
 =head1 VERSION
 
-version 0.020
+version 0.021
 
   $Id$
 
 =cut
 
-our $VERSION = '0.020';
+our $VERSION = '0.021';
 
 =head1 DESCRIPTION
 
@@ -128,6 +128,7 @@ sub __mixin_class_for {
     base => "$class\:\:__mixin__",
   });
 
+  ## no critic (ProhibitNoStrict)
   no strict 'refs';
   if (ref $mix_into) {
     $mix_into = ref $mix_into if ref $mix_into;

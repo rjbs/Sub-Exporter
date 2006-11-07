@@ -26,6 +26,7 @@ t/lib/Test/SubExporter/Faux.pm
 t/lib/Test/SubExporter/GroupGen.pm
 t/lib/Test/SubExporter/ObjGen.pm
 t/lib/Test/SubExporter/s_e.pm
+t/perl-critic.t
 t/pod-coverage.t
 t/pod.t
 t/real-export-groupgen.t

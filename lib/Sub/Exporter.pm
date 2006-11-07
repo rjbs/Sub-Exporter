@@ -14,13 +14,13 @@ Sub::Exporter - a sophisticated exporter for custom-built routines
 
 =head1 VERSION
 
-version 0.970
+version 0.971
 
   $Id$
 
 =cut
 
-our $VERSION = '0.970';
+our $VERSION = '0.971';
 
 =head1 SYNOPSIS
 

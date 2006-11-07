@@ -1,7 +1,8 @@
 Revision history for Sub-Exporter
 
-0.971   2006-??-??
+0.971   2006-11-06
         minor documentation clarification
+        add Perl::Critic tests (disabled by default)
 
 0.970   2006-06-27
         defaults populate before collectors collect, now
