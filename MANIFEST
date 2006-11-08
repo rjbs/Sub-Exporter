@@ -37,3 +37,4 @@ t/util-like.t
 t/util-merge.t
 t/util-mixin.t
 t/valid-config.t
+LICENSE
