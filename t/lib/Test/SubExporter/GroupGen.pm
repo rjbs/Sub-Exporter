@@ -25,11 +25,29 @@ my $returner = sub {
   };
 };
 
+sub gen_group_by_name {
+  my ($class, $group, $arg, $collection) = @_;
+
+  my %given = (
+    class => $class,
+    group => $group,
+    arg   => $arg,
+    collection => $collection,
+  );
+
+  return {
+    baz => sub { return { name => 'baz', %given }; },
+  };
+}
+
 my $config = {
   exports => [ ],
   groups  => {
     alphabet  => sub { { a => $alfa, b => $bravo } },
     generated => $returner,
+    # symbolic  => \&gen_group_by_name,
+    # symbolic  => sub { shift->gen_group_by_name(@_) },
+    symbolic  => \'gen_group_by_name',
   },
   collectors => [ 'col1' ],
 };

@@ -14,13 +14,13 @@ Sub::Exporter - a sophisticated exporter for custom-built routines
 
 =head1 VERSION
 
-version 0.971
+version 0.972
 
   $Id$
 
 =cut
 
-our $VERSION = '0.971';
+our $VERSION = '0.972';
 
 =head1 SYNOPSIS
 
@@ -400,7 +400,11 @@ sub _expand_groups {
       my $prefix = (delete $merge{-prefix}) || '';
       my $suffix = (delete $merge{-suffix}) || '';
 
-      if (Params::Util::_CODELIKE($groups[$i][1])) { ## no critic
+      if (
+        Params::Util::_CODELIKE($groups[$i][1]) ## no critic Private
+        or
+        Params::Util::_SCALAR0($groups[$i][1]) ## no critic Private
+      ) {
         # this entry was build by a group generator
         $groups[$i][0] = $prefix . $groups[$i][0] . $suffix;
       } else {
@@ -443,8 +447,24 @@ sub _expand_group {
 
   my $exports = $config->{groups}{$group_name};
 
-  if (Params::Util::_CODELIKE($exports)) { ## no critic
-    my $group = $exports->($class, $group_name, $group_arg, $collection);
+  if (
+    Params::Util::_CODELIKE($exports) ## no critic Private
+    or
+    Params::Util::_SCALAR0($exports) ## no critic Private
+  ) {
+    # I'm not very happy with this code for hiding -prefix and -suffix, but
+    # it's needed, and I'm not sure, offhand, how to make it better.
+    # -- rjbs, 2006-12-05
+    my $group_arg = $group_arg ? { %$group_arg } : {};
+    delete $group_arg->{-prefix};
+    delete $group_arg->{-suffix};
+
+    my $group;
+    if (Params::Util::_CODELIKE($exports)) {
+      $group = $exports->($class, $group_name, $group_arg, $collection);
+    } else {
+      $group = $class->$$exports($group_name, $group_arg, $collection);
+    }
     Carp::croak qq(group generator "$group_name" did not return a hashref)
       if ref $group ne 'HASH';
     my $stuff = [ map { [ $_ => $group->{$_} ] } keys %$group ];
@@ -594,7 +614,7 @@ sub _rewrite_build_config {
 
   $config->{groups}
     = Data::OptList::mkopt_hash(
-      $config->{groups}, 'groups', [ 'HASH', 'CODE', 'ARRAY' ]
+      $config->{groups}, 'groups', [ 'HASH', 'CODE', 'ARRAY', 'SCALAR' ]
     );
 
   # by default, export nothing
