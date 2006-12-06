@@ -10,7 +10,8 @@ lib/Sub/Exporter.pm
 lib/Sub/Exporter/Tutorial.pod
 lib/Sub/Exporter/Util.pm
 LICENSE
-MANIFEST			This list of files
+MANIFEST
+Makefile.PL
 META.yml
 README
 t/collection.t
