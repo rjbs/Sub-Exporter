@@ -605,16 +605,27 @@ sub _rewrite_build_config {
   Carp::croak q(into and into_level may not both be supplied to exporter)
     if exists $config->{into} and exists $config->{into_level};
 
-  $config->{$_} = Data::OptList::mkopt_hash($config->{$_}, $_, 'CODE')
-    for qw(exports collectors);
+  for (qw(exports collectors)) {
+    $config->{$_} = Data::OptList::mkopt_hash(
+      $config->{$_},
+      $_,
+      [ 'CODE', 'SCALAR' ],
+    );
+  }
 
   if (my @names = _key_intersection(@$config{qw(exports collectors)})) {
     Carp::croak "names (@names) used in both collections and exports";
   }
 
-  $config->{groups}
-    = Data::OptList::mkopt_hash(
-      $config->{groups}, 'groups', [ 'HASH', 'CODE', 'ARRAY', 'SCALAR' ]
+  $config->{groups} = Data::OptList::mkopt_hash(
+      $config->{groups},
+      'groups',
+      [
+        'HASH',   # standard opt list
+        'ARRAY',  # standard opt list
+        'CODE',   # group generator
+        'SCALAR', # name of group generation method
+      ]
     );
 
   # by default, export nothing
