@@ -131,8 +131,7 @@ sub __mixin_class_for {
   ## no critic (ProhibitNoStrict)
   no strict 'refs';
   if (ref $mix_into) {
-    $mix_into = ref $mix_into if ref $mix_into;
-    unshift @{"$mixin_class" . "::ISA"}, $mix_into;
+    unshift @{"$mixin_class" . "::ISA"}, ref $mix_into;
   } else {
     unshift @{"$mix_into" . "::ISA"}, $mixin_class;
   }
