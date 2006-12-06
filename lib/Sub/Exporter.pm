@@ -510,8 +510,12 @@ sub _collect_collections {
         into        => $into,
       };
 
-      Carp::croak "collection $name failed validation"
-        unless $hook->($value, $arg);
+      my $error_msg = "collection $name failed validation";
+      if (Params::Util::_SCALAR0($hook)) {
+        Carp::croak $error_msg unless $class->$$hook($value, $arg);
+      } else {
+        Carp::croak $error_msg unless $hook->($value, $arg);
+      }
     }
   }
 
@@ -746,12 +750,17 @@ sub default_exporter {
 sub _generate {
   my ($class, $generator, $name, $arg, $collection) = @_;
 
-  # I considered making the T case, below, "$class->$generator(" but it seems
-  # that overloading precedence would turn an overloaded-as-code generator
-  # object into a string before code. -- rjbs, 2006-06-11
-  my $code = $generator
-           ? $generator->($class, $name, $arg, $collection)
-           : $class->can($name); 
+  return $class->can($name) unless $generator;
+
+  # I considered making this "$class->$generator(" but it seems that
+  # overloading precedence would turn an overloaded-as-code generator object
+  # into a string before code. -- rjbs, 2006-06-11
+  return $generator->($class, $name, $arg, $collection)
+    if Params::Util::_CODELIKE($generator);
+
+  # This "must" be a scalar reference, to a generator method name.
+  # -- rjbs, 2006-12-05
+  return $class->$$generator($name, $arg, $collection);
 }
 
 sub _install {

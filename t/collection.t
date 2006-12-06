@@ -8,10 +8,15 @@ These tests exercise the handling of collections in the exporter option lists.
 
 =cut
 
-use Test::More tests => 5;
+use Test::More tests => 7;
 use Data::OptList qw(mkopt_hash);
 
 BEGIN { use_ok('Sub::Exporter'); }
+
+sub is_defined {
+  my ($class, $value, $arg) = @_;
+  return defined $value;
+}
 
 my $config = {
   exports => [
@@ -27,8 +32,10 @@ my $config = {
   },
   collectors => [
     'defaults',
-    'brand_preference' => sub { 0 },
-    'model_preference' => sub { 1 },
+    brand_preference => sub { 0 },
+    model_preference => sub { 1 },
+    definedp         => \'is_defined',
+
   ]
 };
 
@@ -39,6 +46,7 @@ $config->{$_} = mkopt_hash($config->{$_})
   my $collection = Sub::Exporter::_collect_collections(
     $config, 
     [ [ circsaw => undef ], [ defaults => { foo => 1, bar => 2 } ] ],
+    'main',
   );
 
   is_deeply(
@@ -51,7 +59,7 @@ $config->{$_} = mkopt_hash($config->{$_})
 {
   my $arg = [ [ defaults => [ 1 ] ], [ defaults => { foo => 1, bar => 2 } ] ];
 
-  eval { Sub::Exporter::_collect_collections($config, $arg); };
+  eval { Sub::Exporter::_collect_collections($config, $arg, 'main'); };
   like(
     $@,
     qr/collection \S+ provided multiple/,
@@ -62,7 +70,7 @@ $config->{$_} = mkopt_hash($config->{$_})
 {
   # because the brand_preference validator always fails, this should die
   my $arg = [ [ brand_preference => [ 1, 2, 3 ] ] ];
-  eval { Sub::Exporter::_collect_collections($config, $arg) };
+  eval { Sub::Exporter::_collect_collections($config, $arg, 'main') };
   like(
     $@,
     qr/brand_preference failed validation/,
@@ -71,8 +79,30 @@ $config->{$_} = mkopt_hash($config->{$_})
 }
 
 {
+  # the definedp collector should require a defined value; this should be ok
+  my $arg = [ [ definedp => {} ] ];
+  my $collection = Sub::Exporter::_collect_collections($config, $arg, 'main');
+  is_deeply(
+    $collection,
+    { definedp => {} },
+    "collector validator allows collection"
+  );
+}
+
+{
+  # the definedp collector should require a defined value; this should die
+  my $arg = [ [ definedp => undef ] ];
+  eval { Sub::Exporter::_collect_collections($config, $arg, 'main') };
+  like(
+    $@,
+    qr/definedp failed validation/,
+    "collector validator prevents bad export"
+  );
+}
+
+{
   my $arg = [ [ model_preference => [ 1, 2, 3 ] ] ];
-  my $collection = Sub::Exporter::_collect_collections($config, $arg);
+  my $collection = Sub::Exporter::_collect_collections($config, $arg, 'main');
   is_deeply(
     $collection,
     { model_preference => [ 1, 2, 3 ] },

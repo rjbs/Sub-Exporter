@@ -11,7 +11,7 @@ style.
 
 =cut
 
-use Test::More tests => 46;
+use Test::More tests => 48;
 
 BEGIN { use_ok('Sub::Exporter'); }
 
@@ -95,13 +95,23 @@ END_TEST
   );
 
   package Test::SubExporter::Z3;
-  main::use_ok($exporting_class, hello_sailor => { game => 'zork3' });
-  use subs qw(hello_sailor);
+  main::use_ok(
+    $exporting_class,
+    hello_sailor => { game => 'zork3' },
+    hi_sailor    => undef,
+  );
+  use subs qw(hello_sailor hi_sailor);
 
   main::is(
     hello_sailor,
     "Something happens!",
     "Z3: custom hello_sailor works as expected"
+  );
+
+  main::is(
+    hi_sailor,
+    "Nothing happens yet.",
+    "Z3: hi_sailor, using symbolic import and no args, works as expected"
   );
 
   package Test::SubExporter::FROTZ_SAILOR;

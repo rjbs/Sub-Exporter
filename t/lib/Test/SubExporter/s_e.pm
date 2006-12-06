@@ -10,6 +10,7 @@ Sub::Exporter::setup_exporter({
   exports => {
     xyzzy        => undef,
     hello_sailor => \&_hs_gen,
+    hi_sailor    => \"_hs_gen",
   },
   groups => {
     default => [ qw(xyzzy hello_sailor) ],
