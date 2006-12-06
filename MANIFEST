@@ -3,14 +3,13 @@ inc/Module/Install.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
 inc/Module/Install/Fetch.pm
-inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/Sub/Exporter.pm
 lib/Sub/Exporter/Tutorial.pod
 lib/Sub/Exporter/Util.pm
-Makefile.PL
+LICENSE
 MANIFEST			This list of files
 META.yml
 README
@@ -24,6 +23,7 @@ t/into-level.t
 t/lib/Test/SubExporter/DashSetup.pm
 t/lib/Test/SubExporter/Faux.pm
 t/lib/Test/SubExporter/GroupGen.pm
+t/lib/Test/SubExporter/GroupGenSubclass.pm
 t/lib/Test/SubExporter/ObjGen.pm
 t/lib/Test/SubExporter/s_e.pm
 t/perl-critic.t
@@ -37,4 +37,3 @@ t/util-like.t
 t/util-merge.t
 t/util-mixin.t
 t/valid-config.t
-LICENSE
