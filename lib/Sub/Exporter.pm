@@ -755,7 +755,11 @@ sub default_exporter {
 sub _generate {
   my ($class, $generator, $name, $arg, $collection) = @_;
 
-  return $class->can($name) unless $generator;
+  if (not defined $generator) {
+    my $code = $class->can($name)
+      or Carp::croak "can't locate exported subroutine $name via $class";
+    return $code;
+  }
 
   # I considered making this "$class->$generator(" but it seems that
   # overloading precedence would turn an overloaded-as-code generator object

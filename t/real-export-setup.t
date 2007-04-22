@@ -12,7 +12,7 @@ calling style.
 
 =cut
 
-use Test::More tests => 35;
+use Test::More tests => 37;
 
 BEGIN { use_ok('Sub::Exporter'); }
 
@@ -31,6 +31,20 @@ for my $iteration (1..2) {
 
     Test::SubExporter::SETUP->import(':all');
     main::is(X(), "desired", "constructed importer (via -setup [LIST]) worked");
+  }
+
+  {
+    package Test::SubExporter::EXPORT_MISSING;
+    use Sub::Exporter -setup => [ qw(X) ];
+
+    package Test::SubExporter::SETUP::CONSUMER_OF_MISSING;
+
+    eval { Test::SubExporter::EXPORT_MISSING->import(':all') };
+    main::like(
+      $@,
+      qr/can't locate export/,
+      "croak if we're configured to export something that can't be found",
+    );
   }
 
   {
