@@ -2,6 +2,7 @@ Revision history for Sub-Exporter
 
 0.975   2007-07-04
         update Tutorial to show (preferred) \'name' style for generators
+        added curry_chain
 
 0.974   2007-04-22
         fix a bug that didn't mind trying to export a routine that didn't exist

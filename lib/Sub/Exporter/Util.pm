@@ -3,6 +3,8 @@ use warnings;
 
 package Sub::Exporter::Util;
 
+use Data::OptList ();
+
 =head1 NAME
 
 Sub::Exporter::Util - utilities to make Sub::Exporter easier
@@ -64,6 +66,70 @@ sub curry_class {
     my ($class, $name) = @_;
     $name = $override_name if defined $override_name;
     sub { $class->$name(@_); };
+  }
+}
+
+=head2 curry_chain
+
+C<curry_chain> behaves like C<L</curry_class>>, but is meant for generating
+exports that will call several methods in succession.
+
+  exports => {
+    reticulate => curry_chain([
+      new => gather_data => analyze => [ detail => 100 ] => results
+    ]),
+  }
+
+If imported from Spliner, calling the C<reticulate> routine will be equivalent
+to:
+
+  Splinter->new->gather_data->analyze(detail => 100)->results;
+
+If any method returns something on which methods may not be called, the routine
+croaks.
+
+The arguments to C<curry_chain> form an optlist.  The names are methods to be
+called and the arguments, if given, are arrayrefs to be dereferenced and passed
+as arguments to those methods.  C<curry_chain> returns a generator like those
+expected by Sub::Exporter.
+
+B<Achtung!> at present, there is no way to pass arguments from the generated
+routine to the method calls.  This will probably be solved in future revisions
+by allowing the opt list's values to be subroutines that will be called with
+the generated routine's stack.
+
+=cut
+
+sub curry_chain {
+  # In the future, we can make \%arg an optional prepend, like the "special"
+  # args to the default Sub::Exporter-generated import routine.
+  my (@opt_list) = @_;
+
+  my $pairs = Data::OptList::mkopt(\@opt_list, 'args', 'ARRAY');
+
+  sub {
+    my ($class) = @_;
+
+    sub {
+      my $next = $class;
+
+      for my $i (0 .. $#$pairs) {
+        my $pair = $pairs->[ $i ];
+        
+        unless (Params::Util::_INVOCANT($next)) {
+          my $str = defined $next ? "'$next'" : 'undef';
+          Carp::croak("can't call $pair->[0] on non-invocant $str")
+        }
+
+        my ($method, $args) = @$pair;
+
+        if ($i == $#$pairs) {
+          return $next->$method($args ? @$args : ());
+        } else {
+          $next = $next->$method($args ? @$args : ());
+        }
+      }
+    };
   }
 }
 
@@ -211,7 +277,7 @@ sub like {
 }
 
 use Sub::Exporter -setup => {
-  exports => [ qw(like merge_col curry_class mixin_exporter) ]
+  exports => [ qw(like merge_col curry_class curry_chain mixin_exporter) ]
 };
 
 =head1 AUTHOR

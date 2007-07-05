@@ -35,6 +35,7 @@ t/real-export-groupgen.t
 t/real-export-href.t
 t/real-export-setup.t
 t/util-curry.t
+t/util-currychain.t
 t/util-like.t
 t/util-merge.t
 t/util-mixin.t
