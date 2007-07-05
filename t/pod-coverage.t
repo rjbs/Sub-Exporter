@@ -16,4 +16,6 @@ BEGIN {
     if $@;
 }
 
-all_pod_coverage_ok;
+all_pod_coverage_ok({
+  trustme => [ 'curry_class' ],
+});

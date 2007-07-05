@@ -28,14 +28,14 @@ utilites may be exported, but none are by default.
 
 =head1 THE UTILITIES
 
-=head2 curry_class
+=head2 curry_method
 
   exports => {
-    some_method => curry_class,
+    some_method => curry_method,
   }
 
-This utility returns a generator which will produce a class-curried version of
-a method.  In other words, it will export a method call with the exporting
+This utility returns a generator which will produce an invocant-curried version
+of a method.  In other words, it will export a method call with the exporting
 class built in as the invocant.
 
 A module importing the code some the above example might do this:
@@ -53,15 +53,17 @@ This would be equivalent to:
 If Some::Module is subclassed and the subclass's import method is called to
 import C<some_method>, the subclass will be curried in as the invocant.
 
-If an argument is provided for C<curry_class> it is used as the name of the
+If an argument is provided for C<curry_method> it is used as the name of the
 curried method to export.  This means you could export a Widget constructor
 like this:
 
-  exports => { widget => curry_class('new') }
+  exports => { widget => curry_method('new') }
+
+This utility may also be called as C<curry_class>, for backwards compatibility.
 
 =cut
 
-sub curry_class {
+sub curry_method {
   my $override_name = shift;
   sub {
     my ($class, $name) = @_;
@@ -70,9 +72,11 @@ sub curry_class {
   }
 }
 
+BEGIN { *curry_class = \&curry_method; }
+
 =head2 curry_chain
 
-C<curry_chain> behaves like C<L</curry_class>>, but is meant for generating
+C<curry_chain> behaves like C<L</curry_method>>, but is meant for generating
 exports that will call several methods in succession.
 
   exports => {
@@ -278,7 +282,13 @@ sub like {
 }
 
 use Sub::Exporter -setup => {
-  exports => [ qw(like merge_col curry_class curry_chain mixin_exporter) ]
+  exports => [ qw(
+    like
+    merge_col
+    curry_method curry_class
+    curry_chain
+    mixin_exporter
+  ) ]
 };
 
 =head1 AUTHOR
