@@ -4,6 +4,7 @@ use warnings;
 package Sub::Exporter::Util;
 
 use Data::OptList ();
+use Params::Util ();
 
 =head1 NAME
 
@@ -11,13 +12,13 @@ Sub::Exporter::Util - utilities to make Sub::Exporter easier
 
 =head1 VERSION
 
-version 0.022
+version 0.975
 
   $Id$
 
 =cut
 
-our $VERSION = '0.022';
+our $VERSION = '0.975';
 
 =head1 DESCRIPTION
 
