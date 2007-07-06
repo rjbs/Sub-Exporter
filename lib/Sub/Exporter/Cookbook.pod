@@ -64,11 +64,94 @@ method on an otherwise unavailable Cypher object.
 
 =head2 Exporting Methods as Methods
 
-TODO
+While exporting modules usually export subroutines to be called as subroutines,
+it's easy to use Sub::Exporter to export subroutines meant to be called as
+methods on the importing package or its objects.
+
+Here's a trivial (and naive) example:
+
+  package Mixin::DumpObj;
+
+  use Data::Dumper;
+
+  use Sub::Exporter -setup => {
+    exports => [ qw(dump) ]
+  };
+
+  sub dump {
+    my ($self) = @_;
+    return Dumper($self);
+  }
+
+When writing your own object class, you can then import C<dump> to be used as a
+method, called like so:
+
+  $object->dump;
+
+By assuming that the importing class will provide a certain interface, a
+method-exporting module can be used as a simple plugin:
+
+  package Number::Plugin::Upto;
+  use Sub::Exporter -setup => {
+    into    => 'Number',
+    exports => [ qw(upto) ],
+    groups  => [ default => [ qw(upto) ] ],
+  };
+
+  sub upto {
+    my ($self) = @_;
+    return 1 .. abs($self->as_integer);
+  }
+
+The C<into> line in the configuration says that this plugin will export, by
+default, into the Number package, not into the C<use>-ing package.  It can be
+exported anyway, though, and will work as long as the destination provides an
+C<as_integer> method like the one it expects.  To import it to a different
+destination, one can just write:
+
+  use Number::Plugin::Upto { into => 'Quantity' };    
 
 =head2 Mixing-in Complex External Behavior
 
-TODO
+When exporting methods to be used as methods (see above), one very powerful
+option is to export methods that are generated routines that maintain an
+enclosed reference to the exporting module.  This allows a user to import a
+single method which is implemented in terms of a complete, well-structured
+package.
+
+Here is a very small example:
+
+  package Data::Analyzer;
+
+  use Sub::Exporter -setup => {
+    exports => [ analyze => \'_generate_analyzer' ],
+  };
+
+  sub _generate_analyzer {
+    my ($mixin, $name, $arg, $col) = @_;
+
+    return sub {
+      my ($self) = @_;
+
+      my $values = [ $self->values ];
+
+      my $analyzer = $mixin->new($values);
+      $analyzer->perform_analysis;
+      $analyzer->aggregate_results;
+
+      return $analyzer->summary;
+    };
+  }
+
+If imported by any package providing a C<values> method, this plugin will
+provide a single C<analyze> method that acts as a simple interface to a more
+complex set of behaviors.
+
+Even more importantly, because the C<$mixin> value will be the invocant on
+which the C<import> was actually called, one can subclass C<Data::Analyzer> and
+replace only individual pieces of the complex behavior, making it easy to write
+complex, subclassable toolkits with simple single points of entry for external
+interfaces.
 
 =head2 Exporting Constants
 
@@ -194,4 +277,12 @@ but will support export and group renaming, including exporting into scalar
 references.  Further, since Sub::Exporter uses C<can> to find the routine being
 exported, the new package may be subclassed and some of its exports replaced.
 
-=cut
+=head1 AUTHOR
+
+Ricardo SIGNES, C<< <rjbs@cpan.org> >>
+
+=head1 COPYRIGHT
+
+Copyright 2007, Ricardo SIGNES.  This is free software;  you can redistribute
+it and/or modify it under the same terms as Perl itself.
+
