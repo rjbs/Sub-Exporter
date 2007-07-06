@@ -121,7 +121,7 @@ sub curry_chain {
       for my $i (0 .. $#$pairs) {
         my $pair = $pairs->[ $i ];
         
-        unless (Params::Util::_INVOCANT($next)) {
+        unless (Params::Util::_INVOCANT($next)) { ## no critic Private
           my $str = defined $next ? "'$next'" : 'undef';
           Carp::croak("can't call $pair->[0] on non-invocant $str")
         }

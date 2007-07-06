@@ -465,7 +465,7 @@ sub _expand_group {
     delete $group_arg->{-prefix};
     delete $group_arg->{-suffix};
 
-    my $group = Params::Util::_CODELIKE($exports)
+    my $group = Params::Util::_CODELIKE($exports) ## no critic Private
               ? $exports->($class, $group_name, $group_arg, $collection)
               : $class->$$exports($group_name, $group_arg, $collection);
 
@@ -516,7 +516,7 @@ sub _collect_collections {
       };
 
       my $error_msg = "collection $name failed validation";
-      if (Params::Util::_SCALAR0($hook)) {
+      if (Params::Util::_SCALAR0($hook)) { ## no critic Private
         Carp::croak $error_msg unless $class->$$hook($value, $arg);
       } else {
         Carp::croak $error_msg unless $hook->($value, $arg);
@@ -765,7 +765,7 @@ sub _generate {
   # overloading precedence would turn an overloaded-as-code generator object
   # into a string before code. -- rjbs, 2006-06-11
   return $generator->($class, $name, $arg, $collection)
-    if Params::Util::_CODELIKE($generator);
+    if Params::Util::_CODELIKE($generator); ## no critic Private
 
   # This "must" be a scalar reference, to a generator method name.
   # -- rjbs, 2006-12-05
