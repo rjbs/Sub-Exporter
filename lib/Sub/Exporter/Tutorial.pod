@@ -199,7 +199,7 @@ When a generator is called, it is passed four parameters:
 
 =over
 
-=item * the class on which the exporter was called
+=item * the invocant on which the exporter was called
 
 =item * the name of the export being generated (not the name it's being installed as)
 
@@ -209,7 +209,7 @@ When a generator is called, it is passed four parameters:
 
 =back
 
-The third item is the last major feature that hasn't been covered.
+The fourth item is the last major feature that hasn't been covered.
 
 =head2 Argument Collectors
 
@@ -231,7 +231,7 @@ module was used like this:
   use Menu::Airline allergies => [ qw(peanuts) ], ethics => [ qw(vegan) ];
 
 ...the consumer would get a salad.  Also, all the generators would be passed,
-as their third argument, something like this:
+as their fourth argument, something like this:
 
   { allerges => [ qw(peanuts) ], ethics => [ qw(vegan) ] }
 

@@ -1,5 +1,8 @@
 Revision history for Sub-Exporter
 
+0.976   2007-07-0?
+        clarify args passed to generator in Tutorial; thanks MARKSTOS
+
 0.975   2007-07-04
         update Tutorial to show (preferred) \'name' style for generators
         changed "standard" name of curry_class to curry_method
