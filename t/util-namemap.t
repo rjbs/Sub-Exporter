@@ -2,14 +2,17 @@
 use strict;
 use warnings;
 
-use Test::More tests => 3;
+use Test::More skip_all => 'not actually offerring this feature yet';
+
+# use Test::More tests => 3;
+
 BEGIN { use_ok("Sub::Exporter::Util", 'name_map'); }
 
 is_deeply(
   {
     name_map(
-      '_$_gen'  => [ qw(fee fie) ],
-      '_make_$' => [ qw(foo bar) ],
+      '_?_gen'  => [ qw(fee fie) ],
+      '_make_?' => [ qw(foo bar) ],
     ),
   },
   {
@@ -22,4 +25,4 @@ is_deeply(
 );
 
 eval { name_map(foo => [ qw(bar) ] ) };
-like($@, qr/no \$/, 'exception raised with no $ in template');
+like($@, qr/no \?/, 'exception raised with no ? in template');

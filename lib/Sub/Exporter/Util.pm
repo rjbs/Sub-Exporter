@@ -138,50 +138,50 @@ sub curry_chain {
   }
 }
 
-=head2 name_map
-
-This utility returns an list to be used in specify export generators.  For
-example, the following:
-
-  exports => {
-    name_map(
-      '_$_gen'  => [ qw(fee fie) ],
-      '_make_$' => [ qw(foo bar) ],
-    ),
-  }
-
-is equivalent to:
-
-  exports => {
-    name_map(
-      fee => \'_fee_gen',
-      fie => \'_fie_gen',
-      foo => \'_make_foo',
-      bar => \'_make_bar',
-    ),
-  }
-
-This can save a lot of typing, when providing many exports with similarly-named
-generators.
-
-=cut
-
-sub name_map {
-  my (%groups) = @_;
-
-  my %map;
-
-  while (my ($template, $names) = each %groups) {
-    for my $name (@$names) {
-      (my $export = $template) =~ s/\$/$name/
-        or Carp::croak 'no $ found in name_map template';
-
-      $map{ $name } = \$export;
-    }
-  }
-
-  return %map;
-}
+# =head2 name_map
+# 
+# This utility returns an list to be used in specify export generators.  For
+# example, the following:
+# 
+#   exports => {
+#     name_map(
+#       '_?_gen'  => [ qw(fee fie) ],
+#       '_make_?' => [ qw(foo bar) ],
+#     ),
+#   }
+# 
+# is equivalent to:
+# 
+#   exports => {
+#     name_map(
+#       fee => \'_fee_gen',
+#       fie => \'_fie_gen',
+#       foo => \'_make_foo',
+#       bar => \'_make_bar',
+#     ),
+#   }
+# 
+# This can save a lot of typing, when providing many exports with similarly-named
+# generators.
+# 
+# =cut
+# 
+# sub name_map {
+#   my (%groups) = @_;
+# 
+#   my %map;
+# 
+#   while (my ($template, $names) = each %groups) {
+#     for my $name (@$names) {
+#       (my $export = $template) =~ s/\?/$name/
+#         or Carp::croak 'no ? found in name_map template';
+# 
+#       $map{ $name } = \$export;
+#     }
+#   }
+# 
+#   return %map;
+# }
 
 =head2 merge_col
 
