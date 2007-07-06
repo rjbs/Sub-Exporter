@@ -7,14 +7,15 @@ BEGIN { use_ok("Sub::Exporter"); }
 
   BEGIN {
     package Thing;
-  BEGIN { main::use_ok("Sub::Exporter::Util", 'merge_col'); }
+    BEGIN { main::use_ok("Sub::Exporter::Util", 'merge_col'); }
+
     use Sub::Exporter -setup => {
       collectors => [ qw(defaults etc) ],
       exports    => {
         merge_col(
           defaults => {
             stack => sub { my @x = @_; sub { return @x } },
-            kcats => sub { my @x = @_; sub { return reverse @x } },
+            kcats => \'_kcats_gen',
           },
           empty    => {
             bogus => sub { my @x = @_; sub { return @x } },
@@ -27,6 +28,11 @@ BEGIN { use_ok("Sub::Exporter"); }
         plain => sub { my @x = @_; sub { return @x } },
       },
     };
+
+    sub _kcats_gen {
+      my @x = @_;
+      sub { return reverse @x }
+    }
   }
 
 package Test::SubExporter::MERGE::0;

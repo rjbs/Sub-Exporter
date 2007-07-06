@@ -1,6 +1,8 @@
 Revision history for Sub-Exporter
 
 0.976   2007-07-0?
+        fixed merge_col, which was not updated to work with \name generators
+        added name_map to Sub::Exporter::Util
         clarify args passed to generator in Tutorial; thanks MARKSTOS
 
 0.975   2007-07-04

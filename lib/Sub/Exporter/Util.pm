@@ -12,13 +12,13 @@ Sub::Exporter::Util - utilities to make Sub::Exporter easier
 
 =head1 VERSION
 
-version 0.975
+version 0.976
 
   $Id$
 
 =cut
 
-our $VERSION = '0.975';
+our $VERSION = '0.976';
 
 =head1 DESCRIPTION
 
@@ -138,11 +138,56 @@ sub curry_chain {
   }
 }
 
+=head2 name_map
+
+This utility returns an list to be used in specify export generators.  For
+example, the following:
+
+  exports => {
+    name_map(
+      '_$_gen'  => [ qw(fee fie) ],
+      '_make_$' => [ qw(foo bar) ],
+    ),
+  }
+
+is equivalent to:
+
+  exports => {
+    name_map(
+      fee => \'_fee_gen',
+      fie => \'_fie_gen',
+      foo => \'_make_foo',
+      bar => \'_make_bar',
+    ),
+  }
+
+This can save a lot of typing, when providing many exports with similarly-named
+generators.
+
+=cut
+
+sub name_map {
+  my (%groups) = @_;
+
+  my %map;
+
+  while (my ($template, $names) = each %groups) {
+    for my $name (@$names) {
+      (my $export = $template) =~ s/\$/$name/
+        or Carp::croak 'no $ found in name_map template';
+
+      $map{ $name } = \$export;
+    }
+  }
+
+  return %map;
+}
+
 =head2 merge_col
 
   exports => {
     merge_col(defaults => {
-      twiddle => \&_twiddle_gen,
+      twiddle => \'_twiddle_gen',
       tweak   => \&_tweak_gen,
     }),
   }
@@ -150,6 +195,8 @@ sub curry_chain {
 This utility wraps the given generator in one that will merge the named
 collection into its args before calling it.  This means that you can support a
 "default" collector in multipe exports without writing the code each time.
+
+You can specify as many pairs of collection names and generators as you like.
 
 =cut
 
@@ -167,7 +214,11 @@ sub merge_col {
                        ? { %{ $col->{$default_name} }, %$arg }
                        : $arg;
 
-        $gen->($class, $name, $merged_arg, $col);
+        if (Params::Util::_CODELIKE($gen)) {
+          $gen->($class, $name, $merged_arg, $col);
+        } else {
+          $class->$$gen($name, $merged_arg, $col);
+        }
       }
     }
   }
@@ -284,6 +335,7 @@ sub like {
 use Sub::Exporter -setup => {
   exports => [ qw(
     like
+    name_map
     merge_col
     curry_method curry_class
     curry_chain

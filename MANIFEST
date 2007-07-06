@@ -3,7 +3,6 @@ inc/Module/Install.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
 inc/Module/Install/Fetch.pm
-inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
@@ -12,8 +11,7 @@ lib/Sub/Exporter/Cookbook.pod
 lib/Sub/Exporter/Tutorial.pod
 lib/Sub/Exporter/Util.pm
 LICENSE
-MANIFEST
-Makefile.PL
+MANIFEST			This list of files
 META.yml
 README
 t/collection.t
@@ -40,4 +38,5 @@ t/util-currychain.t
 t/util-like.t
 t/util-merge.t
 t/util-mixin.t
+t/util-namemap.t
 t/valid-config.t
