@@ -214,7 +214,7 @@ sub merge_col {
                        ? { %{ $col->{$default_name} }, %$arg }
                        : $arg;
 
-        if (Params::Util::_CODELIKE($gen)) {
+        if (Params::Util::_CODELIKE($gen)) { ## no critic Private
           $gen->($class, $name, $merged_arg, $col);
         } else {
           $class->$$gen($name, $merged_arg, $col);
