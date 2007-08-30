@@ -8,7 +8,7 @@ These tests exercise the handling of collections in the exporter option lists.
 
 =cut
 
-use Test::More tests => 7;
+use Test::More tests => 8;
 use Data::OptList qw(mkopt_hash);
 
 BEGIN { use_ok('Sub::Exporter'); }
@@ -34,6 +34,7 @@ my $config = {
     'defaults',
     brand_preference => sub { 0 },
     model_preference => sub { 1 },
+    sets_own_value   => sub { $_[0] = { foo => 10 } },
     definedp         => \'is_defined',
 
   ]
@@ -53,6 +54,20 @@ $config->{$_} = mkopt_hash($config->{$_})
     $collection,
     { defaults => { foo => 1, bar => 2 } },
     "collection returned properly from collector",
+  );
+}
+
+{
+  my $collection = Sub::Exporter::_collect_collections(
+    $config, 
+    [ [ sets_own_value => undef ] ],
+    'main',
+  );
+
+  is_deeply(
+    $collection,
+    { sets_own_value => { foo => 10} },
+    "a collector can alter the stack to change its own value",
   );
 }
 
