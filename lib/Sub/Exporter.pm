@@ -16,8 +16,6 @@ Sub::Exporter - a sophisticated exporter for custom-built routines
 
 version 0.976
 
-  $Id$
-
 =cut
 
 our $VERSION = '0.976';
@@ -504,8 +502,6 @@ sub _collect_collections {
     Carp::croak "collection $name provided multiple times in import"
       if $seen{ $name }++;
 
-    $collection{ $name } = $value;
-
     if (ref(my $hook = $config->{collectors}{$name})) {
       my $arg = {
         name        => $name,
@@ -522,6 +518,8 @@ sub _collect_collections {
         Carp::croak $error_msg unless $hook->($value, $arg);
       }
     }
+
+    $collection{ $name } = $value;
   }
 
   return \%collection;
