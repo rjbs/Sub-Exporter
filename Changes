@@ -1,7 +1,8 @@
 Revision history for Sub-Exporter
 
-0.976   2007-07-0?
+0.976   2007-08-30
         fixed merge_col, which was not updated to work with \name generators
+        collector hooks can now alter @_ to replace the value to be collected
         clarify args passed to generator in Tutorial; thanks MARKSTOS
 
         added commented-out name_map to Sub::Exporter::Util; future feature?
