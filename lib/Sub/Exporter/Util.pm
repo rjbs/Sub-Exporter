@@ -261,21 +261,15 @@ sub __mixin_class_for {
 }
 
 sub mixin_exporter {
-  # These are NOT arguments to mixin_exporter, that's why there is no = @_.
-  # They are variables created to enclose in each generated exporter coderef.
-  my ($mixin_class, $col_ref);
-
   sub {
-    my ($class, $generator, $name, $arg, $collection, $as, $into) = @_;
+    my ($arg, $to_export) = @_;
 
-    unless ($mixin_class and ($collection == $col_ref)) {
-      $mixin_class = __mixin_class_for($class, $into);
-      bless $into => $mixin_class if ref $into;
-      $col_ref = 0 + $collection;
-    }
+    my $mixin_class = __mixin_class_for($arg->{class}, $arg->{into});
+    bless $arg->{into} => $mixin_class if ref $arg->{into};
 
     Sub::Exporter::default_exporter(
-      $class, $generator, $name, $arg, $collection, $as, $mixin_class
+      { %$arg, into => $mixin_class },
+      $to_export,
     );
   };
 }

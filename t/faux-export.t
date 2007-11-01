@@ -35,10 +35,10 @@ my $config = {
 };
 
 {
-  my ($reset, $export, $exports) = faux_exporter;
+  my ($generator, $exporter, $reset, $exports) = faux_exporter;
   my $code = sub {
     $reset->();
-    splice @_, 1, 0, { exporter => $export };
+    splice @_, 1, 0, { generator => $generator, exporter => $exporter };
     Sub::Exporter::build_exporter($config)->(@_);
   };
 
@@ -86,10 +86,10 @@ my $config = {
 }
 
 {
-  my ($reset, $export, $exports) = faux_exporter;
+  my ($generator, $exporter, $reset, $exports) = faux_exporter;
   my $code = sub {
     $reset->();
-    splice @_, 1, 0, { exporter => $export };
+    splice @_, 1, 0, { generator => $generator, exporter => $exporter };
     Sub::Exporter::build_exporter({ exports => [ 'foo' ] })->(@_);
   };
 
@@ -110,9 +110,13 @@ my $config = {
 
 {
   package Test::SubExport::FAUX;
-  my ($reset, $export, $exports) = main::faux_exporter;
+  my ($generator, $exporter, $reset, $exports) = main::faux_exporter;
 
-  Sub::Exporter::setup_exporter({ exports => [ 'X' ], exporter => $export });
+  Sub::Exporter::setup_exporter({
+    exports   => [ 'X' ],
+    exporter  => $exporter,
+    generator => $generator,
+  });
   __PACKAGE__->import(':all');
 
   main::exports_ok($exports, [ [ X => {} ] ], "setup (not built) exporter");

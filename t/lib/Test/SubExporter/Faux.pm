@@ -15,21 +15,38 @@ sub faux_exporter {
 
   my $reset = sub { @exported = () };
 
-  my $export = sub {
-    my ($class, $generator, $name, $arg, $collection, $as, $into) = @_;
-    my $everything = { 
-      class      => $class,
-      generator  => $generator,
-      name       => $name,
-      arg        => $arg,
-      collection => $collection,
-      as         => $as,
-      into       => $into,
-    };
-    push @exported, [ $name, ($verbose ? $everything : $arg) ];
+  my $generator = sub {
+    my ($arg) = @_;
+    # my ($class, $name, $generator) = @$arg{qw(class name generator)};
+
+    return $arg;
   };
 
-  return ($reset, $export, \@exported);
+  my $exporter  = sub {
+    my ($arg, $to_export) = @_;
+
+    for (my $i = 0; $i < @$to_export; $i += 2) {
+      my ($as, $gen_arg) = @$to_export[ $i, $i+1 ];
+
+      # my ($class, $generator, $name, $arg, $collection, $as, $into) = @_;
+      my $everything = {
+        class      => $gen_arg->{class},
+        generator  => $gen_arg->{generator},
+        name       => $gen_arg->{name},
+        arg        => $gen_arg->{arg},
+        collection => $gen_arg->{col},
+        as         => $as,
+        into       => $arg->{into},
+      };
+
+      push @exported, [
+        $gen_arg->{name},
+        ($verbose ? $everything : $gen_arg->{arg}),
+      ];
+    }
+  };
+
+  return ($generator, $exporter, $reset, \@exported);
 }
 
 sub exports_ok {
