@@ -677,35 +677,37 @@ sub build_exporter {
     my $to_import = _expand_groups($class, $config, $import_args, $collection);
 
     # now, finally $import_arg is really the "to do" list
-    for (@$to_import) {
-      _do_import($class, @$_, $collection, $config, $into, $export);
-    }
+    _do_import($class, $to_import, $collection, $config, $into, $export);
   };
 
   return $import;
 }
 
 sub _do_import {
-  my ($class, $name, $arg, $collection, $config, $into, $export) = @_;
+  my ($class, $to_import, $collection, $config, $into, $export) = @_;
 
-  my ($generator, $as);
+  for my $pair (@$to_import) {
+    my ($name, $arg) = @$pair;
 
-  if ($arg and Params::Util::_CODELIKE($arg)) { ## no critic
-    # This is the case when a group generator has inserted name/code pairs.
-    $generator = sub { $arg };
-    $as = $name;
-  } else {
-    $arg = { $arg ? %$arg : () };
+    my ($generator, $as);
 
-    Carp::croak qq("$name" is not exported by the $class module)
-      unless (exists $config->{exports}{$name});
+    if ($arg and Params::Util::_CODELIKE($arg)) { ## no critic
+      # This is the case when a group generator has inserted name/code pairs.
+      $generator = sub { $arg };
+      $as = $name;
+    } else {
+      $arg = { $arg ? %$arg : () };
 
-    $generator = $config->{exports}{$name};
+      Carp::croak qq("$name" is not exported by the $class module)
+        unless (exists $config->{exports}{$name});
 
-    $as = exists $arg->{-as} ? (delete $arg->{-as}) : $name;
+      $generator = $config->{exports}{$name};
+
+      $as = exists $arg->{-as} ? (delete $arg->{-as}) : $name;
+    }
+
+    $export->($class, $generator, $name, $arg, $collection, $as, $into);
   }
-
-  $export->($class, $generator, $name, $arg, $collection, $as, $into);
 }
 
 # XXX: Consider implementing a _export_args routine that takes the arguments to
