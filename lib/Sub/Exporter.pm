@@ -760,6 +760,18 @@ B<Warning!>  Its interface isn't really stable yet, so don't rely on it.  It's
 only named here so that you can pass it in to the exporter builder.  It will
 have a stable interface in the future so that it may be more easily replaced.
 
+
+  default_exporter(\%arg, \@to_export);
+
+Passed arguments are:
+
+  into - the package into which exports should be delivered
+
+C<@to_export> is a list of name/value pairs.  The default exporter assigns code
+(the values) to named slots (the names) in the given package.  If the name is a
+scalar reference, the scalar reference is made to point to the code reference
+instead.
+
 =cut
 
 sub default_exporter {
@@ -809,6 +821,17 @@ installed.
 B<Warning!>  Its interface isn't really stable yet, so don't rely on it.  It's
 only named here so that you can pass it in to the exporter builder.  It will
 have a stable interface in the future so that it may be more easily replaced.
+
+  my $code = default_generator(\%arg);
+
+Passed arguments are:
+
+  class - the class on which the import method was called
+  name  - the name of the export being generated
+  arg   - the arguments to the generator
+  col   - the collections
+
+  generator - the generator to be used to build the export (code or scalar ref)
 
 =cut
 
