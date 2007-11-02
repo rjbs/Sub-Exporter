@@ -874,7 +874,7 @@ sub default_installer {
 }
 
 sub default_exporter {
-  Carp::croak "default_exporter is deprecated; call default_installer instead; the semantics are identical";
+  Carp::cluck "default_exporter is deprecated; call default_installer instead; the semantics are identical";
   goto &default_installer;
 }
 
