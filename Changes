@@ -1,5 +1,10 @@
 Revision history for Sub-Exporter
 
+0.977_02  2007-11-01
+          improve documentation of new installer/generator options
+          deprecate calling "installer" the "exporter"
+          WARNING: "exporter" OPTION WILL BE REMOVED AFTER 2008-06-01
+
 0.977_01  2007-10-31
           major refactoring of the core generation/installation code
           tentative interface documentation for replacing it!
