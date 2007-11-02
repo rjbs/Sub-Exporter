@@ -29,9 +29,9 @@ BEGIN { use_ok("Sub::Exporter"); }
 
   BEGIN {
     package Thing::Mixin;
-    BEGIN { main::use_ok("Sub::Exporter::Util", 'mixin_exporter'); }
+    BEGIN { main::use_ok("Sub::Exporter::Util", 'mixin_installer'); }
     use Sub::Exporter -setup => {
-      exporter => mixin_exporter,
+      installer => mixin_installer,
       exports  => {
         bar => sub { sub { 1 } },
         foo => sub {
@@ -46,7 +46,7 @@ package Test::SubExporter::MIXIN::0;
 
 BEGIN {
   Thing->import(
-    { exporter => Sub::Exporter::Util::mixin_exporter },
+    { installer => Sub::Exporter::Util::mixin_installer },
     -all => { arg => '0' },
   );
 }
@@ -55,7 +55,7 @@ package Test::SubExporter::MIXIN::1;
 
 BEGIN {
   Thing->import(
-    { exporter => Sub::Exporter::Util::mixin_exporter },
+    { installer => Sub::Exporter::Util::mixin_installer },
     -all => { arg => '1' },
   );
 }

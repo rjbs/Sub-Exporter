@@ -5,9 +5,9 @@ package Test::SubExporter::Faux;
 
 use base qw(Exporter);
 
-our @EXPORT = qw(faux_exporter exports_ok everything_ok);
+our @EXPORT = qw(faux_installer exports_ok everything_ok);
 
-sub faux_exporter {
+sub faux_installer {
   my ($verbose) = @_;
   $verbose = 1;
 
@@ -22,7 +22,7 @@ sub faux_exporter {
     return $arg;
   };
 
-  my $exporter  = sub {
+  my $installer  = sub {
     my ($arg, $to_export) = @_;
 
     for (my $i = 0; $i < @$to_export; $i += 2) {
@@ -46,7 +46,7 @@ sub faux_exporter {
     }
   };
 
-  return ($generator, $exporter, $reset, \@exported);
+  return ($generator, $installer, $reset, \@exported);
 }
 
 sub exports_ok {

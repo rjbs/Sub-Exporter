@@ -224,15 +224,15 @@ sub merge_col {
   return %merged;
 }
 
-=head2 mixin_exporter
+=head2 mixin_installer
 
   use Sub::Exporter -setup => {
-    exporter => Sub::Exporter::Util::mixin_exporter,
-    exports  => [ qw(foo bar baz) ],
+    installer => Sub::Exporter::Util::mixin_installer,
+    exports   => [ qw(foo bar baz) ],
   };
 
-This utility returns an exporter that will export into a superclass and adjust
-the ISA importing class to include the newly generated superclass.
+This utility returns an installer that will install into a superclass and
+adjust the ISA importing class to include the newly generated superclass.
 
 If the target of importing is an object, the hierarchy is reversed: the new
 class will be ISA the object's class, and the object will be reblessed.
@@ -258,18 +258,23 @@ sub __mixin_class_for {
   return $mixin_class;
 }
 
-sub mixin_exporter {
+sub mixin_installer {
   sub {
     my ($arg, $to_export) = @_;
 
     my $mixin_class = __mixin_class_for($arg->{class}, $arg->{into});
     bless $arg->{into} => $mixin_class if ref $arg->{into};
 
-    Sub::Exporter::default_exporter(
+    Sub::Exporter::default_installer(
       { %$arg, into => $mixin_class },
       $to_export,
     );
   };
+}
+
+sub mixin_exporter {
+  Carp::croak "mixin_exporter is deprecated; use mixin_installer instead; it behaves identically";
+  return mixin_installer;
 }
 
 =head2 like
@@ -331,7 +336,7 @@ use Sub::Exporter -setup => {
     merge_col
     curry_method curry_class
     curry_chain
-    mixin_exporter
+    mixin_installer mixin_exporter
   ) ]
 };
 

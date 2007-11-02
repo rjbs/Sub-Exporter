@@ -17,5 +17,11 @@ BEGIN {
 }
 
 all_pod_coverage_ok({
-  trustme => [ 'curry_class' ],
+  trustme => [
+    # Sub::Exporter
+    qw(default_exporter),
+
+    # Sub::Exporter::Util
+    qw(curry_class mixin_exporter),
+  ],
 });

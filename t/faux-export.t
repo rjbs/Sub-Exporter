@@ -4,8 +4,8 @@ use warnings;
 
 =head1 TEST PURPOSE
 
-These tests check the output of build_exporter when handed an alternate
-exporter that returns its plan.
+These tests check the output of build_installer when handed an alternate
+installer that returns its plan.
 
 =cut
 
@@ -35,10 +35,10 @@ my $config = {
 };
 
 {
-  my ($generator, $exporter, $reset, $exports) = faux_exporter;
+  my ($generator, $installer, $reset, $exports) = faux_installer;
   my $code = sub {
     $reset->();
-    splice @_, 1, 0, { generator => $generator, exporter => $exporter };
+    splice @_, 1, 0, { generator => $generator, installer => $installer };
     Sub::Exporter::build_exporter($config)->(@_);
   };
 
@@ -86,10 +86,10 @@ my $config = {
 }
 
 {
-  my ($generator, $exporter, $reset, $exports) = faux_exporter;
+  my ($generator, $installer, $reset, $exports) = faux_installer;
   my $code = sub {
     $reset->();
-    splice @_, 1, 0, { generator => $generator, exporter => $exporter };
+    splice @_, 1, 0, { generator => $generator, installer => $installer };
     Sub::Exporter::build_exporter({ exports => [ 'foo' ] })->(@_);
   };
 
@@ -110,11 +110,11 @@ my $config = {
 
 {
   package Test::SubExport::FAUX;
-  my ($generator, $exporter, $reset, $exports) = main::faux_exporter;
+  my ($generator, $installer, $reset, $exports) = main::faux_installer;
 
   Sub::Exporter::setup_exporter({
     exports   => [ 'X' ],
-    exporter  => $exporter,
+    installer => $installer,
     generator => $generator,
   });
   __PACKAGE__->import(':all');

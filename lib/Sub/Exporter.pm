@@ -599,7 +599,8 @@ my %valid_config_key;
 BEGIN {
   %valid_config_key =
     map { $_ => 1 }
-    qw(collectors exporter generator exports groups into into_level)
+    qw(collectors installer generator exports groups into into_level),
+    qw(exporter), # deprecated
 }
 
 sub _rewrite_build_config {
@@ -607,6 +608,15 @@ sub _rewrite_build_config {
 
   if (my @keys = grep { not exists $valid_config_key{$_} } keys %$config) {
     Carp::croak "unknown options (@keys) passed to Sub::Exporter";
+  }
+
+  Carp::croak q(into and into_level may not both be supplied to exporter)
+    if exists $config->{into} and exists $config->{into_level};
+
+  # XXX: Remove after deprecation period.
+  if ($config->{exporter}) {
+    Carp::cluck "'exporter' argument to build_exporter is deprecated. Use 'installer' instead; the semantics are identical.";
+    $config->{installer} = delete $config->{exporter};
   }
 
   Carp::croak q(into and into_level may not both be supplied to exporter)
@@ -640,6 +650,9 @@ sub _rewrite_build_config {
 
   # by default, build an all-inclusive 'all' group
   $config->{groups}{all} ||= [ keys %{ $config->{exports} } ];
+
+  $config->{generator} ||= \&default_generator;
+  $config->{installer} ||= \&default_installer;
 }
 
 sub build_exporter {
@@ -655,6 +668,11 @@ sub build_exporter {
     Carp::croak q(into and into_level may not both be supplied to exporter)
       if exists $special->{into} and exists $special->{into_level};
 
+    if ($special->{exporter}) {
+      Carp::cluck "'exporter' special import argument is deprecated. Use 'installer' instead; the semantics are identical.";
+      $special->{installer} = delete $special->{exporter};
+    }
+
     my $into
       = defined $special->{into}       ? delete $special->{into}
       : defined $special->{into_level} ? caller(delete $special->{into_level})
@@ -662,13 +680,8 @@ sub build_exporter {
       : defined $config->{into_level}  ? caller($config->{into_level})
       :                                  caller(0);
 
-    my $exporter = delete $special->{exporter}
-                || $config->{exporter}
-                || \&default_exporter;
-
-    my $generator = delete $special->{generator}
-                 || $config->{generator}
-                 || \&default_generator;
+    my $generator = delete $special->{generator} || $config->{generator};
+    my $installer = delete $special->{installer} || $config->{installer};
 
     # this builds a AOA, where the inner arrays are [ name => value_ref ]
     my $import_args = Data::OptList::mkopt([ @_ ]);
@@ -687,8 +700,8 @@ sub build_exporter {
         col       => $collection,
         config    => $config,
         into      => $into,
-        exporter  => $exporter,
         generator => $generator,
+        installer => $installer,
       },
       $to_import,
     );
@@ -735,7 +748,7 @@ sub _do_import {
     push @todo, $as, $code;
   }
 
-  $arg->{exporter}->(
+  $arg->{installer}->(
     {
       class => $arg->{class},
       into  => $arg->{into},
@@ -751,17 +764,17 @@ sub _do_import {
 # premature guarantee, though, unless I guarantee that @_ will never get
 # /smaller/.
 
-=head2 default_exporter
+=head2 default_installer
 
-This is Sub::Exporter's default exporter.  It does what Sub::Exporter promises:
-it installs code into the target package.
+This is Sub::Exporter's default installer.  It does what Sub::Exporter
+promises: it installs code into the target package.
 
 B<Warning!>  Its interface isn't really stable yet, so don't rely on it.  It's
 only named here so that you can pass it in to the exporter builder.  It will
 have a stable interface in the future so that it may be more easily replaced.
 
 
-  default_exporter(\%arg, \@to_export);
+  default_installer(\%arg, \@to_export);
 
 Passed arguments are:
 
@@ -774,7 +787,7 @@ instead.
 
 =cut
 
-sub default_exporter {
+sub default_installer {
   my ($arg, $to_export) = @_;
 
   for (my $i = 0; $i < @$to_export; $i += 2) {
@@ -795,6 +808,11 @@ sub default_exporter {
       });
     }
   }
+}
+
+sub default_exporter {
+  Carp::croak "default_exporter is deprecated; call default_installer instead; the semantics are identical";
+  goto &default_installer;
 }
 
 ## Cute idea, possibly for future use: also supply an "unimport" for:

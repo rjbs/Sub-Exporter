@@ -8,8 +8,8 @@ BEGIN { use_ok("Sub::Exporter"); }
 use lib 't/lib';
 use Test::SubExporter::Faux;
 
-my ($generator, $exporter, $reset, $exports);
-BEGIN { ($generator, $exporter, $reset, $exports) = faux_exporter; }
+my ($generator, $installer, $reset, $exports);
+BEGIN { ($generator, $installer, $reset, $exports) = faux_installer; }
 
 my %generator;
 BEGIN {
@@ -23,12 +23,12 @@ BEGIN {
 }
 
   BEGIN {
-    isa_ok($exporter, 'CODE');
+    isa_ok($installer, 'CODE');
 
     package Thing;
     BEGIN { main::use_ok('Sub::Exporter::Util', 'like'); }
     use Sub::Exporter -setup => {
-      exporter   => $exporter,
+      installer  => $installer,
       generator  => $generator,
       collectors => {
         -like => like
