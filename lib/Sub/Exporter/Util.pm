@@ -273,7 +273,7 @@ sub mixin_installer {
 }
 
 sub mixin_exporter {
-  Carp::croak "mixin_exporter is deprecated; use mixin_installer instead; it behaves identically";
+  Carp::cluck "mixin_exporter is deprecated; use mixin_installer instead; it behaves identically";
   return mixin_installer;
 }
 
