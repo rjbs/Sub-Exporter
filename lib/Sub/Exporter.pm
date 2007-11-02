@@ -14,11 +14,11 @@ Sub::Exporter - a sophisticated exporter for custom-built routines
 
 =head1 VERSION
 
-version 0.977_01
+version 0.977_02
 
 =cut
 
-our $VERSION = '0.977_01';
+our $VERSION = '0.977_02';
 
 =head1 SYNOPSIS
 
@@ -176,8 +176,28 @@ The following keys are valid in C<%config>:
   groups  - a list of groups to provide for exporting; each must be followed by
             either (a) a list of exports, possibly with arguments for each
             export, or (b) a generator
+
   collectors - a list of names into which values are collected for use in
                routine generation; each name may be followed by a validator
+
+In addition to the basic options above, a few more advanced options may be
+passed:
+
+  into_level - how far up the caller stack to look for a target (default 0)
+  into       - an explicit target (package) into which to export routines
+
+In other words: Sub::Exporter installs a C<import> routine which, when called,
+exports routines to the calling namespace.  The C<into> and C<into_level>
+options change where those exported routines are installed.
+
+  generator  - a callback used to produce the code that will be installed
+               default: Sub::Exporter::default_generator
+
+  installer  - a callback used to install the code produced by the generator
+               default: Sub::Exporter::default_installer
+
+For information on how these callbacks are used, see the documentation for
+C<L</default_generator>> and C<L</default_installer>>.
 
 =head2 Export Configuration
 
@@ -363,11 +383,13 @@ first argument, in a hashref.
 
 These options are:
 
-  into_level - how far up the caller stack to look for a target (default 0)
-  into       - an explicit target (package) into which to export routines
+  into_level
+  into
+  generator
+  installer
 
-Providing both C<into_level> and C<into> will cause an exception to be
-thrown.
+These override the same-named configuration options described in L</EXPORTER
+CONFIGURATION>.
 
 =cut
 
@@ -549,9 +571,6 @@ Providing both C<into> and C<into_level> will cause an exception to be thrown.
 The exporter is built by C<L</build_exporter>>.
 
 =cut
-
-# \%special is for experimental options that may or may not be kept around and,
-# probably, moved to \%config.  These are also passed along to build_exporter.
 
 sub setup_exporter {
   my ($config)  = @_;
@@ -758,63 +777,6 @@ sub _do_import {
   );
 }
 
-# XXX: Consider implementing a _export_args routine that takes the arguments to
-# _export and returns a hash of named params.  This lets other people write
-# exporters without tying me down to one set of @_ contents.  Maybe that's
-# premature guarantee, though, unless I guarantee that @_ will never get
-# /smaller/.
-
-=head2 default_installer
-
-This is Sub::Exporter's default installer.  It does what Sub::Exporter
-promises: it installs code into the target package.
-
-B<Warning!>  Its interface isn't really stable yet, so don't rely on it.  It's
-only named here so that you can pass it in to the exporter builder.  It will
-have a stable interface in the future so that it may be more easily replaced.
-
-
-  default_installer(\%arg, \@to_export);
-
-Passed arguments are:
-
-  into - the package into which exports should be delivered
-
-C<@to_export> is a list of name/value pairs.  The default exporter assigns code
-(the values) to named slots (the names) in the given package.  If the name is a
-scalar reference, the scalar reference is made to point to the code reference
-instead.
-
-=cut
-
-sub default_installer {
-  my ($arg, $to_export) = @_;
-
-  for (my $i = 0; $i < @$to_export; $i += 2) {
-    my ($as, $code) = @$to_export[ $i, $i+1 ];
-
-    # Allow as isa ARRAY to push onto an array?
-    # Allow into isa HASH to install name=>code into hash?
-
-    if (ref $as eq 'SCALAR') {
-      $$as = $code;
-    } elsif (ref $as) {
-      Carp::croak "invalid reference type for $as: " . ref $as;
-    } else {
-      Sub::Install::reinstall_sub({
-        code => $code,
-        into => $arg->{into},
-        as   => $as
-      });
-    }
-  }
-}
-
-sub default_exporter {
-  Carp::croak "default_exporter is deprecated; call default_installer instead; the semantics are identical";
-  goto &default_installer;
-}
-
 ## Cute idea, possibly for future use: also supply an "unimport" for:
 ## no Module::Whatever qw(arg arg arg);
 # sub _unexport {
@@ -872,6 +834,52 @@ sub default_generator {
   # This "must" be a scalar reference, to a generator method name.
   # -- rjbs, 2006-12-05
   return $class->$$generator($name, $arg->{arg}, $arg->{col});
+}
+
+=head2 default_installer
+
+This is Sub::Exporter's default installer.  It does what Sub::Exporter
+promises: it installs code into the target package.
+
+  default_installer(\%arg, \@to_export);
+
+Passed arguments are:
+
+  into - the package into which exports should be delivered
+
+C<@to_export> is a list of name/value pairs.  The default exporter assigns code
+(the values) to named slots (the names) in the given package.  If the name is a
+scalar reference, the scalar reference is made to point to the code reference
+instead.
+
+=cut
+
+sub default_installer {
+  my ($arg, $to_export) = @_;
+
+  for (my $i = 0; $i < @$to_export; $i += 2) {
+    my ($as, $code) = @$to_export[ $i, $i+1 ];
+
+    # Allow as isa ARRAY to push onto an array?
+    # Allow into isa HASH to install name=>code into hash?
+
+    if (ref $as eq 'SCALAR') {
+      $$as = $code;
+    } elsif (ref $as) {
+      Carp::croak "invalid reference type for $as: " . ref $as;
+    } else {
+      Sub::Install::reinstall_sub({
+        code => $code,
+        into => $arg->{into},
+        as   => $as
+      });
+    }
+  }
+}
+
+sub default_exporter {
+  Carp::croak "default_exporter is deprecated; call default_installer instead; the semantics are identical";
+  goto &default_installer;
 }
 
 =head1 EXPORTS
