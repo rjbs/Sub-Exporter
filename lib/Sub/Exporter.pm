@@ -798,10 +798,6 @@ This is Sub::Exporter's default generator.  It takes bits of configuration that
 have been gathered during the import and turns them into a coderef that can be
 installed.
 
-B<Warning!>  Its interface isn't really stable yet, so don't rely on it.  It's
-only named here so that you can pass it in to the exporter builder.  It will
-have a stable interface in the future so that it may be more easily replaced.
-
   my $code = default_generator(\%arg);
 
 Passed arguments are:
