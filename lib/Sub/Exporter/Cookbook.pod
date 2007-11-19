@@ -12,7 +12,7 @@ L<Sub::Exporter::Tutorial> and L<Sub::Exporter>.  This document presents
 applications that may not be immediately obvious, or that can demonstrate how
 certain features can be put to use (for good or evil).
 
-=head1 THE RECIPIES
+=head1 THE RECIPES
 
 =head2 Exporting Methods as Routines
 
