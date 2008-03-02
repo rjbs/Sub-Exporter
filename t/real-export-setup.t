@@ -12,7 +12,7 @@ calling style.
 
 =cut
 
-use Test::More tests => 37;
+use Test::More tests => 40;
 
 BEGIN { use_ok('Sub::Exporter'); }
 
@@ -132,4 +132,27 @@ for my $iteration (1..2) {
     "Nothing happens yet.",
     "FROTZ_SAILOR: hs_fails export works as expected"
   );
+}
+
+{
+  package Test::SubExporter::SETUPALT;
+  use Sub::Exporter -setup => {
+    -as      => 'alternimport',
+    exports => [ qw(Y) ],
+  };
+
+  sub X { return "desired" }
+  sub Y { return "other" }
+
+  package Test::SubExporter::SETUP::ALTCONSUMER;
+
+  Test::SubExporter::SETUPALT->import(':all');
+  eval { X() };
+  main::like($@, qr/undefined subroutine/i, "X didn't get imported");
+
+  eval { Y() };
+  main::like($@, qr/undefined subroutine/i, "Y didn't get imported");
+
+  Test::SubExporter::SETUPALT->alternimport(':all');
+  main::is(Y(), "other", "other importer (via -setup { -as ...}) worked");
 }

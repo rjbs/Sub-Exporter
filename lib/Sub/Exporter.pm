@@ -575,7 +575,7 @@ The exporter is built by C<L</build_exporter>>.
 sub setup_exporter {
   my ($config)  = @_;
 
-  Carp::croak q(into and into_level may not both be supplied to exporter)
+  Carp::croak 'into and into_level may not both be supplied to exporter'
     if exists $config->{into} and exists $config->{into_level};
 
   my $as   = delete $config->{as}   || 'import';
@@ -618,7 +618,7 @@ my %valid_config_key;
 BEGIN {
   %valid_config_key =
     map { $_ => 1 }
-    qw(collectors installer generator exports groups into into_level),
+    qw(as collectors installer generator exports groups into into_level),
     qw(exporter), # deprecated
 }
 
@@ -882,7 +882,23 @@ sub default_exporter {
 
 Sub::Exporter also offers its own exports: the C<setup_exporter> and
 C<build_exporter> routines described above.  It also provides a special "setup"
-group, which will setup an exporter using the parameters passed to it.
+collector, which will set up an exporter using the parameters passed to it.
+
+Note that the "setup" collector (seen in examples like the L</SYNOPSIS> above)
+uses C<build_exporter>, not C<setup_exporter>.  This means that the special
+arguments like "into" and "as" for C<setup_exporter> are not accepted here.
+Instead, you may write something like:
+
+  use Sub::Exporter
+    { into => 'Target::Package' },
+    -setup => {
+      -as     => 'do_import',
+      exports => [ ... ],
+    }
+  ;
+
+Finding a good reason for wanting to do this is left as as exercise for the
+reader.
 
 =cut
 
