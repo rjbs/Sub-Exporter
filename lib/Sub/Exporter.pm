@@ -1,7 +1,7 @@
-package Sub::Exporter;
-
+use 5.006;
 use strict;
 use warnings;
+package Sub::Exporter;
 
 use Carp ();
 use Data::OptList ();
