@@ -506,19 +506,13 @@ sub _expand_group {
   }
 }
 
-# Given a config and pre-canonicalized importer args, remove collections from
-# the args and return them.
-sub _collect_collections {
-  my ($config, $import_args, $class, $into) = @_;
-  my %collection;
-
-  my @collections
-    = map  { splice @$import_args, $_, 1 }
-      grep { exists $config->{collectors}{ $import_args->[$_][0] } }
-      reverse 0 .. $#$import_args;
+sub _mk_collection_builder {
+  my ($col, $etc) = @_;
+  my ($config, $import_args, $class, $into) = @$etc;
 
   my %seen;
-  for my $collection (@collections) {
+  sub {
+    my ($collection) = @_;
     my ($name, $value) = @$collection;
 
     Carp::croak "collection $name provided multiple times in import"
@@ -541,10 +535,29 @@ sub _collect_collections {
       }
     }
 
-    $collection{ $name } = $value;
+    $col->{ $name } = $value;
+  }
+}
+
+# Given a config and pre-canonicalized importer args, remove collections from
+# the args and return them.
+sub _collect_collections {
+  my ($config, $import_args, $class, $into) = @_;
+
+  my @collections
+    = map  { splice @$import_args, $_, 1 }
+      grep { exists $config->{collectors}{ $import_args->[$_][0] } }
+      reverse 0 .. $#$import_args;
+
+  unshift @collections, [ INIT => {} ] if $config->{collectors}{INIT};
+
+  my $col = {};
+  my $builder = _mk_collection_builder($col, \@_);
+  for my $collection (@collections) {
+    $builder->($collection)
   }
 
-  return \%collection;
+  return $col;
 }
 
 =head1 SUBROUTINES
@@ -622,6 +635,15 @@ BEGIN {
     qw(exporter), # deprecated
 }
 
+sub _assert_collector_names_ok {
+  my ($collectors) = @_;
+
+  for my $reserved_name (grep { /\A[A-Z]+\z/ } keys %$collectors) {
+    Carp::croak "unknown reserved collector name: $reserved_name"
+      if $reserved_name ne 'INIT';
+  }
+}
+
 sub _rewrite_build_config {
   my ($config) = @_;
 
@@ -648,6 +670,8 @@ sub _rewrite_build_config {
       [ 'CODE', 'SCALAR' ],
     );
   }
+
+  _assert_collector_names_ok($config->{collectors});
 
   if (my @names = _key_intersection(@$config{qw(exports collectors)})) {
     Carp::croak "names (@names) used in both collections and exports";

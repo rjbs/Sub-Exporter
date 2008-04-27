@@ -36,7 +36,6 @@ my $config = {
     model_preference => sub { 1 },
     sets_own_value   => sub { $_[0] = { foo => 10 } },
     definedp         => \'is_defined',
-
   ]
 };
 
