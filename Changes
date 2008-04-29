@@ -1,6 +1,6 @@
 Revision history for Sub-Exporter
 
-0.979     2007-04-29
+0.979     2008-04-29
           add INIT collector
           declare reservation of all CAPS collectors
           clarify documentation of -setup after report by GAISSMAI
