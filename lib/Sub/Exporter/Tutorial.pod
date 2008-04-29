@@ -3,10 +3,6 @@
 
 Sub::Exporter::Tutorial - a friendly guide to exporting with Sub::Exporter
 
-=head1 VERSION
-
-  $Id$
-
 =head1 DESCRIPTION
 
 =head2 What's an Exporter?

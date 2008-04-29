@@ -14,11 +14,11 @@ Sub::Exporter - a sophisticated exporter for custom-built routines
 
 =head1 VERSION
 
-version 0.978
+version 0.979
 
 =cut
 
-our $VERSION = '0.978';
+our $VERSION = '0.979';
 
 =head1 SYNOPSIS
 
@@ -349,6 +349,11 @@ hashref containing the following entries:
   class       - the package on which the importer was called
   into        - the package into which exports will be exported
 
+Collectors with all-caps names (that is, made up of underscore or capital A
+through Z) are reserved for special use.  The only currently implemented
+special collector is C<INIT>, whose hook (if present in the exporter
+configuration) is always run before any other hook.
+
 =head1 CALLING THE EXPORTER
 
 Arguments to the exporter (that is, the arguments after the module name in a
@@ -638,7 +643,7 @@ BEGIN {
 sub _assert_collector_names_ok {
   my ($collectors) = @_;
 
-  for my $reserved_name (grep { /\A[A-Z]+\z/ } keys %$collectors) {
+  for my $reserved_name (grep { /\A[_A-Z]+\z/ } keys %$collectors) {
     Carp::croak "unknown reserved collector name: $reserved_name"
       if $reserved_name ne 'INIT';
   }
