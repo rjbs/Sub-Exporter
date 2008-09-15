@@ -1,5 +1,10 @@
 Revision history for Sub-Exporter
 
+0.980     2008-09-14
+          fix inadvertant futzing with group generator args
+            https://rt.cpan.org/Ticket/Display.html?id=38885
+            thanks, trendele!
+
 0.979     2008-04-29
           add INIT collector
           declare reservation of all CAPS collectors

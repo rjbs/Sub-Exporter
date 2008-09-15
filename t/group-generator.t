@@ -12,7 +12,7 @@ that use group generators.
 # XXX: The framework is stolen from expand-group.  I guess it should be
 # factored out.  Whatever. -- rjbs, 2006-03-12
 
-use Test::More tests => 10;
+use Test::More tests => 12;
 
 BEGIN { use_ok('Sub::Exporter'); }
 
@@ -41,6 +41,7 @@ my $config = {
     alphabet  => sub { { A => $alfa, b => $bravo } },
     broken    => sub { [ qw(this is broken because it is not a hashref) ] },
     generated => $returner,
+    nested    => [qw( :generated )],
   },
   collectors => [ 'col1' ],
 };
@@ -152,6 +153,31 @@ like($@,
         collection => { col1 => { value => 2 } },
       },
       "generated foo does what we expect",
+    );
+  }
+}
+
+{
+  my $got = Sub::Exporter::_expand_groups(
+    'Class',
+    $config,
+    [ [ -nested => { xyz => 1 } ] ],
+    { col1 => { value => 2 } },
+  );
+
+  my %code = map { $_->[0] => $_->[1] } @$got;
+
+  for (qw(foo bar)) {
+    is_deeply(
+      $code{$_}->(),
+      {
+        name  => $_,
+        class => 'Class',
+        group => 'generated',
+        arg   => { xyz => 1 }, 
+        collection => { col1 => { value => 2 } },
+      },
+      "generated foo (via nested group) does what we expect",
     );
   }
 }

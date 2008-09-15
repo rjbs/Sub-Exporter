@@ -14,11 +14,11 @@ Sub::Exporter - a sophisticated exporter for custom-built routines
 
 =head1 VERSION
 
-version 0.979
+version 0.980
 
 =cut
 
-our $VERSION = '0.979';
+our $VERSION = '0.980';
 
 =head1 SYNOPSIS
 
@@ -486,7 +486,7 @@ sub _expand_group {
     # I'm not very happy with this code for hiding -prefix and -suffix, but
     # it's needed, and I'm not sure, offhand, how to make it better.
     # -- rjbs, 2006-12-05
-    my $group_arg = $group_arg ? { %$group_arg } : {};
+    my $group_arg = $merge ? { %$merge } : {};
     delete $group_arg->{-prefix};
     delete $group_arg->{-suffix};
 
