@@ -1,5 +1,7 @@
 Revision history for Sub-Exporter
 
+0.981     2008-10-24
+          finally fix very occasional hash ordering issue in tests
           fix typo in SYNOPSIS (thanks, Florian!)
 
 0.980     2008-09-14
