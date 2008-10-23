@@ -12,11 +12,11 @@ Sub::Exporter::Util - utilities to make Sub::Exporter easier
 
 =head1 VERSION
 
-version 0.980
+version 0.981
 
 =cut
 
-our $VERSION = '0.980';
+our $VERSION = '0.981';
 
 =head1 DESCRIPTION
 
