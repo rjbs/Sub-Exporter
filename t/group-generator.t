@@ -71,7 +71,11 @@ for my $test (@single_tests) {
     {},
   );
 
-  is_deeply(\@got, $expected, "expand_group: $label");
+  is_deeply(
+    [ sort { lc $a->[0] cmp lc $b->[0] } @got ],
+    $expected,
+    "expand_group: $label",
+  );
 }
 
 for my $test (@single_tests) {
@@ -83,7 +87,11 @@ for my $test (@single_tests) {
     [ $given ],
   );
 
-  is_deeply($got, $expected, "expand_groups: $label [single test]");
+  is_deeply(
+    [ sort { lc $a->[0] cmp lc $b->[0] } @$got ],
+    $expected,
+    "expand_groups: $label [single test]",
+  );
 }
 
 my @multi_tests = (
