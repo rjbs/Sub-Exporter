@@ -8,4 +8,7 @@ requires('Params::Util'  => 0.14 ); # _CODELIKE
 
 extra_tests;
 
+repository('http://github.com/rjbs/sub-exporter');
+auto_manifest;
+
 WriteAll();
