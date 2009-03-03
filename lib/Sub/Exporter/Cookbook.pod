@@ -214,8 +214,8 @@ also want to inherit behavior from some base plugin class;
 
   use Sub::Exporter -setup => {
     exports    => [ qw(log global_config) ],
-    collectors => { _become_plugin => \'_become_plugin' },
-    groups     => [ -plugin => [ qw(log global_config _become_plugin) ]
+    groups     => [ _plugin => [ qw(log global_config) ]
+    collectors => { '-plugin' => \'_become_plugin' },
   };
 
   sub _become_plugin {
@@ -223,6 +223,8 @@ also want to inherit behavior from some base plugin class;
 
     my $target = $data->{into};
     push @{"$target\::ISA"}, $class->plugin_base_class;
+
+    push @{ $data->{import_args} }, '-_plugin';
   }
 
 Now, you can write a plugin like this:
