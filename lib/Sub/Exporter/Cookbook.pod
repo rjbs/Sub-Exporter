@@ -170,11 +170,13 @@ export constants by using one of its sister modules, Package::Generator.
     Package::Generator->assign_symbols(
       $data->{into},
       [
-        MEANING_OF_LIFE => 42,
-        ONE_TRUE_BASE   => 13,
+        MEANING_OF_LIFE => \42,
+        ONE_TRUE_BASE   => \13,
         FACTORS         => [ 6, 9 ],
       ],
     );
+
+    return 1;
   }
 
 Then, someone can write:
