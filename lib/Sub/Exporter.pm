@@ -7,6 +7,7 @@ use Carp ();
 use Data::OptList ();
 use Params::Util ();
 use Sub::Install 0.92 ();
+use Sub::Exporter::Import;
 
 =head1 NAME
 
@@ -754,6 +755,8 @@ sub build_exporter {
       $to_import,
     );
   };
+
+  Sub::Exporter::Import->new( $import, $config );
 
   return $import;
 }
