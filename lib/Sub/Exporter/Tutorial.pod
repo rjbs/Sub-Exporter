@@ -166,7 +166,7 @@ example shows how a generator can take and use arguments:
   package Package::Counter;
 
   sub _build_counter {
-    my ($class, $arg) = @_;
+    my ($class, $name, $arg) = @_;
     $arg ||= {};
     my $i = $arg->{start} || 0;
     return sub { $i++ };
