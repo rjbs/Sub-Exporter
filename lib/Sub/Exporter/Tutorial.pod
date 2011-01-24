@@ -1,7 +1,10 @@
 
 =head1 NAME
 
-Sub::Exporter::Tutorial - a friendly guide to exporting with Sub::Exporter
+=cut
+
+# PODNAME: Sub::Exporter::Tutorial
+# ABSTRACT: a friendly guide to exporting with Sub::Exporter
 
 =head1 DESCRIPTION
 
@@ -244,21 +247,7 @@ you can supply a generator for a group which returns a hashref of names and
 code references.  This generator is passed all the usual data, and the group
 may receive the usual C<-prefix> or C<-suffix> arguments.
 
-=head1 AUTHOR
-
-Ricardo SIGNES, C<< <rjbs@cpan.org> >>
-
 =head1 SEE ALSO
 
-=over
-
-=item * L<Sub::Exporter> for complete documentation and references to other exporters.
-
-=back
-
-=head1 COPYRIGHT
-
-Copyright 2007 Ricardo SIGNES.  This program is free software;  you can
-redistribute it and/or modify it under the same terms as Perl itself.
-
-=cut
+=for :list
+* L<Sub::Exporter> for complete documentation and references to other exporters

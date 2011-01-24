@@ -2,23 +2,12 @@ use 5.006;
 use strict;
 use warnings;
 package Sub::Exporter;
+# ABSTRACT: a sophisticated exporter for custom-built routines
 
 use Carp ();
-use Data::OptList ();
-use Params::Util ();
+use Data::OptList 0.100 ();
+use Params::Util 0.14 (); # _CODELIKE
 use Sub::Install 0.92 ();
-
-=head1 NAME
-
-Sub::Exporter - a sophisticated exporter for custom-built routines
-
-=head1 VERSION
-
-version 0.983
-
-=cut
-
-our $VERSION = '0.983';
 
 =head1 SYNOPSIS
 
@@ -1072,10 +1061,6 @@ variables for its configuration.
 
 =back
 
-=head1 AUTHOR
-
-Ricardo SIGNES, C<< <rjbs@cpan.org> >>
-
 =head1 THANKS
 
 Hans Dieter Pearcey provided helpful advice while I was writing Sub::Exporter.
@@ -1090,11 +1075,6 @@ Thanks, guys!
 Please report any bugs or feature requests through the web interface at
 L<http://rt.cpan.org>. I will be notified, and then you'll automatically be
 notified of progress on your bug as I make changes.
-
-=head1 COPYRIGHT
-
-Copyright 2006-2007, Ricardo SIGNES.  This program is free software;  you can
-redistribute it and/or modify it under the same terms as Perl itself.
 
 =cut
 

@@ -1,7 +1,10 @@
 
 =head1 NAME
 
-Sub::Exporter::Cookbook - useful, demonstrative, or stupid Sub::Exporter tricks
+=cut
+
+# ABSTRACT: useful, demonstrative, or stupid Sub::Exporter tricks
+# PODNAME: Sub::Exporter::Cookbook
 
 =head1 OVERVIEW
 
@@ -281,12 +284,5 @@ but will support export and group renaming, including exporting into scalar
 references.  Further, since Sub::Exporter uses C<can> to find the routine being
 exported, the new package may be subclassed and some of its exports replaced.
 
-=head1 AUTHOR
-
-Ricardo SIGNES, C<< <rjbs@cpan.org> >>
-
-=head1 COPYRIGHT
-
-Copyright 2007, Ricardo SIGNES.  This is free software;  you can redistribute
-it and/or modify it under the same terms as Perl itself.
+=cut
 
