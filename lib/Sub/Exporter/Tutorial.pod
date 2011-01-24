@@ -213,7 +213,7 @@ Sometimes you will want to accept arguments once that can then be available to
 any subroutine that you're going to export.  To do this, you specify
 collectors, like this:
 
-  use Menu::Airline
+  package Menu::Airline
   use Sub::Exporter -setup => {
     exports =>  ... ,
     groups  =>  ... ,
