@@ -124,7 +124,7 @@ Consider the following code:
   use Morality qw(sin virtue); # for calculating viciousness
   use Math::Trig qw(:all);     # for dealing with circles
 
-The programmer has inadvertantly imported two C<sin> routines.  The solution,
+The programmer has inadvertently imported two C<sin> routines.  The solution,
 in Exporter.pm-based modules, would be to import only one and then call the
 other by its fully-qualified name.  Alternately, the importer could write a
 routine that did so, or could mess about with typeglobs.
