@@ -193,7 +193,7 @@ altering the importing class in a way other than installing subroutines.)
  
 =head2 Altering the Importer's @ISA
 
-It's trivial to make a collector that changes the inheritence of an importing
+It's trivial to make a collector that changes the inheritance of an importing
 package:
 
   use Sub::Exporter -setup => {
