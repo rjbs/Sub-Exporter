@@ -1,6 +1,3 @@
-=head1 NAME
-
-=cut
 
 # ABSTRACT: useful, demonstrative, or stupid Sub::Exporter tricks
 # PODNAME: Sub::Exporter::Cookbook

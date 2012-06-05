@@ -1,8 +1,4 @@
 
-=head1 NAME
-
-=cut
-
 # PODNAME: Sub::Exporter::Tutorial
 # ABSTRACT: a friendly guide to exporting with Sub::Exporter
 
