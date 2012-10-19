@@ -750,8 +750,14 @@ sub build_exporter {
 sub _do_import {
   my ($arg, $to_import) = @_;
 
-  my @todo;
+  # if $to_import contains any negative names, remove them
+  my @negative = grep {/^!/} map {$_->[0]} @$to_import;
+  if (@negative) {
+    my %to_exclude = map {($_ => 1, substr($_, 1) => 1)} @negative;
+    $to_import = [grep {!$to_exclude{$_->[0]}} @$to_import];
+  }
 
+  my @todo;
   for my $pair (@$to_import) {
     my ($name, $import_arg) = @$pair;
 
