@@ -359,6 +359,18 @@ group, have special meaning:
   -prefix - a string to prepend to any export imported from this group
   -suffix - a string to append to any export imported from this group
 
+Then, all names preceded by an exclamation mark are removed from
+the export list; so
+
+  use Some::Module qw/:all !foo !bar/;
+
+will import everything from C<Some::Module> except C<foo> and C<bar>.
+However it only works with individual names, so
+
+  use Some::Module qw/:all !:not_this_group/;
+
+will not work like in L<Exporter>.
+
 Finally, individual export generators are called and all subs, generated or
 otherwise, are installed in the calling package.  There is only one special
 argument for export generators:
@@ -750,8 +762,14 @@ sub build_exporter {
 sub _do_import {
   my ($arg, $to_import) = @_;
 
-  my @todo;
+  # if $to_import contains any negative names, remove them
+  my @negative = grep {/^!/} map {$_->[0]} @$to_import;
+  if (@negative) {
+    my %to_exclude = map {($_ => 1, substr($_, 1) => 1)} @negative;
+    $to_import = [grep {!$to_exclude{$_->[0]}} @$to_import];
+  }
 
+  my @todo;
   for my $pair (@$to_import) {
     my ($name, $import_arg) = @$pair;
 
@@ -955,11 +973,12 @@ some other exporters and how they compare.
 
 =item * L<Exporter> and co.
 
-This is the standard Perl exporter.  Its interface is a little clunky, but it's
-fast and ubiquitous.  It can do some things that Sub::Exporter can't:  it can
-export things other than routines, it can import "everything in this group
-except this symbol," and some other more esoteric things.  These features seem
-to go nearly entirely unused.
+This is the standard Perl exporter.  Its interface is a little clunky,
+but it's fast and ubiquitous.  It can do some things that
+Sub::Exporter can't: it can export things other than routines, it can
+import "everything in this group except this other group", and some
+other more esoteric things.  These features seem to go nearly entirely
+unused.
 
 It always exports things exactly as they appear in the exporting module; it
 can't rename or customize routines.  Its groups ("tags") can't be nested.
