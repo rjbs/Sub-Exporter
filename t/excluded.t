@@ -1,4 +1,10 @@
-#  !  perl -T
+#!perl -T
+
+=head1 TEST PURPOSE
+
+Check "bang-syntax": import a group while excluding some particular names
+
+=cut
 
 package E;
 use strict;
@@ -29,11 +35,6 @@ is(a(), 'E::a', 'a imported');
 ok(!eval{b()}, 'b not imported');
 
 
-=head1 TEST PURPOSE
-
-Import a group while excluding some particular names
-
-=cut
 
 
 
