@@ -306,7 +306,7 @@ rewritten as:
    }
  }
 
-That would allow the import to specify global defaults for his imports:
+That would allow the importer to specify global defaults for his imports:
 
   use Data::Analyze
     'analyze',
