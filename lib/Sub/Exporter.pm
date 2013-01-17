@@ -315,7 +315,7 @@ That would allow the import to specify global defaults for his imports:
     defaults => { passes => 10 };
 
   my $A = analyze10($data);     # equivalent to analyze($data, 0.10, 10);
-  my $C = analyze50($data);     # equivalent to analyze($data, 0.15, 10);
+  my $C = analyze50($data);     # equivalent to analyze($data, 0.15, 50);
   my $B = analyze($data, 0.20); # equivalent to analyze($data, 0.20, 10);
 
 If values are provided in the C<collectors> list during exporter setup, they
