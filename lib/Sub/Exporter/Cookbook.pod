@@ -250,12 +250,12 @@ demonstration than a suggestion.
      into    => $new_pkg,
      exports => [ @{"$pkg\::EXPORT_OK"} ],
      groups  => {
-       %{{"$pkg\::EXPORT_TAG"},
+       %{"$pkg\::EXPORT_TAG"},
        default => [ @{"$pkg\::EXPORTS"} ],
      },
    });
 
-   @{"$new_pkg\::ISA"} = $class;
+   @{"$new_pkg\::ISA"} = $pkg;
    return $new_pkg;
  }
 
