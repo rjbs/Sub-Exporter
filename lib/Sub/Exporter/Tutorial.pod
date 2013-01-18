@@ -77,7 +77,7 @@ exporter is called.  The exporter will B<not> recurse into the same group twice
 while expanding groups.
 
 There are two special groups:  C<all> and C<default>.  The C<all> group is
-defined by default, and contains all exportable subs.  You can redefine it,
+defined for you and contains all exportable subs.  You can redefine it,
 if you want to export only a subset when all exports are requested.  The
 C<default> group is the set of routines to export when nothing specific is
 requested.  By default, there is no C<default> group.
