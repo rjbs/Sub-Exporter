@@ -65,7 +65,14 @@ simple generator, you can let them do this, instead:
 
   my $value = analyze10($data);
 
-The generator for that would look something like this:
+The package with the generator for that would look something like this:
+
+  package Data::Analyze;
+  use Sub::Exporter -setup => {
+    exports => [
+      analyze => \&build_analyzer,
+      ],
+    };
 
   sub build_analyzer {
     my ($class, $name, $arg) = @_;
