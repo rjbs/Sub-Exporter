@@ -14,7 +14,8 @@ equivalent:
 
   BEGIN { require Module; Module->import(LIST); }
 
-The import method is the module's I<exporter>.
+The method named C<import> is the module's I<exporter>, it exports
+functions and variables into its caller's namespace.
 
 =head2 The Basics of Sub::Exporter
 
