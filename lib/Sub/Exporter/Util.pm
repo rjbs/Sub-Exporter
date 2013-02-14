@@ -71,7 +71,7 @@ exports that will call several methods in succession.
     ]),
   }
 
-If imported from Spliner, calling the C<reticulate> routine will be equivalent
+If imported from Splinter, calling the C<reticulate> routine will be equivalent
 to:
 
   Splinter->new->gather_data->analyze(detail => 100)->results;
