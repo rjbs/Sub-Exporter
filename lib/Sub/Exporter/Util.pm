@@ -74,7 +74,7 @@ exports that will call several methods in succession.
 If imported from Spliner, calling the C<reticulate> routine will be equivalent
 to:
 
-  Splinter->new->gather_data->analyze(detail => 100)->results;
+  Spliner->new->gather_data->analyze(detail => 100)->results;
 
 If any method returns something on which methods may not be called, the routine
 croaks.
