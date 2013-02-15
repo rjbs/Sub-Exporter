@@ -66,9 +66,9 @@ C<curry_chain> behaves like C<L</curry_method>>, but is meant for generating
 exports that will call several methods in succession.
 
   exports => {
-    reticulate => curry_chain([
-      new => gather_data => analyze => [ detail => 100 ] => results
-    ]),
+    reticulate => curry_chain(
+      new => gather_data => analyze => [ detail => 100 ] => 'results'
+    ),
   }
 
 If imported from Spliner, calling the C<reticulate> routine will be equivalent
