@@ -65,7 +65,14 @@ simple generator, you can let them do this, instead:
 
   my $value = analyze10($data);
 
-The generator for that would look something like this:
+The package with the generator for that would look something like this:
+
+  package Data::Analyze;
+  use Sub::Exporter -setup => {
+    exports => [
+      analyze => \&build_analyzer,
+      ],
+    };
 
   sub build_analyzer {
     my ($class, $name, $arg) = @_;
@@ -306,7 +313,7 @@ rewritten as:
    }
  }
 
-That would allow the import to specify global defaults for his imports:
+That would allow the importer to specify global defaults for his imports:
 
   use Data::Analyze
     'analyze',
@@ -315,7 +322,7 @@ That would allow the import to specify global defaults for his imports:
     defaults => { passes => 10 };
 
   my $A = analyze10($data);     # equivalent to analyze($data, 0.10, 10);
-  my $C = analyze50($data);     # equivalent to analyze($data, 0.15, 10);
+  my $C = analyze50($data);     # equivalent to analyze($data, 0.15, 50);
   my $B = analyze($data, 0.20); # equivalent to analyze($data, 0.20, 10);
 
 If values are provided in the C<collectors> list during exporter setup, they
