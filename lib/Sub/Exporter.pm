@@ -158,7 +158,7 @@ this:
 
   package Tools;
   use base qw(Exporter);
-  our @EXPORT_OK = qw(function1 function2 function2);
+  our @EXPORT_OK = qw(function1 function2 function3);
 
 Any basic use of Sub::Exporter will look like this:
 
@@ -922,7 +922,7 @@ Instead, you may write something like:
     }
   ;
 
-Finding a good reason for wanting to do this is left as as exercise for the
+Finding a good reason for wanting to do this is left as an exercise for the
 reader.
 
 =cut
