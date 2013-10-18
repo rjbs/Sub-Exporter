@@ -2,6 +2,9 @@ Revision history for Sub-Exporter
 
 {{$NEXT}}
 
+0.987     2013-10-18 11:10:03 America/New_York
+          update bugtracker metadata
+
 0.986     2013-06-14 18:45:45 America/New_York
           typo fixes in docs (thanks, David Steinbrunner!)
 
