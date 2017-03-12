@@ -117,7 +117,10 @@ Because of the way that exporters and Sub::Exporter work, any package that
 inherits from Data::Methodical can inherit its exporter and override its
 C<some_method>.  If a user imports C<some_method> from that package, he'll
 receive a subroutine that calls the method on the subclass, rather than on
-Data::Methodical itself.
+Data::Methodical itself.  Keep in mind that if you re-setup Sub::Exporter in a
+package that inherits from Data::Methodical you will, of course, be entirely
+replacing the exporter from Data::Methodical.  C<import> is a method, and is
+hidden by the same means as any other method.
 
 =head2 Other Customizations
 
