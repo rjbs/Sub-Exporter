@@ -1078,7 +1078,7 @@ Ian Langworth and Shawn Sorichetti asked some good questions and helped me
 improve my documentation quite a bit.  Yuval Kogman helped me find a bunch of
 little problems.
 
-Thanks, guys! 
+Thanks, friends! 
 
 =head1 BUGS
 
