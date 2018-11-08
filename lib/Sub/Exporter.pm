@@ -664,9 +664,6 @@ sub _rewrite_build_config {
     $config->{installer} = delete $config->{exporter};
   }
 
-  Carp::croak q(into and into_level may not both be supplied to exporter)
-    if exists $config->{into} and exists $config->{into_level};
-
   for (qw(exports collectors)) {
     $config->{$_} = Data::OptList::mkopt_hash(
       $config->{$_},
