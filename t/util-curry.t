@@ -18,7 +18,7 @@ BEGIN { use_ok("Sub::Exporter"); }
     sub new { bless { key => "value" } => $_[0] }
     sub return_invocant { return $_[0] }
   }
-  
+
   BEGIN {
     package Thing::Subclass;
     our @ISA = qw(Thing);

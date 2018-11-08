@@ -43,7 +43,7 @@ like(
   "into and into_level are mutually exclusive (in setup_exporter)"
 );
 
-eval { 
+eval {
   Sub::Exporter::build_exporter({})->(
     Class => {
       into       => 'Your::Face',

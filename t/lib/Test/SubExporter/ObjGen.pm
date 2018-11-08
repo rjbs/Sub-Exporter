@@ -49,6 +49,6 @@ use Sub::Exporter -setup => {
   exports => { baz  => $baz, quux => $quux },
   groups  => { meta => $group_b, ringo => $group_o },
 };
-  
+
 
 "call me";

@@ -66,7 +66,7 @@ my $config = {
   $code->('Tools::Power', ':cutters');
   exports_ok(
     $exports,
-    [ [ circsaw => {} ], [ handsaw => {} ], [ circsaw => {} ] ], 
+    [ [ circsaw => {} ], [ handsaw => {} ], [ circsaw => {} ] ],
     "group with two export instances of one export",
   );
 
