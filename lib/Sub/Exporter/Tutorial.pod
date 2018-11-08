@@ -146,7 +146,7 @@ that's just good business!  With Sub::Exporter, this is easy.
 To offer subroutines to order, you need to provide a generator when you set up
 your exporter.  A generator is just a routine that returns a new routine.
 L<perlref> is talking about these when it discusses closures and function
-templates. The canonical example of a generator builds a unique incrementor;
+templates. The canonical example of a generator builds a unique incrementer;
 here's how you'd do that with Sub::Exporter;
 
   package Package::Counter;
@@ -229,7 +229,7 @@ module was used like this:
 ...the consumer would get a salad.  Also, all the generators would be passed,
 as their fourth argument, something like this:
 
-  { allerges => [ qw(peanuts) ], ethics => [ qw(vegan) ] }
+  { allergies => [ qw(peanuts) ], ethics => [ qw(vegan) ] }
 
 Generators may have arguments in their definition, as well.  These must be code
 refs that perform validation of the collected values.  They are passed the
