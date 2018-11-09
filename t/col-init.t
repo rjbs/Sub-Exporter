@@ -36,7 +36,7 @@ $config->{$_} = mkopt_hash($config->{$_}) for qw(exports collectors);
 
 {
   my $collection = Sub::Exporter::_collect_collections(
-    $config, 
+    $config,
     [ ],
     'main',
   );
@@ -51,7 +51,7 @@ $config->{$_} = mkopt_hash($config->{$_}) for qw(exports collectors);
 {
   my $collection = eval {
     Sub::Exporter::_collect_collections(
-      $config, 
+      $config,
       [ [ handsaw => undef ] ],
       'main',
     );

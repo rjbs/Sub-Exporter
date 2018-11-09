@@ -109,7 +109,7 @@ exported anyway, though, and will work as long as the destination provides an
 C<as_integer> method like the one it expects.  To import it to a different
 destination, one can just write:
 
-  use Number::Plugin::Upto { into => 'Quantity' };    
+  use Number::Plugin::Upto { into => 'Quantity' };
 
 =head2 Mixing-in Complex External Behavior
 
@@ -159,14 +159,14 @@ While Sub::Exporter isn't in the constant-exporting business, it's easy to
 export constants by using one of its sister modules, Package::Generator.
 
   package Important::Constants;
- 
+
   use Sub::Exporter -setup => {
     collectors => [ constants => \'_set_constants' ],
   };
- 
+
   sub _set_constants {
     my ($class, $value, $data) = @_;
- 
+
     Package::Generator->assign_symbols(
       $data->{into},
       [
@@ -182,12 +182,12 @@ export constants by using one of its sister modules, Package::Generator.
 Then, someone can write:
 
   use Important::Constants 'constants';
-  
+
   print "The factors @FACTORS produce $MEANING_OF_LIFE in $ONE_TRUE_BASE.";
 
 (The constants must be exported via a collector, because they are effectively
 altering the importing class in a way other than installing subroutines.)
- 
+
 =head2 Altering the Importer's @ISA
 
 It's trivial to make a collector that changes the inheritance of an importing
