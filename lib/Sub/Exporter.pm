@@ -1,4 +1,4 @@
-use 5.006;
+use v5.8;
 use strict;
 use warnings;
 package Sub::Exporter;
