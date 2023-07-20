@@ -136,6 +136,9 @@ for my $iteration (1..2) {
 
 {
   package Test::SubExporter::SETUPALT;
+  use Exporter qw(import);
+  our %EXPORT_TAGS = ( "all" => [] );
+
   use Sub::Exporter -setup => {
     -as      => 'alternimport',
     exports => [ qw(Y) ],
