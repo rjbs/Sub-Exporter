@@ -135,27 +135,31 @@ for my $iteration (1..2) {
 }
 
 {
-  package Test::SubExporter::SETUPALT;
-  use Exporter qw(import);
-  our %EXPORT_TAGS = ( "all" => [] );
+  {
+    package Test::SubExporter::SETUPALT;
+    use Exporter qw(import);
+    our %EXPORT_TAGS = ( "all" => [] );
 
-  use Sub::Exporter -setup => {
-    -as      => 'alternimport',
-    exports => [ qw(Y) ],
-  };
+    use Sub::Exporter -setup => {
+      -as      => 'alternimport',
+      exports => [ qw(Y) ],
+    };
 
-  sub X { return "desired" }
-  sub Y { return "other" }
+    sub X { return "desired" }
+    sub Y { return "other" }
+  }
 
-  package Test::SubExporter::SETUP::ALTCONSUMER;
+  {
+    package Test::SubExporter::SETUP::ALTCONSUMER;
 
-  Test::SubExporter::SETUPALT->import(':all');
-  eval { X() };
-  main::like($@, qr/undefined subroutine/i, "X didn't get imported");
+    Test::SubExporter::SETUPALT->import(':all');
+    eval { X() };
+    main::like($@, qr/undefined subroutine/i, "X didn't get imported");
 
-  eval { Y() };
-  main::like($@, qr/undefined subroutine/i, "Y didn't get imported");
+    eval { Y() };
+    main::like($@, qr/undefined subroutine/i, "Y didn't get imported");
 
-  Test::SubExporter::SETUPALT->alternimport(':all');
-  main::is(Y(), "other", "other importer (via -setup { -as ...}) worked");
+    Test::SubExporter::SETUPALT->alternimport(':all');
+    main::is(Y(), "other", "other importer (via -setup { -as ...}) worked");
+  }
 }
