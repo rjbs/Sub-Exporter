@@ -135,6 +135,13 @@ for my $iteration (1..2) {
 }
 
 {
+  # Okay, what's going on here?
+  #
+  # We want to test that the -as argument to Sub::Exporter's own -setup behaves
+  # according to the usual -as rules.  That means it won't install the importer
+  # code as "import", but as the given name.  We use Exporter to provide a
+  # do-nothing import routine, and then test that this routine is *not*
+  # clobbered by Sub::Exporter.
   {
     package Test::SubExporter::SETUPALT;
     use Exporter qw(import);
