@@ -1,5 +1,4 @@
-use v5.8;
-use strict;
+use v5.12.0;
 use warnings;
 package Sub::Exporter;
 # ABSTRACT: a sophisticated exporter for custom-built routines

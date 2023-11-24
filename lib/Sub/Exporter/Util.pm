@@ -1,4 +1,4 @@
-use strict;
+use v5.12.0;
 use warnings;
 package Sub::Exporter::Util;
 # ABSTRACT: utilities to make Sub::Exporter easier
