@@ -1079,12 +1079,6 @@ little problems.
 
 Thanks, friends!
 
-=head1 BUGS
-
-Please report any bugs or feature requests through the web interface at
-L<http://rt.cpan.org>. I will be notified, and then you'll automatically be
-notified of progress on your bug as I make changes.
-
 =cut
 
 "jn8:32"; # <-- magic true value
