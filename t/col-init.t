@@ -1,6 +1,7 @@
 #!perl -T
-use strict;
+use v5.20.0;
 use warnings;
+use stable 'postderef';
 
 =head1 TEST PURPOSE
 
@@ -25,7 +26,7 @@ my $config = {
   collectors => [
     INIT => sub {
       my ($value, $arg) = @_;
-      return 0 if @{$arg->{import_args}}; # in other words, fail if args
+      return 0 if $arg->{import_args}->@*; # in other words, fail if args
       $_[0] = [ $counter++ ];
       return 1;
     },
@@ -36,7 +37,7 @@ $config->{$_} = mkopt_hash($config->{$_}) for qw(exports collectors);
 
 {
   my $collection = Sub::Exporter::_collect_collections(
-    $config, 
+    $config,
     [ ],
     'main',
   );
@@ -51,7 +52,7 @@ $config->{$_} = mkopt_hash($config->{$_}) for qw(exports collectors);
 {
   my $collection = eval {
     Sub::Exporter::_collect_collections(
-      $config, 
+      $config,
       [ [ handsaw => undef ] ],
       'main',
     );

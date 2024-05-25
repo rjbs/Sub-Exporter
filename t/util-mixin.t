@@ -1,6 +1,7 @@
 #!perl -T
-use strict;
+use v5.20.0;
 use warnings;
+use stable 'postderef';
 
 use Test::More;
 
@@ -96,9 +97,9 @@ for (0 .. $#pkg) {
 my @super = map {; no strict 'refs'; [ @{$_ . "::ISA"} ] } @pkg;
 
 for my $x (0 .. $#pkg) {
-  is(@{$super[$x]}, 1, "one parent for $pkg[$x]: @{$super[$x]}");
+  is($super[$x]->@*, 1, "one parent for $pkg[$x]: $super[$x]->@*");
   for my $y (($x + 1) .. $#pkg) {
-    isnt("@{$super[$x]}", "@{$super[$y]}", "parent($x) ne parent($y)")
+    isnt("$super[$x]->@*", "$super[$y]->@*", "parent($x) ne parent($y)")
   }
 }
 

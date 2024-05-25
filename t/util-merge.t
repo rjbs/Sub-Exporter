@@ -1,6 +1,7 @@
 #!perl -T
-use strict;
+use v5.20.0;
 use warnings;
+use stable 'postderef';
 
 use Test::More tests => 8;
 BEGIN { use_ok("Sub::Exporter"); }

@@ -1,6 +1,7 @@
 #!perl -T
-use strict;
+use v5.20.0;
 use warnings;
+use stable 'postderef';
 
 use Test::More skip_all => 'not actually offerring this feature yet';
 

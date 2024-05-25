@@ -1,6 +1,7 @@
 #!perl -T
-use strict;
+use v5.20.0;
 use warnings;
+use stable 'postderef';
 
 =head1 TEST PURPOSE
 
@@ -63,7 +64,7 @@ my @single_tests = (
 
 for my $test (@single_tests) {
   my ($label, $given, $expected) = @$test;
-  
+
   my @got = Sub::Exporter::_expand_group(
     'Class',
     $config,
@@ -80,7 +81,7 @@ for my $test (@single_tests) {
 
 for my $test (@single_tests) {
   my ($label, $given, $expected) = @$test;
-  
+
   my $got = Sub::Exporter::_expand_groups(
     'Class',
     $config,
@@ -100,7 +101,7 @@ my @multi_tests = (
 
 for my $test (@multi_tests) {
   my ($label, $given, $expected) = @$test;
-  
+
   my $got = Sub::Exporter::_expand_groups(
     'Class',
     $config,
@@ -157,7 +158,7 @@ like($@,
         name  => $_,
         class => 'Class',
         group => 'generated',
-        arg   => { xyz => 1 }, 
+        arg   => { xyz => 1 },
         collection => { col1 => { value => 2 } },
       },
       "generated foo does what we expect",
@@ -182,7 +183,7 @@ like($@,
         name  => $_,
         class => 'Class',
         group => 'generated',
-        arg   => { xyz => 1 }, 
+        arg   => { xyz => 1 },
         collection => { col1 => { value => 2 } },
       },
       "generated foo (via nested group) does what we expect",

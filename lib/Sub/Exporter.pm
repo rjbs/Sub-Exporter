@@ -1,5 +1,6 @@
-use v5.12.0;
+use v5.20.0;
 use warnings;
+use stable 'postderef';
 package Sub::Exporter;
 # ABSTRACT: a sophisticated exporter for custom-built routines
 
@@ -442,7 +443,7 @@ sub _expand_groups {
           :     $groups[$i][1]{-as} ? $prefix . $groups[$i][1]{-as} . $suffix
           :                           $prefix . $groups[$i][0]      . $suffix;
 
-        $groups[$i][1] = { %{ $groups[$i][1] }, %merge, -as => $as };
+        $groups[$i][1] = { $groups[$i][1]->%*, %merge, -as => $as };
       }
     }
   }
@@ -695,7 +696,7 @@ sub _rewrite_build_config {
   $config->{groups}{default} ||= [];
 
   # by default, build an all-inclusive 'all' group
-  $config->{groups}{all} ||= [ keys %{ $config->{exports} } ];
+  $config->{groups}{all} ||= [ keys $config->{exports}->%* ];
 
   $config->{generator} ||= \&default_generator;
   $config->{installer} ||= \&default_installer;
@@ -840,7 +841,7 @@ Passed arguments are:
 
 sub default_generator {
   my ($arg) = @_;
-  my ($class, $name, $generator) = @$arg{qw(class name generator)};
+  my ($class, $name, $generator) = $arg->@{qw(class name generator)};
 
   if (not defined $generator) {
     my $code = $class->can($name)
@@ -881,7 +882,7 @@ sub default_installer {
   my ($arg, $to_export) = @_;
 
   for (my $i = 0; $i < @$to_export; $i += 2) {
-    my ($as, $code) = @$to_export[ $i, $i+1 ];
+    my ($as, $code) = $to_export->@[ $i, $i+1 ];
 
     # Allow as isa ARRAY to push onto an array?
     # Allow into isa HASH to install name=>code into hash?
@@ -944,10 +945,10 @@ sub _setup {
   my ($value, $arg) = @_;
 
   if (ref $value eq 'HASH') {
-    push @{ $arg->{import_args} }, [ _import => { -as => 'import', %$value } ];
+    push $arg->{import_args}->@*, [ _import => { -as => 'import', %$value } ];
     return 1;
   } elsif (ref $value eq 'ARRAY') {
-    push @{ $arg->{import_args} },
+    push $arg->{import_args}->@*,
       [ _import => { -as => 'import', exports => $value } ];
     return 1;
   }

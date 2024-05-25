@@ -1,6 +1,7 @@
 #!perl -T
-use strict;
+use v5.20.0;
 use warnings;
+use stable 'postderef';
 
 use Test::More tests => 10;
 BEGIN { use_ok("Sub::Exporter"); }
@@ -18,7 +19,7 @@ BEGIN { use_ok("Sub::Exporter"); }
     sub new { bless { key => "value" } => $_[0] }
     sub return_invocant { return $_[0] }
   }
-  
+
   BEGIN {
     package Thing::Subclass;
     our @ISA = qw(Thing);

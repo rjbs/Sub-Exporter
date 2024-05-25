@@ -1,6 +1,7 @@
 #!perl -T
-use strict;
+use v5.20.0;
 use warnings;
+use stable 'postderef';
 
 =head1 TEST PURPOSE
 
@@ -66,7 +67,7 @@ my $config = {
   $code->('Tools::Power', ':cutters');
   exports_ok(
     $exports,
-    [ [ circsaw => {} ], [ handsaw => {} ], [ circsaw => {} ] ], 
+    [ [ circsaw => {} ], [ handsaw => {} ], [ circsaw => {} ] ],
     "group with two export instances of one export",
   );
 

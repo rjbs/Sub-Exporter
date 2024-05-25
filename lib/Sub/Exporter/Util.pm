@@ -1,5 +1,6 @@
-use v5.12.0;
+use v5.20.0;
 use warnings;
+use stable 'postderef';
 package Sub::Exporter::Util;
 # ABSTRACT: utilities to make Sub::Exporter easier
 
@@ -104,7 +105,7 @@ sub curry_chain {
     sub {
       my $next = $class;
 
-      for my $i (0 .. $#$pairs) {
+      for my $i (0 .. $pairs->$#*) {
         my $pair = $pairs->[ $i ];
 
         unless (Params::Util::_INVOCANT($next)) { ## no critic Private
@@ -114,7 +115,7 @@ sub curry_chain {
 
         my ($method, $args) = @$pair;
 
-        if ($i == $#$pairs) {
+        if ($i == $pairs->$#*) {
           return $next->$method($args ? @$args : ());
         } else {
           $next = $next->$method($args ? @$args : ());
@@ -197,7 +198,7 @@ sub merge_col {
         my ($class, $name, $arg, $col) = @_;
 
         my $merged_arg = exists $col->{$default_name}
-                       ? { %{ $col->{$default_name} }, %$arg }
+                       ? { $col->{$default_name}->%*, %$arg }
                        : $arg;
 
         if (Params::Util::_CODELIKE($gen)) { ## no critic Private
@@ -300,7 +301,7 @@ sub like {
     while (my ($re, $opt) = splice @values, 0, 2) {
       Carp::croak "given pattern for regex group generater is not a Regexp"
         unless eval { $re->isa('Regexp') };
-      my @exports  = keys %{ $arg->{config}->{exports} };
+      my @exports  = keys $arg->{config}->{exports}->%*;
       my @matching = grep { $_ =~ $re } @exports;
 
       my %merge = $opt ? %$opt : ();
@@ -309,7 +310,7 @@ sub like {
 
       for my $name (@matching) {
         my $as = $prefix . $name . $suffix;
-        push @{ $arg->{import_args} }, [ $name => { %merge, -as => $as } ];
+        push $arg->{import_args}->@*, [ $name => { %merge, -as => $as } ];
       }
     }
 

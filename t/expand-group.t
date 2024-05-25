@@ -1,6 +1,7 @@
 #!perl -T
-use strict;
+use v5.20.0;
 use warnings;
+use stable 'postderef';
 
 =head1 TEST PURPOSE
 
@@ -161,7 +162,7 @@ my @single_tests = (
 
 for my $test (@single_tests) {
   my ($label, $given, $expected) = @$test;
-  
+
   my @got = Sub::Exporter::_expand_group(
     'Class',
     $config,
@@ -174,7 +175,7 @@ for my $test (@single_tests) {
 
 for my $test (@single_tests) {
   my ($label, $given, $expected) = @$test;
-  
+
   my $got = Sub::Exporter::_expand_groups(
     'Class',
     $config,
@@ -202,7 +203,7 @@ my @multi_tests = (
 
 for my $test (@multi_tests) {
   my ($label, $given, $expected) = @$test;
-  
+
   my $got = Sub::Exporter::_expand_groups(
     'Class',
     $config,

@@ -1,6 +1,7 @@
 #!perl -T
-use strict;
+use v5.20.0;
 use warnings;
+use stable 'postderef';
 
 =head1 TEST PURPOSE
 
@@ -11,14 +12,14 @@ exporter.
 
 use Test::More tests => 14;
 
-BEGIN { 
-  use_ok('Sub::Exporter'); 
+BEGIN {
+  use_ok('Sub::Exporter');
 }
 
 BEGIN {
   package Test::SubExport::FROM;
   use strict;
-  use warnings;    
+  use warnings;
   use Sub::Exporter -setup => {
     exports => [ qw(A B) ],
     groups  => {
@@ -31,13 +32,13 @@ BEGIN {
   sub A { 'A' }
   sub B { 'B' }
 
-  1;    
+  1;
 }
 
 BEGIN {
   package Test::SubExport::HAS_DEFAULT_INTO_LEVEL;
   use strict;
-  use warnings;    
+  use warnings;
   use Sub::Exporter -setup => {
     exports    => [ qw(C) ],
     into_level => 1,
@@ -45,7 +46,7 @@ BEGIN {
 
   sub C { 'C' }
 
-  1;    
+  1;
 }
 
 BEGIN {

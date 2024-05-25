@@ -1,6 +1,7 @@
 #!perl -T
-use strict;
+use v5.20.0;
 use warnings;
+use stable 'postderef';
 
 =head1 TEST PURPOSE
 
@@ -43,7 +44,7 @@ like(
   "into and into_level are mutually exclusive (in setup_exporter)"
 );
 
-eval { 
+eval {
   Sub::Exporter::build_exporter({})->(
     Class => {
       into       => 'Your::Face',
@@ -70,4 +71,3 @@ like(
   qr(^into and into_level may not both be supplied to exporter),
   "can't use one name in exports and collectors"
 );
-

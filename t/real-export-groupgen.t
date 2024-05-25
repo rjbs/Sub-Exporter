@@ -1,6 +1,7 @@
 #!perl -T
-use strict;
+use v5.20.0;
 use warnings;
+use stable 'postderef';
 
 =head1 TEST PURPOSE
 
@@ -39,7 +40,7 @@ for my $routine (qw(foo bar)) {
       name  => $routine,
       class => 'Test::SubExporter::GroupGen',
       group => 'generated',
-      arg   => { xyz => 1 }, 
+      arg   => { xyz => 1 },
       collection => { col1 => { value => 2 } },
     },
     "generated $routine does what we expect",
@@ -52,7 +53,7 @@ for my $routine (qw(foo bar)) {
       name  => $routine,
       class => 'Test::SubExporter::GroupGen',
       group => 'generated',
-      arg   => { xyz => 5 }, 
+      arg   => { xyz => 5 },
       collection => { col1 => { value => 2 } },
     },
     "generated $five does what we expect",
@@ -65,7 +66,7 @@ is_deeply(
     name  => 'baz',
     class => 'Test::SubExporter::GroupGen',
     group => 'symbolic',
-    arg   => { xyz => 2 }, 
+    arg   => { xyz => 2 },
     collection => { col1 => { value => 2 } },
   },
   "parent class's generated baz does what we expect",
@@ -77,7 +78,7 @@ is_deeply(
     name  => 'baz-sc',
     class => 'Test::SubExporter::GroupGenSubclass',
     group => 'symbolic',
-    arg   => { xyz => 4 }, 
+    arg   => { xyz => 4 },
     collection => { col1 => { value => 3 } },
   },
   "inheriting class's generated baz does what we expect",

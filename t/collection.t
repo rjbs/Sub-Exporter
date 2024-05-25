@@ -1,6 +1,7 @@
 #!perl -T
-use strict;
+use v5.20.0;
 use warnings;
+use stable 'postderef';
 
 =head1 TEST PURPOSE
 
@@ -44,7 +45,7 @@ $config->{$_} = mkopt_hash($config->{$_})
 
 {
   my $collection = Sub::Exporter::_collect_collections(
-    $config, 
+    $config,
     [ [ circsaw => undef ], [ defaults => { foo => 1, bar => 2 } ] ],
     'main',
   );
@@ -58,7 +59,7 @@ $config->{$_} = mkopt_hash($config->{$_})
 
 {
   my $collection = Sub::Exporter::_collect_collections(
-    $config, 
+    $config,
     [ [ sets_own_value => undef ] ],
     'main',
   );
