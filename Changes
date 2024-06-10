@@ -1,6 +1,7 @@
 Revision history for Sub-Exporter
 
 {{$NEXT}}
+        - docs: fix typo in tutorial (thanks, Kıvanç Yazan!)
 
 0.991     2023-11-23 20:32:17-05:00 America/New_York
         - make the requirement for perl v5.12.0 explicit; previously, it was
