@@ -4,7 +4,7 @@ package Sub::Exporter::Util;
 # ABSTRACT: utilities to make Sub::Exporter easier
 
 use Data::OptList ();
-use Params::Util ();
+use Params::SomeUtil ();
 
 =head1 DESCRIPTION
 
@@ -107,7 +107,7 @@ sub curry_chain {
       for my $i (0 .. $#$pairs) {
         my $pair = $pairs->[ $i ];
 
-        unless (Params::Util::_INVOCANT($next)) { ## no critic Private
+        unless (Params::SomeUtil::_INVOCANT($next)) { ## no critic Private
           my $str = defined $next ? "'$next'" : 'undef';
           Carp::croak("can't call $pair->[0] on non-invocant $str")
         }
@@ -200,7 +200,7 @@ sub merge_col {
                        ? { %{ $col->{$default_name} }, %$arg }
                        : $arg;
 
-        if (Params::Util::_CODELIKE($gen)) { ## no critic Private
+        if (Params::SomeUtil::_CODELIKE($gen)) { ## no critic Private
           $gen->($class, $name, $merged_arg, $col);
         } else {
           $class->$$gen($name, $merged_arg, $col);
